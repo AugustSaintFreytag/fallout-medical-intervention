@@ -65,7 +65,7 @@ begin function { ref rInvRef }
 	string_var sDialog = Sv_Construct "^%z^%z|%z" sDialogTitle sDialogIntro sDialogButtons
 
 	Player.AuxiliaryVariableSetFromArray "*SMI_TreatmentDialogBodyParts" aMenuBodyParts
-	MessageBoxExAlt OnTreatmentMenuConfirmUDF ($sDialog)
+	MessageBoxExAlt OnTreatmentMenuConfirmUDF "%z" sDialog
 
 	; Clean-Up
 
@@ -77,6 +77,5 @@ begin function { ref rInvRef }
 	let aBodyHealthMap := Ar_Null
 	let aMenuButtons := Ar_Null
 	let aMenuBodyParts := Ar_Null
-	
 
 end
