@@ -1,0 +1,15 @@
+begin function { string_var sKey }
+
+	if eval sKey == "head"
+		SetFunctionValue 80
+	elseif eval sKey == "torso"
+		SetFunctionValue 60
+	elseif eval (sKey == "leftarm" || sKey == "rightarm")
+		SetFunctionValue 40
+	elseif eval (sKey == "leftleg" || sKey == "rightleg")
+		SetFunctionValue 30
+	else
+		SetFunctionValue 0
+	endif
+
+end
