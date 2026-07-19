@@ -1,0 +1,45 @@
+; UDFs
+
+ref OpenTreatmentMenuUDF = CompileScript "SaintsMedicalIntervention\Activation\OpenTreatmentMenu.gek"
+
+; UDFs (Local)
+
+ref GetDoctorsBagInvRef = (begin function {}
+	array_var aDoctorsBagsInvRefs = Player.GetInvRefsForItem NVDoctorBag
+
+	if eval (Ar_Size aDoctorsBagsInvRefs) == 0
+		SetFunctionValue 0
+		let aDoctorsBagsInvRefs := Ar_Null
+		return
+	endif
+
+	ref rInvRef = aDoctorsBagsInvRefs[0]
+	SetFunctionValue rInvRef
+
+	let aDoctorsBagsInvRefs := Ar_Null
+end)
+
+; Events
+
+SetEventHandlerAlt "ShowOff:OnPreActivateInventoryItem" (begin function { ref rBaseItem, ref rInvRef, short bIsActivationNotPrevented, short iActivatedHotkey }
+	if eval rBaseItem != NVDoctorBag
+		SetFunctionValue 1
+		return
+	endif
+
+	PrintC "Player used Doctor's Bag, interaction will be prevented."
+
+	Call OpenTreatmentMenuUDF rInvRef
+	SetFunctionValue 0
+end)
+
+SetOnMenuClickEventHandler (begin function { short iMenuId, short iTileId, string_var sTileName } 
+	PrintC "Player used Doctor's Bag from stats menu, interaction will be prevented."
+	ref rInvRef = Call GetDoctorsBagInvRef
+
+	if eval rInvRef == 0
+		return
+	endif
+
+	Call OpenTreatmentMenuUDF rInvRef
+end) 1 "StatsMenu#1059"
