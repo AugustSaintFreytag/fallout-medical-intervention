@@ -7,10 +7,10 @@ begin function { ref rInvRef }
 	ref GetBodyPartHealthDescriptionUDF = CompileScript "SaintsMedicalIntervention\Status\GetBodyPartHealthDescription.gek"
 	ref OnTreatmentMenuConfirmUDF = CompileScript "SaintsMedicalIntervention\Activation\OnTreatmentMenuConfirm.gek"
 
-
 	; Settings
 
 	short bShowHealthyBodyParts = 1
+	short bShowNumericBodyPartHealth = 1
 
 	array_var aKeys = Ar_List "head", "torso", "leftarm", "rightarm", "leftleg", "rightleg"
 	array_var aDescriptionByKey = Ar_Map "head"::"Head", "torso"::"Torso", "leftarm"::"Left Arm", "rightarm"::"Right Arm", "leftleg"::"Left Leg", "rightleg"::"Right Leg"
@@ -37,11 +37,16 @@ begin function { ref rInvRef }
 		string_var sPartDescription = aDescriptionByKey[$sKey]
 		string_var sPartHealthDescription = Call GetBodyPartHealthDescriptionUDF sKey iBodyPartHealth
 		string_var sStateDescription = sPartHealthDescription
+
+		if eval bShowNumericBodyPartHealth
+			let sStateDescription := (Sv_Construct "%z, %g%%" sPartHealthDescription iBodyPartHealth)
+		endif
+
 		string_var sLabel = Sv_Construct "%z (%z)" sPartDescription sStateDescription
 
 		Ar_Append aMenuButtons, sLabel
 		Ar_Append aMenuBodyParts, $sKey
-		Sv_Destruct sPartDescription, sStateDescription
+		Sv_Destruct sPartDescription, sPartHealthDescription, sStateDescription
 	loop
 
 	; Cancel Option
