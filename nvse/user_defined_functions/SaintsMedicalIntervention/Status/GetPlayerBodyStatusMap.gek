@@ -8,7 +8,7 @@ begin function {}
 	let aMap["torso"] := GetBit iLimbMask 1
 	let aMap["leftarm"] := GetBit iLimbMask 2
 	let aMap["rightarm"] := GetBit iLimbMask 3
-	let aMap["leftleft"] := GetBit iLimbMask 4
+	let aMap["leftleg"] := GetBit iLimbMask 4
 	let aMap["rightleg"] := GetBit iLimbMask 5
 	let aMap["brain"] := GetBit iLimbMask 6
 	let aMap["_any"] := Player.IsLimbCrippled (-1)
