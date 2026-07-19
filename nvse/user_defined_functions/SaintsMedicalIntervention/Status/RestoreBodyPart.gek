@@ -1,0 +1,24 @@
+begin function { string_var sKey, short iAmount }
+
+	; RestoreActorValue limits the damage modifier to zero, preventing overhealing.
+	if iAmount < 0
+		let iAmount := 0
+	elseif iAmount > 100
+		let iAmount := 100
+	endif
+
+	if eval sKey == "head"
+		Player.RestoreActorValue PerceptionCondition iAmount
+	elseif eval sKey == "torso"
+		Player.RestoreActorValue EnduranceCondition iAmount
+	elseif eval sKey == "leftarm"
+		Player.RestoreActorValue LeftAttackCondition iAmount
+	elseif eval sKey == "rightarm"
+		Player.RestoreActorValue RightAttackCondition iAmount
+	elseif eval sKey == "leftleg"
+		Player.RestoreActorValue LeftMobilityCondition iAmount
+	elseif eval sKey == "rightleg"
+		Player.RestoreActorValue RightMobilityCondition iAmount
+	endif
+
+end
