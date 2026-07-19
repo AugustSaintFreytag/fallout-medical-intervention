@@ -1,0 +1,20 @@
+begin function {}
+
+	array_var aMap = Ar_Construct "stringmap"
+	
+	short iLimbMask = Player.GetCrippledLimbsAsBitMask
+	
+	let aMap["head"] := GetBit iLimbMask 0
+	let aMap["torso"] := GetBit iLimbMask 1
+	let aMap["leftarm"] := GetBit iLimbMask 2
+	let aMap["rightarm"] := GetBit iLimbMask 3
+	let aMap["leftleft"] := GetBit iLimbMask 4
+	let aMap["rightleg"] := GetBit iLimbMask 5
+	let aMap["brain"] := GetBit iLimbMask 6
+	let aMap["_any"] := Player.IsLimbCrippled (-1)
+
+	SetFunctionValue aMap
+
+	let aMap := Ar_Null
+
+end
