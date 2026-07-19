@@ -11,7 +11,7 @@ begin function { ref rInvRef }
 	ref GetBodyPartHealthDescription = (begin function { short iHealth }
 		if iHealth > 99
 			SetFunctionValue "Healthy"
-		if iHealth > 90
+		elseif iHealth > 90
 			SetFunctionValue "Sore"
 		elseif iHealth > 70
 			SetFunctionValue "Contused" ; Or "bruised"
@@ -38,6 +38,9 @@ begin function { ref rInvRef }
 	array_var aBodyStatusMap = Call GetPlayerBodyStatusMapUDF
 	array_var aBodyHealthMap = Call GetPlayerBodyHealthMapUDF
 	array_var aMenuButtons = Ar_Construct "array"
+
+	; Body Part Options
+
 	array_var aMenuBodyParts = Ar_Construct "array"
 
 	foreach (array_var aElement <- aKeys)
@@ -58,12 +61,18 @@ begin function { ref rInvRef }
 		Sv_Destruct sPartDescription, sStateDescription
 	loop
 
+	; Cancel Option
+
+	Ar_Append aMenuButtons, "Cancel"
+
+	; Build Dialog
+
 	; Should probably gate by player skill.
 	; Could say, "You need a medicine skill of 25 or higher for more treatment options.
 	; 35 -> Legs, 45 -> Arms, 65 -> Torso, 85 -> Head
 
 	string_var sDialogTitle = "Field Treatment"
-	string_var sDialogIntro = "Select a body part to view treatment options available for your skill level and materials."
+	string_var sDialogIntro = "Select a body part to view treatment options %ravailable for your skill level and materials."
 	string_var sDialogButtons = Sv_Join aMenuButtons, "|"
 	string_var sDialog = Sv_Construct "^%z^%z|%z" sDialogTitle sDialogIntro sDialogButtons
 
