@@ -9,15 +9,15 @@ begin function { ref rInvRef }
 	; UDFs (Local)
 
 	ref GetBodyPartHealthDescription = (begin function { short iHealth }
-		if iHealth > 99
+		if iHealth > 95
 			SetFunctionValue "Healthy"
-		elseif iHealth > 90
+		elseif iHealth > 85
 			SetFunctionValue "Sore"
-		elseif iHealth > 70
+		elseif iHealth > 65
 			SetFunctionValue "Contused" ; Or "bruised"
-		elseif iHealth > 50
+		elseif iHealth > 45
 			SetFunctionValue "Sprained"
-		elseif iHealth > 30
+		elseif iHealth > 25
 			SetFunctionValue "Dislocated"
 		elseif iHealth > 0
 			SetFunctionValue "Fractured"
