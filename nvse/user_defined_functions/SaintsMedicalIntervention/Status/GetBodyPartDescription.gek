@@ -1,0 +1,19 @@
+begin function { string_var sKey }
+
+	if eval sKey == "head"
+		SetFunctionValue "Head"
+	elseif eval sKey == "torso"
+		SetFunctionValue "Torso"
+	elseif eval sKey == "leftarm"
+		SetFunctionValue "Left Arm"
+	elseif eval sKey == "rightarm"
+		SetFunctionValue "Right Arm"
+	elseif eval sKey == "leftleg"
+		SetFunctionValue "Left Leg"
+	elseif eval sKey == "rightleg"
+		SetFunctionValue "Right Leg"
+	else
+		SetFunctionValue "Unknown Appendage"
+	endif
+
+end
