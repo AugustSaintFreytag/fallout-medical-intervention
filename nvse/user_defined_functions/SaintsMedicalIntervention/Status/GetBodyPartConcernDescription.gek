@@ -1,0 +1,15 @@
+begin function { string_var sKey }
+
+	if eval sKey == "head"
+		SetFunctionValue "head injuries"
+	elseif eval sKey = "torso"
+		SetFunctionValue "internal injuries"
+	elseif eval (sKey == "leftarm" || sKey == "rightarm")
+		SetFunctionValue "arm injuries"
+	elseif eval (sKey == "leftleg" || sKey == "rightleg")
+		SetFunctionValue "leg injuries"
+	else
+		SetFunctionValue "unknown ailments"
+	endif
+
+end
