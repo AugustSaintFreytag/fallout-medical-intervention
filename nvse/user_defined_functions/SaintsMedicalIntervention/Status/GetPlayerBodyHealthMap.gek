@@ -6,7 +6,7 @@ begin function {}
 	let aMap["torso"] := (Player.GetAV EnduranceCondition)
 	let aMap["leftarm"] := (Player.GetAV LeftAttackCondition)
 	let aMap["rightarm"] := (Player.GetAV RightAttackCondition)
-	let aMap["leftleft"] := (Player.GetAV LeftMobilityCondition)
+	let aMap["leftleg"] := (Player.GetAV LeftMobilityCondition)
 	let aMap["rightleg"] := (Player.GetAV LeftMobilityCondition)
 
 	SetFunctionValue aMap
