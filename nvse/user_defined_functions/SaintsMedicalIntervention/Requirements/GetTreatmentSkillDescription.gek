@@ -1,0 +1,22 @@
+begin function { short iCurrentSkill, short iMinSkill }
+
+	short iMaxSkill = 100
+	short iSkillRange = iMaxSkill - iMinSkill
+	short iSkillDiff = iCurrentSkill - iMinSkill
+	float fSkillFactor = iSkillDiff / iSkillRange
+
+	if iSkillDiff < 0
+		SetFunctionValue "insufficient"
+	elseif fSkillFactor < 0.2
+		SetFunctionValue "foundational"
+	elseif fSkillFactor < 0.4
+		SetFunctionValue "practiced"
+	elseif fSkillFactor < 0.6
+		SetFunctionValue "intermediate"
+	elseif fSkillFactor < 0.8
+		SetFunctionValue "accomplished"
+	else
+		SetFunctionValue "expert"
+	endif
+
+end
