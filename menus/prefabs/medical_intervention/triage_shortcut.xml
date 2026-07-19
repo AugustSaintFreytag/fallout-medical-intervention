@@ -1,0 +1,5 @@
+<_PCButton_E> stats_triage_button </_PCButton_E>
+
+<xbuttony>
+	<ref src="stats_triage_button" trait="clicked"/>
+</xbuttony>

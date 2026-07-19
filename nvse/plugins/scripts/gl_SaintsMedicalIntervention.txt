@@ -1,0 +1,2 @@
+; Set ySI button icon
+SetUIStringAlt "StatsMenu/GLOW_BRANCH/stats_status_container/stats_triage_button/ySIImage/filename" "interface\icons\Aid_DoctorBag.dds"

@@ -1,0 +1,22 @@
+<hotrect name="stats_triage_button">
+	<id> 1059 </id>
+	<include src="text_box.xml"/>
+	<visible>
+		<copy src="sibling(stats_player_head)" trait="visible"/>
+	</visible>	<!--VUI+ compatible with hovering -->
+	<string>
+		<copy src="sibling(stats_drbag_button)" trait="string"/>
+	</string>
+	<_x>
+		<copy src="sibling(stats_drbag_button)" trait="_x"/>
+	</_x>
+	<_y>
+		<copy src="sibling(stats_drbag_button)" trait="_y"/>
+	</_y>
+	<justify> &right; </justify>
+	<_xbox_button> &xbuttony; </_xbox_button>
+	<_PCButtonText>
+		<copy src="io" trait="_stats_drbag_button"/>
+	</_PCButtonText>
+	<listindex> 2 </listindex>
+</hotrect>
