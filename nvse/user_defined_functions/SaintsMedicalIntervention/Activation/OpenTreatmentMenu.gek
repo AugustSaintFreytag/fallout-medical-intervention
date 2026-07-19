@@ -4,27 +4,9 @@ begin function { ref rInvRef }
 
 	ref GetPlayerBodyStatusMapUDF = CompileScript "SaintsMedicalIntervention\Status\GetPlayerBodyStatusMap.gek"
 	ref GetPlayerBodyHealthMapUDF = CompileScript "SaintsMedicalIntervention\Status\GetPlayerBodyHealthMap.gek"
+	ref GetBodyPartHealthDescriptionUDF = CompileScript "SaintsMedicalIntervention\Status\GetBodyPartHealthDescription.gek"
 	ref OnTreatmentMenuConfirmUDF = CompileScript "SaintsMedicalIntervention\Activation\OnTreatmentMenuConfirm.gek"
 
-	; UDFs (Local)
-
-	ref GetBodyPartHealthDescription = (begin function { short iHealth }
-		if iHealth > 95
-			SetFunctionValue "Healthy"
-		elseif iHealth > 85
-			SetFunctionValue "Sore"
-		elseif iHealth > 65
-			SetFunctionValue "Contused" ; Or "bruised"
-		elseif iHealth > 45
-			SetFunctionValue "Sprained"
-		elseif iHealth > 25
-			SetFunctionValue "Dislocated"
-		elseif iHealth > 0
-			SetFunctionValue "Fractured"
-		else
-			SetFunctionValue "Crippled"
-		endif
-	end)
 
 	; Settings
 
@@ -53,7 +35,8 @@ begin function { ref rInvRef }
 		endif
 
 		string_var sPartDescription = aDescriptionByKey[$sKey]
-		string_var sStateDescription = Call GetBodyPartHealthDescription iBodyPartHealth
+		string_var sPartHealthDescription = Call GetBodyPartHealthDescriptionUDF sKey iBodyPartHealth
+		string_var sStateDescription = sPartHealthDescription
 		string_var sLabel = Sv_Construct "%z (%z)" sPartDescription sStateDescription
 
 		Ar_Append aMenuButtons, sLabel

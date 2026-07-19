@@ -1,0 +1,53 @@
+begin function { string_var sKey, short iHealth }
+
+	if eval sKey == "torso"
+		if iHealth > 95
+			SetFunctionValue "Healthy"
+		elseif iHealth > 85
+			SetFunctionValue "Sore"
+		elseif iHealth > 65
+			SetFunctionValue "Contused"
+		elseif iHealth > 45
+			SetFunctionValue "Strained"
+		elseif iHealth > 25
+			SetFunctionValue "Punctured"
+		elseif iHealth > 0
+			SetFunctionValue "Ruptured"
+		else
+			SetFunctionValue "Crippled"
+		endif
+	elseif eval sKey == "head"
+		if iHealth > 95
+			SetFunctionValue "Healthy"
+		elseif iHealth > 85
+			SetFunctionValue "Scraped"
+		elseif iHealth > 65
+			SetFunctionValue "Contused" ; Or "bruised"
+		elseif iHealth > 45
+			SetFunctionValue "Lacerated"
+		elseif iHealth > 25
+			SetFunctionValue "Traumatized"
+		elseif iHealth > 0
+			SetFunctionValue "Fractured"
+		else
+			SetFunctionValue "Crippled"
+		endif
+	else
+		if iHealth > 95
+			SetFunctionValue "Healthy"
+		elseif iHealth > 85
+			SetFunctionValue "Sore"
+		elseif iHealth > 65
+			SetFunctionValue "Contused" ; Or "bruised"
+		elseif iHealth > 45
+			SetFunctionValue "Sprained"
+		elseif iHealth > 25
+			SetFunctionValue "Dislocated"
+		elseif iHealth > 0
+			SetFunctionValue "Fractured"
+		else
+			SetFunctionValue "Crippled"
+		endif
+	endif
+
+end
