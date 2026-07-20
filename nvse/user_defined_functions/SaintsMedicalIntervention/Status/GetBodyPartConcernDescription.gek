@@ -2,7 +2,7 @@ begin function { string_var sKey }
 
 	if eval sKey == "head"
 		SetFunctionValue "head injuries"
-	elseif eval sKey = "torso"
+	elseif eval sKey == "torso"
 		SetFunctionValue "internal injuries"
 	elseif eval (sKey == "leftarm" || sKey == "rightarm")
 		SetFunctionValue "arm injuries"
