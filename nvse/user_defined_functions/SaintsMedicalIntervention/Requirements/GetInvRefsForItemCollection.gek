@@ -1,0 +1,20 @@
+begin function { array_var aItems }
+
+	array_var aInvRefs = Ar_Construct "array"
+
+	foreach (array_var aItemEntry <- aItems)
+		ref rItem = *aItemEntry
+
+		if eval rItem == 0
+			continue
+		endif
+
+		array_var aItemInvRefs = Player.GetInvRefsForItem rItem
+		Ar_InsertRange aInvRefs (Ar_Size aInvRefs) aItemInvRefs
+		let aItemInvRefs := Ar_Null
+	loop
+
+	SetFunctionValue aInvRefs
+	let aInvRefs := Ar_Null
+
+end
