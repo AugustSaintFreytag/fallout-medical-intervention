@@ -1,6 +1,3 @@
 begin function { short iOption }
-
-	array_var aBodyPartKeys = Player.AuxiliaryVariableGetAsArray "*SMI_TreatmentDialogBodyParts"
-	string_var sKey = aBodyPartKeys[iOption]
-
+	PrintC "Confirmed menu option %g." iOption
 end

@@ -1,0 +1,16 @@
+begin function { ref rPrimaryItem, ref rSecondaryItem }
+
+	if eval (!rPrimaryItem && !rSecondaryItem)
+		SetFunctionValue ""
+		return
+	endif
+
+	if eval (!rSecondaryItem)
+		SetFunctionValue (GetName rPrimaryItem)
+		return
+	else
+		SetFunctionValue (Sv_Construct "%z and %z" (GetName rPrimaryItem) (GetName rSecondaryItem))
+		return
+	endif
+
+end
