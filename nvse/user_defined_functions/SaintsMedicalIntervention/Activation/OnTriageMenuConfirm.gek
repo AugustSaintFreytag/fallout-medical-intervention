@@ -1,0 +1,22 @@
+begin function { short iOption }
+
+	; UDFs
+
+	ref OpenTreatmentMenuUDF = CompileScript "SaintsMedicalIntervention\Activation\OpenTreatmentMenu.gek"
+
+	; Main
+
+	array_var aBodyPartKeys = Player.AuxiliaryVariableGetAsArray "*SMI_TreatmentDialogBodyParts"
+	short iNumBodyParts = Ar_Size aBodyPartKeys
+
+	if iOption >= iNumBodyParts
+		return
+	endif
+
+	string_var sKey = aBodyPartKeys[iOption]
+
+	PrintC "Selected treatment for limb '%z', opening menu." sKey
+
+	Call OpenTreatmentMenuUDF sKey
+
+end

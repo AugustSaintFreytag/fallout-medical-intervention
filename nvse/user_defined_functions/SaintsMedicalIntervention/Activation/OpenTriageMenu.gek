@@ -1,0 +1,81 @@
+begin function { ref rInvRef }
+
+	; UDFs
+
+	ref GetPlayerBodyStatusMapUDF = CompileScript "SaintsMedicalIntervention\Status\GetPlayerBodyStatusMap.gek"
+	ref GetPlayerBodyHealthMapUDF = CompileScript "SaintsMedicalIntervention\Status\GetPlayerBodyHealthMap.gek"
+	ref GetBodyPartHealthDescriptionUDF = CompileScript "SaintsMedicalIntervention\Status\GetBodyPartHealthDescription.gek"
+	ref OnTriageMenuConfirmUDF = CompileScript "SaintsMedicalIntervention\Activation\OnTriageMenuConfirm.gek"
+
+	; Settings
+
+	short bShowOnlyCrippledBodyParts = 0
+	short bShowNumericBodyPartHealth = 1
+
+	array_var aKeys = Ar_List "head", "torso", "leftarm", "rightarm", "leftleg", "rightleg"
+	array_var aDescriptionByKey = Ar_Map "head"::"Head", "torso"::"Torso", "leftarm"::"Left Arm", "rightarm"::"Right Arm", "leftleg"::"Left Leg", "rightleg"::"Right Leg"
+
+	; Main
+
+	array_var aBodyStatusMap = Call GetPlayerBodyStatusMapUDF
+	array_var aBodyHealthMap = Call GetPlayerBodyHealthMapUDF
+	array_var aMenuButtons = Ar_Construct "array"
+
+	; Body Part Options
+
+	array_var aMenuBodyParts = Ar_Construct "array"
+
+	foreach (array_var aElement <- aKeys)
+		string_var sKey = *aElement
+		short iBodyPartHealth = aBodyHealthMap[$sKey]
+		short bBodyPartIsCrippled = eval (iBodyPartHealth == 0)
+
+		if eval !bBodyPartIsCrippled && bShowOnlyCrippledBodyParts
+			continue
+		endif
+
+		string_var sPartDescription = aDescriptionByKey[$sKey]
+		string_var sPartHealthDescription = Call GetBodyPartHealthDescriptionUDF sKey iBodyPartHealth
+		string_var sStateDescription = sPartHealthDescription
+
+		if eval bShowNumericBodyPartHealth
+			let sStateDescription := (Sv_Construct "%z, %g%%" sPartHealthDescription iBodyPartHealth)
+		endif
+
+		string_var sLabel = Sv_Construct "%z (%z)" sPartDescription sStateDescription
+
+		Ar_Append aMenuButtons, sLabel
+		Ar_Append aMenuBodyParts, $sKey
+		Sv_Destruct sPartDescription, sPartHealthDescription, sStateDescription
+	loop
+
+	; Cancel Option
+
+	Ar_Append aMenuButtons, "Cancel"
+
+	; Build Dialog
+
+	; Should probably gate by player skill.
+	; Could say, "You need a medicine skill of 25 or higher for more treatment options.
+	; 35 -> Legs, 45 -> Arms, 65 -> Torso, 85 -> Head
+
+	string_var sMenuTitle = "Field Treatment"
+	string_var sMenuIntro = "Select a body part to view treatment options %ravailable for your skill level and materials."
+	string_var sMenuButtons = Sv_Join aMenuButtons, "|"
+	string_var sMenu = Sv_Construct "^%z^%z|%z" sMenuTitle sMenuIntro sMenuButtons
+
+	Player.AuxiliaryVariableSetFromArray "*SMI_TreatmentDialogBodyParts" aMenuBodyParts
+	MessageBoxExAlt OnTriageMenuConfirmUDF "%z" sMenu
+
+	; Clean-Up
+
+	Sv_Destruct sMenuTitle, sMenuIntro, sMenuButtons, sMenu
+
+	let aKeys := Ar_Null
+	let aDescriptionByKey := Ar_Null
+	let aBodyStatusMap := Ar_Null
+	let aBodyHealthMap := Ar_Null
+	let aMenuButtons := Ar_Null
+	let aMenuBodyParts := Ar_Null
+
+end

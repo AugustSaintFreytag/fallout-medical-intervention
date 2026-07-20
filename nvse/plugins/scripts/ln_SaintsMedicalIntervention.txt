@@ -1,6 +1,6 @@
 ; UDFs
 
-ref OpenTreatmentMenuUDF = CompileScript "SaintsMedicalIntervention\Activation\OpenTreatmentMenu.gek"
+ref OpenTriageMenuUDF = CompileScript "SaintsMedicalIntervention\Activation\OpenTriageMenu.gek"
 
 ; UDFs (Local)
 
@@ -29,7 +29,7 @@ SetEventHandlerAlt "ShowOff:OnPreActivateInventoryItem" (begin function { ref rB
 
 	PrintC "Player used Doctor's Bag, interaction will be prevented."
 
-	Call OpenTreatmentMenuUDF rInvRef
+	Call OpenTriageMenuUDF rInvRef
 	SetFunctionValue 0
 end)
 
@@ -41,5 +41,5 @@ SetOnMenuClickEventHandler (begin function { short iMenuId, short iTileId, strin
 		return
 	endif
 
-	Call OpenTreatmentMenuUDF rInvRef
+	Call OpenTriageMenuUDF rInvRef
 end) 1 "StatsMenu#1059"
