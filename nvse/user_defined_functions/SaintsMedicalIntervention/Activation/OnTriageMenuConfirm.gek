@@ -2,7 +2,10 @@ begin function { short iOption }
 
 	; UDFs
 
+	ref OpenTriageMenuUDF = CompileScript "SaintsMedicalIntervention\Activation\OpenTriageMenu.gek"
 	ref OpenTreatmentMenuUDF = CompileScript "SaintsMedicalIntervention\Activation\OpenTreatmentMenu.gek"
+	ref GetTreatmentSkillLevelUDF = CompileScript "SaintsMedicalIntervention\Requirements\GetTreatmentSkillLevel.gek"
+	ref GetBodyPartConcernDescriptionUDF = CompileScript "SaintsMedicalIntervention\Status\GetBodyPartConcernDescription.gek"
 
 	; Main
 
@@ -14,9 +17,28 @@ begin function { short iOption }
 	endif
 
 	string_var sKey = aBodyPartKeys[iOption]
+	string_var sPartConcernDescription = Call GetBodyPartConcernDescriptionUDF sKey
 
 	PrintC "Selected treatment for limb '%z', opening menu." sKey
 
-	Call OpenTreatmentMenuUDF sKey
+	; Preconditions
+
+	short iMinSkill = Call GetTreatmentSkillLevelUDF sKey
+	short iCurrentSkill = Player.GetActorValue Medicine
+	short bPlayerHasSufficientSkill = iCurrentSkill >= iMinSkill
+
+	if eval !bPlayerHasSufficientSkill
+		; Insufficient skill, return to previous menu.
+		Call OpenTriageMenuUDF
+		MessageExAlt 2 "$0|You cannot treat %z with your current Medicine skill (%g/%g)." sPartConcernDescription iCurrentSkill iMinSkill
+	else
+		; Open Menu
+		Call OpenTreatmentMenuUDF sKey
+	endif
+
+	; Clean-Up
+
+	Sv_Destruct sPartConcernDescription
+	let aBodyPartKeys := Ar_Null
 
 end
