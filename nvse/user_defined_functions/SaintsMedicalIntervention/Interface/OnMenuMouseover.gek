@@ -1,0 +1,62 @@
+begin function { short iMenuId }
+
+	; Values
+
+	string_var sBasePath = "MessageMenu/NOGLOW_BRANCH/MM_MainRect/MM_ButtonList"
+	string_var sHighlightBoxDefault = sBasePath + "/lb_highlight_box"
+	string_var sHighlightBoxFail = sBasePath + "/lb_highlight_box_fail"
+
+	; Functions	
+
+	ref SetHighlightBoxVisibilityUDF = (begin function { short iOptionMode } 
+		short bShowDefault = eval iOptionMode == 1
+		short bShowFail = eval iOptionMode == 2
+
+		SetUIFloatAlt (sHighlightBoxDefault + "/visible") bShowDefault
+		SetUIFloatAlt (sHighlightBoxFail + "/visible") bShowFail
+	end)
+
+	; Main
+
+	string_var sComponentName = GetActiveUIComponentName
+	short bIsMessageButton = eval (sComponentName == "MM_Button") || ((Sv_Find "MM_Button:" sComponentName) == 0)
+
+	if eval !bIsMessageButton
+		Call SetHighlightBoxVisibilityUDF 0
+
+		Sv_Destruct sComponentName, sBasePath, sHighlightBoxDefault, sHighlightBoxFail
+		return
+	endif
+
+	array_var aFailOptions = Player.AuxiliaryVariableGetAsArray "*SMI_MenuFailOptions"
+	short iNumOptions = Ar_Size aFailOptions
+
+	if eval iNumOptions == 0
+		PrintF "triage.txt" "Processing menu mouseover but no fail options present."
+		Call SetHighlightBoxVisibilityUDF 1
+		
+		Sv_Destruct sComponentName, sBasePath, sHighlightBoxDefault, sHighlightBoxFail
+		let aFailOptions := Ar_Null
+		return
+	endif
+
+	string_var sButtonPath = GetActiveUIComponentFullName
+	short iOption = GetUIFloatAlt (sButtonPath + "/listindex")
+
+	if eval (iOption < 0) || (iOption >= iNumOptions)
+		PrintF "triage.txt" (Sv_Construct "Processing menu mouseover but option %g is out of range (%g)." iOption iNumOptions)
+		Call SetHighlightBoxVisibilityUDF 1
+
+		Sv_Destruct sButtonPath, sComponentName, sBasePath, sHighlightBoxDefault, sHighlightBoxFail
+		let aFailOptions := Ar_Null
+		return
+	endif
+
+	short bIsFailOption = #(aFailOptions[iOption])
+	Call SetHighlightBoxVisibilityUDF (bIsFailOption + 1)
+
+	Sv_Destruct sButtonPath, sComponentName, sBasePath, sHighlightBoxDefault, sHighlightBoxFail
+
+	let aFailOptions := Ar_Null
+
+end

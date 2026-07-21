@@ -9,3 +9,6 @@ true
 
 medical_intervention\doctors_bag_button_disable.xml::StatsMenu::stats_drbag_button
 true
+
+medical_intervention\lb_highlight_box_fail.xml::MessageMenu::MM_ButtonList
+true
