@@ -1,0 +1,11 @@
+begin function { array_var aItems }
+	array_var aNames = Ar_Construct "array"
+
+	foreach array_var aElement <- aItems
+		string_var sName = GetName (*aElement)
+		Ar_Append aNames, sName
+	loop
+
+	SetFunctionValue (Sv_Join aNames, ", ")
+	let aNames := Ar_Null
+end
