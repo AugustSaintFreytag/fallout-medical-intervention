@@ -4,11 +4,11 @@ begin function { short iOption }
 
 	ref OpenTriageMenuUDF = CompileScript "SaintsMedicalIntervention\Activation\OpenTriageMenu.gek"
 	ref OpenTreatmentMenuUDF = CompileScript "SaintsMedicalIntervention\Activation\OpenTreatmentMenu.gek"
-	ref GetBodyPartConcernDescriptionUDF = CompileScript "SaintsMedicalIntervention\Status\GetBodyPartConcernDescription.gek"
+	ref GetBodyPartDescriptionUDF = CompileScript "SaintsMedicalIntervention\Status\GetBodyPartDescription.gek"
 	ref GetTreatmentItemsForKindUDF = CompileScript "SaintsMedicalIntervention\Requirements\GetTreatmentItemsForKind.gek"
-	ref GetInvRefsForIndexCollectionUDF = CompileScript "SaintsMedicalIntervention\Requirements\GetInvRefsForIndexCollection.gek"
-	ref MapFirstInCollectionUDF = CompileScript "SaintsMedicalIntervention\Requirements\MapFirstInCollection.gek"
+	ref MapFirstInCollectionUDF = CompileScript "SaintsMedicalIntervention\Utility\MapFirstInCollection.gek"
 	ref RestoreBodyPartUDF = CompileScript "SaintsMedicalIntervention\Status\RestoreBodyPart.gek"
+	ref GetNameListUDF = CompileScript "SaintsMedicalIntervention\Utility\GetNameList.gek"
 
 	; Routing
 
@@ -44,41 +44,30 @@ begin function { short iOption }
 	endif
 
 	array_var aTreatmentItems = Call GetTreatmentItemsForKindUDF sKey
-	array_var aAllItemInvRefs = Call GetInvRefsForIndexCollectionUDF aTreatmentItems
-	array_var aUsableInvRefs = Call MapFirstInCollectionUDF aAllItemInvRefs
+	string_var sTreatmentItemNames = Call GetNameListUDF aTreatmentItems
+	string_var sPartDescription = Call GetBodyPartDescriptionUDF sKey
 
-	short bPlayerHasSufficientItems = eval (Ar_Size aTreatmentItems) > 0
+	PrintC "Confirmed treatment for limb '%z' with items %z." sKey sTreatmentItemNames
 
-	foreach array_var aInvRefElement <- aUsableInvRefs
-		if eval !(*aInvRefElement)
-			let bPlayerHasSufficientItems := 0
-			break
-		endif
+	; Remove Items
+
+	foreach array_var aTreatmentItemElement <- aTreatmentItems
+		ref rTreatmentItem = *aTreatmentItemElement
+		Player.RemoveItem rTreatmentItem 1 1
 	loop
 
-	if eval !bPlayerHasSufficientItems
-		string_var sPartConcernDescription = Call GetBodyPartConcernDescriptionUDF sKey
+	Call RestoreBodyPartUDF sKey 100
 
-		Call OpenTreatmentMenuUDF sKey
-		MessageExAlt 2 "Interface\Icons\Message Icons\glow_message_vaultboy_sad.dds|You cannot treat %z because you do not have the required items." sPartConcernDescription
+	; Space for sound playback.
 
-		Sv_Destruct sPartConcernDescription, sKey
-		let aTreatmentItems := Ar_Null
-		let aAllItemInvRefs := Ar_Null
-		let aUsableInvRefs := Ar_Null
-		return
-	endif
-
-	PrintC "Confirmed treatment for limb '%z' with %g usable item inv refs." sKey (Ar_Size aUsableInvRefs)
+	MessageExAlt 4 "interface\icons\pipboyimages\itsmejesushchrist\message icons\glow_doctor.dds|You've used %z to treat your %z." sTreatmentItemNames sPartDescription
 
 	; Clean-Up
 
 	Player.AuxiliaryVariableErase "*SMI_MenuFailOptions"
 	Player.AuxiliaryVariableErase "*SMI_TreatmentDialogBodyPartKey"
 
-	Sv_Destruct sKey
+	Sv_Destruct sKey, sTreatmentItemNames, sPartDescription
 	let aTreatmentItems := Ar_Null
-	let aAllItemInvRefs := Ar_Null
-	let aUsableInvRefs := Ar_Null
 
 end
