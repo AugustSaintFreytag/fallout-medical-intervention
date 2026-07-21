@@ -92,7 +92,7 @@ begin function { string_var sKey }
 
 	array_var aMenuFailOptions = Ar_List (!bPlayerHasSufficientItems), 0, 0
 	Player.AuxiliaryVariableSetFromArray "*SMI_MenuFailOptions" aMenuFailOptions
-	Player.AuxiliaryVariableSetString "*SMI_TreatmentDialogBodyPartKey" sKey
+	Player.AuxiliaryVariableSetString "*SMI_TreatmentDialogBodyPartKey" ($sKey)
 
 	MessageBoxExAlt OnTreatmentMenuConfirmUDF "%z" sMenu
 

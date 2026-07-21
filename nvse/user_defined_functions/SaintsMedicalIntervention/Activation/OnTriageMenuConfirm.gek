@@ -33,7 +33,7 @@ begin function { short iOption }
 		MessageExAlt 2 "Interface\Icons\Message Icons\glow_message_vaultboy_sad.dds|You cannot treat %z with your current Medicine skill (%g/%g)." sPartConcernDescription iCurrentSkill iMinSkill
 	else
 		; Persist selection
-		Player.AuxiliaryVariableSetString "*SMI_TreatmentDialogBodyPartKey" sKey
+		Player.AuxiliaryVariableSetString "*SMI_TreatmentDialogBodyPartKey" ($sKey)
 
 		; Open menu
 		Call OpenTreatmentMenuUDF sKey
