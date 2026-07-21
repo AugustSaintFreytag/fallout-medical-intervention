@@ -15,7 +15,7 @@ begin function { string_var sKey }
 	ref GetTreatmentSkillLevelUDF = CompileScript "SaintsMedicalIntervention\Requirements\GetTreatmentSkillLevel.gek"
 	ref OnTreatmentMenuConfirmUDF = CompileScript "SaintsMedicalIntervention\Activation\OnTreatmentMenuConfirm.gek"
 	ref GetInvRefsForIndexCollectionUDF = CompileScript "SaintsMedicalIntervention\Requirements\GetInvRefsForIndexCollection.gek"
-	ref MapFirstInCollectionUDF = CompileScript "SaintsMedicalIntervention\Requirements\MapFirstInCollection.gek"
+	ref MapFirstInCollectionUDF = CompileScript "SaintsMedicalIntervention\Utility\MapFirstInCollection.gek"
 	ref GetTreatmentItemDescriptionBlockUDF = CompileScript "SaintsMedicalIntervention\Requirements\GetTreatmentItemDescriptionBlock.gek"
 
 	; Settings
