@@ -1,6 +1,7 @@
 ; UDFs
 
 ref OpenTriageMenuUDF = CompileScript "SaintsMedicalIntervention\Activation\OpenTriageMenu.gek"
+ref OnMenuMouseoverUDF = CompileScript "SaintsMedicalIntervention\Interface\OnMenuMouseover.gek"
 
 ; UDFs (Local)
 
@@ -21,20 +22,19 @@ end)
 
 ; Events
 
+SetOnMouseoverChangeEventHandler OnMenuMouseoverUDF 1 1001
+
 SetEventHandlerAlt "ShowOff:OnPreActivateInventoryItem" (begin function { ref rBaseItem, ref rInvRef, short bIsActivationNotPrevented, short iActivatedHotkey }
 	if eval rBaseItem != NVDoctorBag
 		SetFunctionValue 1
 		return
 	endif
 
-	PrintC "Player used Doctor's Bag, interaction will be prevented."
-
 	Call OpenTriageMenuUDF rInvRef
 	SetFunctionValue 0
 end)
 
 SetOnMenuClickEventHandler (begin function { short iMenuId, short iTileId, string_var sTileName } 
-	PrintC "Player used Doctor's Bag from stats menu, interaction will be prevented."
 	ref rInvRef = Call GetDoctorsBagInvRef
 
 	if eval rInvRef == 0
