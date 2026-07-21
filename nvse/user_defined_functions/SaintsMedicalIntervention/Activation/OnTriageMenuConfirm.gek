@@ -23,14 +23,14 @@ begin function { short iOption }
 
 	; Preconditions
 
-	short iMinSkill = Call GetTreatmentSkillLevelUDF sKey
+	short iPlayerSkill = Call GetTreatmentSkillLevelUDF sKey
 	short iCurrentSkill = Player.GetActorValue Medicine
-	short bPlayerHasSufficientSkill = iCurrentSkill >= iMinSkill
+	short bPlayerHasSufficientSkill = iCurrentSkill >= iPlayerSkill
 
 	if eval !bPlayerHasSufficientSkill
 		; Insufficient skill, return to previous menu.
 		Call OpenTriageMenuUDF
-		MessageExAlt 2 "Interface\Icons\Message Icons\glow_message_vaultboy_sad.dds|You cannot treat %z with your current Medicine skill (%g/%g)." sPartConcernDescription iCurrentSkill iMinSkill
+		MessageExAlt 2 "Interface\Icons\Message Icons\glow_message_vaultboy_sad.dds|You cannot treat %z with your current Medicine skill (%g/%g)." sPartConcernDescription iCurrentSkill iPlayerSkill
 	else
 		; Persist selection
 		Player.AuxiliaryVariableSetString "*SMI_TreatmentDialogBodyPartKey" ($sKey)

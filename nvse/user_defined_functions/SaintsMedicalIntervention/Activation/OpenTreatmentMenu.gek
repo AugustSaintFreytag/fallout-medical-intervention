@@ -25,11 +25,11 @@ begin function { string_var sKey }
 	; Main
 
 	short iCurrentSkill = Player.GetActorValue Medicine
-	short iMinSkill = Call GetTreatmentSkillLevelUDF sKey
+	short iPlayerSkill = Call GetTreatmentSkillLevelUDF sKey
 
 	string_var sBodyPartDescription = Call GetBodyPartDescriptionUDF sKey
 	string_var sBodyPartConcernDescription = Call GetBodyPartConcernDescriptionUDF sKey
-	string_var sSkillDescription = Call GetTreatmentSkillDescriptionUDF iCurrentSkill iMinSkill
+	string_var sSkillDescription = Call GetTreatmentSkillDescriptionUDF iCurrentSkill iPlayerSkill
 
 	array_var aPlayerBodyHealthMap = Call GetPlayerBodyHealthMapUDF
 	short iBodyPartHealth = aPlayerBodyHealthMap[$sKey]
