@@ -1,0 +1,18 @@
+begin function { ref rItem }
+
+	short bOnlyShowNumIfLacking = 0
+
+	short iNumRequiredItems = 1
+	short iNumPlayerItems = Ar_Size (Player.GetInvRefsForItem rItem)
+
+	string_var sDescription = ""
+	
+	if eval (bOnlyShowNumIfLacking && iNumPlayerItems >= iNumRequiredItems)
+		let sDescription := Sv_Construct "[%z]" (GetName rItem)
+	else
+		let sDescription := Sv_Construct "[%z %g/%g]" (GetName rItem) iNumPlayerItems iNumRequiredItems
+	endif
+
+	SetFunctionValue sDescription
+
+end
