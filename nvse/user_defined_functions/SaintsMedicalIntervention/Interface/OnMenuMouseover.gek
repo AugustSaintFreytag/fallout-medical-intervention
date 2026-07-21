@@ -52,7 +52,7 @@ begin function { short iMenuId }
 		return
 	endif
 
-	short bIsFailOption = #(aFailOptions[iOption])
+	short bIsFailOption = aFailOptions[iOption]
 	Call SetHighlightBoxVisibilityUDF (bIsFailOption + 1)
 
 	Sv_Destruct sButtonPath, sComponentName, sBasePath, sHighlightBoxDefault, sHighlightBoxFail
