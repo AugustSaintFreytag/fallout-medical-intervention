@@ -1,0 +1,23 @@
+begin function { array_var aItems }
+
+	; Returns an array of index ref arrays.
+	; aItems[0]: rItem --> returning aReturn[0]: Array<InvRef>
+
+	array_var aItemInvRefs = Ar_Construct "array"
+
+	foreach array_var aItemElement <- aItems
+		short iIndex = aItemElement["key"]
+		ref rItem = aItemElement["value"]
+
+		if eval !rItem
+			continue
+		endif
+
+		let aItemInvRefs[iIndex] := (Player.GetInvRefsForItem rItem)
+		PrintC "Returning %g inv refs for item %z." (Ar_Size aItemInvRefs[iIndex]) (GetName rItem)
+	loop
+
+	SetFunctionValue aItemInvRefs
+	let aItemInvRefs := Ar_Null
+
+end

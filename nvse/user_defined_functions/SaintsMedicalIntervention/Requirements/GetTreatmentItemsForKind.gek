@@ -1,15 +1,15 @@
 begin function { string_var sKey }
 
 	ref GetHeadItems = (begin function {} 
-		SetFunctionValue (Ar_Map "primary"::SurgicalTweasers01, "secondary"::SurgicalTubing)
+		SetFunctionValue Ar_List SurgicalTweasers01, SurgicalTubing
 	end)
 
 	ref GetTorsoItems = (begin function {} 
-		SetFunctionValue (Ar_Map "primary"::SurgicalForceps01, "secondary"::SurgicalTubing)
+		SetFunctionValue Ar_List SurgicalForceps01, SurgicalTubing
 	end)
 
 	ref GetLimbItems = (begin function {} 
-		SetFunctionValue (Ar_Map "primary"::MedicalBrace)
+		SetFunctionValue Ar_List MedicalBrace
 	end)
 
 	if eval sKey == "head"

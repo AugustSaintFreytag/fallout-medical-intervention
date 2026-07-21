@@ -14,6 +14,9 @@ begin function { string_var sKey }
 	ref GetTreatmentSkillDescriptionUDF = CompileScript "SaintsMedicalIntervention\Requirements\GetTreatmentSkillDescription.gek"
 	ref GetTreatmentSkillLevelUDF = CompileScript "SaintsMedicalIntervention\Requirements\GetTreatmentSkillLevel.gek"
 	ref OnTreatmentMenuConfirmUDF = CompileScript "SaintsMedicalIntervention\Activation\OnTreatmentMenuConfirm.gek"
+	ref GetInvRefsForIndexCollectionUDF = CompileScript "SaintsMedicalIntervention\Requirements\GetInvRefsForIndexCollection.gek"
+	ref MapFirstInCollectionUDF = CompileScript "SaintsMedicalIntervention\Requirements\MapFirstInCollection.gek"
+	ref GetTreatmentItemDescriptionBlockUDF = CompileScript "SaintsMedicalIntervention\Requirements\GetTreatmentItemDescriptionBlock.gek"
 
 	; Settings
 
@@ -33,35 +36,42 @@ begin function { string_var sKey }
 
 	string_var sBodyPartHealthDescription = Call GetBodyPartHealthDescriptionUDF sKey iBodyPartHealth
 
-	; Options
+	; Buttons
 
 	array_var aMenuButtons = Ar_Construct "array"
 
-	; Items
+	; Treatment Buttons
 
-	array_var aItemTuple = Call GetTreatmentItemsForKindUDF sKey
-	ref rPrimaryItem = aItemTuple["primary"]
-	ref rSecondaryItem = aItemTuple["secondary"]
+	array_var aTreatmentItems = Call GetTreatmentItemsForKindUDF sKey
+	array_var aAllItemInvRefs = Call GetInvRefsForIndexCollectionUDF aTreatmentItems
+	array_var aUsableInvRefs = Call MapFirstInCollectionUDF aAllItemInvRefs
 
-	short bNeedsSecondaryItem = eval !!(rSecondaryItem)
+	short bPlayerHasSufficientItems = eval (Ar_Size aTreatmentItems) > 0
 
-	array_var aPrimaryItemInvRefs = Player.GetInvRefsForItem rPrimaryItem
-	array_var aSecondaryItemInvRefs = Ar_Construct "array"
+	foreach array_var aInvRefElement <- aUsableInvRefs
+		if eval !(*aInvRefElement)
+			let bPlayerHasSufficientItems := 0
+			break
+		endif
+	loop
 
-	if eval bNeedsSecondaryItem
-		let aSecondaryItemInvRefs := Player.GetInvRefsForItem rSecondaryItem
-	endif
+	array_var aItemBlockDescriptions = Ar_Construct "array"
 
-	short bPlayerHasPrimaryItems = eval (Ar_Size aPrimaryItemInvRefs) > 0
-	short bPlayerHasSecondaryItems = eval (Ar_Size aSecondaryItemInvRefs) > 0
-	short bPlayerHasSufficientItems = eval bPlayerHasPrimaryItems && (!bNeedsSecondaryItem || bPlayerHasSecondaryItems)
-	
-	string_var sItemTupleDescription = Call GetTreatmentItemGroupDescriptionUDF rPrimaryItem rSecondaryItem
-	string_var sItemOption = Sv_Construct "[Medicine %g/%g] Use %z" iCurrentSkill iMinSkill sItemTupleDescription
+	foreach array_var aElement <- aTreatmentItems
+		ref rItem = *aElement
+		string_var sItemDescriptionBlock = Call GetTreatmentItemDescriptionBlockUDF rItem
 
-	if eval bPlayerHasSufficientItems
-		Ar_Append aMenuButtons, sItemOption
-	endif
+		Ar_Append aItemBlockDescriptions, sItemDescriptionBlock
+		Sv_Destruct sItemDescriptionBlock
+	loop
+
+	string_var sItemBlockDescriptions = Sv_Join aItemBlockDescriptions, " "
+	string_var sTreatmentButton = Sv_Construct "%z Treat %z" sItemBlockDescriptions sBodyPartDescription
+
+	Ar_Append aMenuButtons, sTreatmentButton
+
+	Sv_Destruct sItemBlockDescriptions
+	let aItemBlockDescriptions := Ar_Null
 
 	; Conclusion
 
@@ -71,31 +81,31 @@ begin function { string_var sKey }
 	; Menu
 
 	string_var sMenuTitle = "Field Treatment"
-	string_var sMenuIntroPart = Sv_Construct "The diagnosis for your %z appears to be: %z." (Sv_ToLower sBodyPartDescription) sBodyPartHealthDescription
-	string_var sMenuIntroSkill = ""
-
-	if eval iCurrentSkill >= iMinSkill
-		let sMenuIntroSkill := Sv_Construct "%rYour Medicine skill (%g) enables you to treat %z." iCurrentSkill sBodyPartConcernDescription
-	else
-		let sMenuIntroSkill := Sv_Construct "%rYour Medicine skill (%g) is insufficient to treat %z." iCurrentSkill sBodyPartConcernDescription
-	endif
-
-	string_var sMenuIntroConditions = ""
-
-	if eval !bPlayerHasSufficientItems
-		let sMenuIntroConditions := Sv_Construct "%rTreatment requires items you do not have: %z." sItemTupleDescription
-	endif
+	string_var sBodyPartDescriptionLower = Sv_ToLower sBodyPartDescription
+	string_var sMenuIntroPart = Sv_Construct "The diagnosis for your %z is: %z." sBodyPartDescriptionLower sBodyPartHealthDescription
+	string_var sMenuIntroSkill = Sv_Construct "%rYour expertise in treating %z is: %z." sBodyPartConcernDescription sSkillDescription
 
 	string_var sMenuButtons = Sv_Join aMenuButtons, "|"
-	string_var sMenu = Sv_Construct "^%z^%z%z%z|%z" sMenuTitle sMenuIntroPart sMenuIntroSkill sMenuIntroConditions sMenuButtons
+	string_var sMenu = Sv_Construct "^%z^%z%z|%z" sMenuTitle sMenuIntroPart sMenuIntroSkill sMenuButtons
+
+	; Open Menu
+
+	array_var aMenuFailOptions = Ar_List (!bPlayerHasSufficientItems), 0, 0
+	Player.AuxiliaryVariableSetFromArray "*SMI_MenuFailOptions" aMenuFailOptions
+	Player.AuxiliaryVariableSetString "*SMI_TreatmentDialogBodyPartKey" sKey
 
 	MessageBoxExAlt OnTreatmentMenuConfirmUDF "%z" sMenu
 
 	; Clean-Up
 
-	Sv_Destruct sSkillDescription, sBodyPartConcernDescription, sMenuTitle, sMenuIntroPart, sMenuIntroSkill, sMenuIntroConditions, sMenuButtons, sMenu
-	
-	let aPrimaryItemInvRefs := Ar_Null
-	let aSecondaryItemInvRefs := Ar_Null
+	Sv_Destruct sBodyPartDescription, sBodyPartConcernDescription, sSkillDescription, sBodyPartHealthDescription, sTreatmentButton
+	Sv_Destruct sMenuTitle, sBodyPartDescriptionLower, sMenuIntroPart, sMenuIntroSkill, sMenuButtons, sMenu
+
+	let aPlayerBodyHealthMap := Ar_Null
+	let aMenuButtons := Ar_Null
+	let aTreatmentItems := Ar_Null
+	let aAllItemInvRefs := Ar_Null
+	let aUsableInvRefs := Ar_Null
+	let aMenuFailOptions := Ar_Null
 
 end
