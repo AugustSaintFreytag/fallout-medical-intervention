@@ -63,6 +63,7 @@ begin function { ref rInvRef }
 	; Cancel Option
 
 	Ar_Append aMenuButtons, "Cancel"
+	Ar_Append aMenuTreatmentButtonsDisabled, 0
 
 	; Build Dialog
 
