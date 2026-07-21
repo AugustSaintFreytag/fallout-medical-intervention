@@ -3,7 +3,7 @@ begin function { ref rItem }
 	short bOnlyShowNumIfLacking = 0
 
 	short iNumRequiredItems = 1
-	short iNumPlayerItems = Ar_Size (Player.GetInvRefsForItem rItem)
+	short iNumPlayerItems = Player.GetItemCount rItem
 
 	string_var sDescription = ""
 	
