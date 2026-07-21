@@ -1,0 +1,23 @@
+begin function { array_var aCollections }
+
+	; Maps each nested array to its first element, or 0 when it is empty.
+
+	array_var aFirstValues = Ar_Construct "array"
+
+	foreach array_var aElement <- aCollections
+		short iIndex = aElement["key"]
+		array_var aCollection = aElement["value"]
+
+		let aFirstValues[iIndex] := 0
+
+		if eval (Ar_Size aCollection) > 0
+			let aFirstValues[iIndex] := aCollection[0]
+		endif
+
+		let aCollection := Ar_Null
+	loop
+
+	SetFunctionValue aFirstValues
+	let aFirstValues := Ar_Null
+
+end
