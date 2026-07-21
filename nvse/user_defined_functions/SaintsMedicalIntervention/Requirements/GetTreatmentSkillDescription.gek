@@ -6,17 +6,17 @@ begin function { short iCurrentSkill, short iMinSkill }
 	float fSkillFactor = iSkillDiff / iSkillRange
 
 	if iSkillDiff < 0
-		SetFunctionValue "insufficient"
+		SetFunctionValue "Insufficient"
 	elseif fSkillFactor < 0.2
-		SetFunctionValue "foundational"
+		SetFunctionValue "Foundational"
 	elseif fSkillFactor < 0.4
-		SetFunctionValue "practiced"
+		SetFunctionValue "Practiced"
 	elseif fSkillFactor < 0.6
-		SetFunctionValue "intermediate"
+		SetFunctionValue "Intermediate"
 	elseif fSkillFactor < 0.8
-		SetFunctionValue "accomplished"
+		SetFunctionValue "Accomplished"
 	else
-		SetFunctionValue "expert"
+		SetFunctionValue "Expert"
 	endif
 
 end
