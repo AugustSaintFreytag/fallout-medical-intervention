@@ -14,7 +14,7 @@ begin function {}
 	let aMap["rightarm"] := (Player.GetAV RightAttackCondition)
 	let aMap["leftleg"] := (Player.GetAV LeftMobilityCondition)
 	let aMap["rightleg"] := (Player.GetAV RightMobilityCondition)
-	let aMap["body"] := (Call GetOverallBodyHealthUDF aMap)
+	let aMap["all"] := (Call GetOverallBodyHealthUDF aMap)
 
 	SetFunctionValue aMap
 
