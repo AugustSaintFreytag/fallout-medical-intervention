@@ -1,0 +1,33 @@
+begin function { string_var sKey }
+
+	; Settings
+
+	float fMaxRestoreFactor = 0.8
+
+	; UDFs
+
+	ref GetTreatmentSkillLevelUDF = CompileScript "SaintsMedicalIntervention\Requirements\GetTreatmentSkillLevel.gek"
+	ref RestoreBodyPartUDF = CompileScript "SaintsMedicalIntervention\Status\RestoreBodyPart.gek"
+
+	; Main
+
+	short iMinSkill = Call GetTreatmentSkillLevelUDF sKey
+	short iPlayerSkill = Player.GetActorValue Medicine
+	short iSkillRange = 100 - iMinSkill
+	short iSkillDiff = iPlayerSkill - iMinSkill
+
+	if iSkillDiff < 0
+		let iSkillDiff := 0
+	elseif iSkillDiff > iSkillRange
+		let iSkillDiff := iSkillRange
+	endif
+
+	float fSkillFactor = iSkillDiff / iSkillRange
+	short iRestoredCondition = Floor (100.0 * fMaxRestoreFactor * fSkillFactor)
+
+	let iRestoredCondition := GetMinOf 1, iRestoredCondition
+
+	PrintC "Restoring condition for '%z' by %g (min skill: %g, player skill: %g, factor: %.2f)." sKey iRestoredCondition iMinSkill iPlayerSkill fSkillFactor
+	Call RestoreBodyPartUDF sKey iRestoredCondition
+
+end

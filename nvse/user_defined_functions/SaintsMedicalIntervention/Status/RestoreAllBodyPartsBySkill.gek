@@ -1,0 +1,20 @@
+begin function {}
+
+	; UDFs
+
+	ref RestoreBodyPartBySkillUDF = CompileScript "SaintsMedicalIntervention\Status\RestoreBodyPartBySkill.gek"
+
+	; Main
+
+	array_var aPartKeys = Ar_List "leftleg", "rightleg", "leftarm", "rightarm", "torso", "head"
+
+	foreach array_var aPartElement <- aPartKeys 
+		string_var sKey = *aPartElement
+
+		Call RestoreBodyPartBySkillUDF sKey
+		Sv_Destruct sKey
+	loop
+
+	let aPartKeys := Ar_Null
+
+end
