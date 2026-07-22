@@ -7,8 +7,9 @@ begin function { short iOption }
 	ref GetBodyPartDescriptionUDF = CompileScript "SaintsMedicalIntervention\Status\GetBodyPartDescription.gek"
 	ref GetTreatmentItemsForKindUDF = CompileScript "SaintsMedicalIntervention\Requirements\GetTreatmentItemsForKind.gek"
 	ref MapFirstInCollectionUDF = CompileScript "SaintsMedicalIntervention\Utility\MapFirstInCollection.gek"
-	ref RestoreBodyPartUDF = CompileScript "SaintsMedicalIntervention\Status\RestoreBodyPart.gek"
 	ref GetNameListUDF = CompileScript "SaintsMedicalIntervention\Utility\GetNameList.gek"
+	ref RestoreAllBodyPartsBySkillUDF = CompileScript "SaintsMedicalIntervention\Status\RestoreAllBodyPartsBySkill.gek"
+	ref RestoreBodyPartBySkillUDF = CompileScript "SaintsMedicalIntervention\Status\RestoreBodyPartBySkill.gek"
 
 	; Routing
 
@@ -56,7 +57,11 @@ begin function { short iOption }
 		Player.RemoveItem rTreatmentItem 1 1
 	loop
 
-	Call RestoreBodyPartUDF sKey 100
+	if eval sKey == "all"
+		Call RestoreAllBodyPartsBySkillUDF
+	else
+		Call RestoreBodyPartBySkillUDF sKey
+	endif
 
 	; Space for sound playback.
 

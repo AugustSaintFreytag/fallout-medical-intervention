@@ -5,6 +5,7 @@ begin function { string_var sKey }
 
 	; UDFs
 
+	ref AlignMessageMenuButtonsUDF = CompileScript "SaintsMedicalIntervention\Interface\AlignMessageMenuButtons.gek"
 	ref GetBodyPartConcernDescriptionUDF = CompileScript "SaintsMedicalIntervention\Status\GetBodyPartConcernDescription.gek"
 	ref GetBodyPartDescriptionUDF = CompileScript "SaintsMedicalIntervention\Status\GetBodyPartDescription.gek"
 	ref GetBodyPartHealthDescriptionUDF = CompileScript "SaintsMedicalIntervention\Status\GetBodyPartHealthDescription.gek"
@@ -85,6 +86,10 @@ begin function { string_var sKey }
 	string_var sMenuIntroPart = Sv_Construct "The diagnosis for your %z is: %z." sBodyPartDescriptionLower sBodyPartHealthDescription
 	string_var sMenuIntroSkill = Sv_Construct "%rYour expertise in treating %z is: %z." sBodyPartConcernDescription sSkillDescription
 
+	if eval sKey == "all"
+		let sMenuIntroSkill := "%rThe amount restored for each body part is dependent on your skill."
+	endif
+
 	string_var sMenuButtons = Sv_Join aMenuButtons, "|"
 	string_var sMenu = Sv_Construct "^%z^%z%z|%z" sMenuTitle sMenuIntroPart sMenuIntroSkill sMenuButtons
 
@@ -95,6 +100,7 @@ begin function { string_var sKey }
 	Player.AuxiliaryVariableSetString "*SMI_TreatmentDialogBodyPartKey" ($sKey)
 
 	MessageBoxExAlt OnTreatmentMenuConfirmUDF "%z" sMenu
+	Call AlignMessageMenuButtonsUDF
 
 	; Clean-Up
 
