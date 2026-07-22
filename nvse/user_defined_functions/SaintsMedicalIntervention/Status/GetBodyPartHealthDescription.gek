@@ -1,6 +1,20 @@
 begin function { string_var sKey, short iHealth }
 
-	if eval sKey == "torso"
+	if eval sKey == "all"
+		if iHealth > 95
+			SetFunctionValue "Healthy"
+		elseif iHealth > 75
+			SetFunctionValue "Minor Injuries"
+		elseif iHealth > 50
+			SetFunctionValue "Moderate Injuries"
+		elseif iHealth > 25
+			SetFunctionValue "Serious Injuries"
+		elseif iHealth > 0
+			SetFunctionValue "Major Injuries"
+		else
+			SetFunctionValue "Critical Injuries"
+		endif
+	elseif eval sKey == "torso"
 		if iHealth > 95
 			SetFunctionValue "Healthy"
 		elseif iHealth > 85
