@@ -1,5 +1,11 @@
 begin function {}
 
+	; UDFs
+
+	ref GetOverallBodyHealthUDF = CompileScript "SaintsMedicalIntervention\Status\GetOverallBodyHealth.gek"
+
+	; Map
+
 	array_var aMap = Ar_Construct "stringmap"
 
 	let aMap["head"] := (Player.GetAV PerceptionCondition)
@@ -8,6 +14,7 @@ begin function {}
 	let aMap["rightarm"] := (Player.GetAV RightAttackCondition)
 	let aMap["leftleg"] := (Player.GetAV LeftMobilityCondition)
 	let aMap["rightleg"] := (Player.GetAV RightMobilityCondition)
+	let aMap["body"] := (Call GetOverallBodyHealthUDF aMap)
 
 	SetFunctionValue aMap
 
