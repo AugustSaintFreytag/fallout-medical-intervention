@@ -1,0 +1,23 @@
+begin function {}
+
+	; UDFs
+
+	ref RestoreAllBodyPartsBySkillUDF = CompileScript "SaintsMedicalIntervention\Status\RestoreAllBodyPartsBySkill.gek"
+	ref RestoreBodyPartBySkillUDF = CompileScript "SaintsMedicalIntervention\Status\RestoreBodyPartBySkill.gek"
+
+	; Main
+
+	string_var sKey = Player.AuxiliaryVariableGetString "*SMI_TreatmentDialogBodyPartKey"
+
+	if eval sKey == "all"
+		Call RestoreAllBodyPartsBySkillUDF
+	elseif eval sKey
+		Call RestoreBodyPartBySkillUDF sKey
+	endif
+
+	; Clean-Up
+
+	Player.AuxiliaryVariableErase "*SMI_TreatmentDialogBodyPartKey"
+	Sv_Destruct sKey
+
+end

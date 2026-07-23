@@ -29,6 +29,8 @@ begin function { short iOption }
 
 	if eval !bPlayerHasSufficientSkill
 		; Insufficient skill, return to previous menu.
+
+		CloseActiveMenu
 		Call OpenTriageMenuUDF
 		MessageExAlt 2 "Interface\Icons\Message Icons\glow_message_vaultboy_sad.dds|You cannot treat %z with your current Medicine skill (%g/%g)." sPartConcernDescription iCurrentSkill iPlayerSkill
 	else
@@ -36,6 +38,7 @@ begin function { short iOption }
 		Player.AuxiliaryVariableSetString "*SMI_TreatmentDialogBodyPartKey" ($sKey)
 
 		; Open menu
+		CloseActiveMenu
 		Call OpenTreatmentMenuUDF sKey
 	endif
 
