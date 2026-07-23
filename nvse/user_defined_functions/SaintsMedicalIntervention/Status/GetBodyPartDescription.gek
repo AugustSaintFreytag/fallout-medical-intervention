@@ -1,6 +1,8 @@
 begin function { string_var sKey }
 
-	if eval sKey == "head"
+	if eval sKey == "all"
+		SetFunctionValue "Body Parts"
+	elseif eval sKey == "head"
 		SetFunctionValue "Head"
 	elseif eval sKey == "torso"
 		SetFunctionValue "Torso"

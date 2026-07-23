@@ -1,6 +1,10 @@
 begin function { ref rItem }
 
-	short bOnlyShowNumIfLacking = 0
+	; Settings
+
+	short bOnlyShowNumIfLacking = 1
+
+	; Main
 
 	short iNumRequiredItems = 1
 	short iNumPlayerItems = Player.GetItemCount rItem

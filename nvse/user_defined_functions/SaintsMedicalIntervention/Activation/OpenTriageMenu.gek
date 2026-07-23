@@ -2,11 +2,22 @@ begin function { ref rInvRef }
 
 	; UDFs
 
+	ref AlignMessageMenuButtonsUDF = CompileScript "SaintsMedicalIntervention\Interface\AlignMessageMenuButtons.gek"
 	ref GetBodyPartHealthDescriptionUDF = CompileScript "SaintsMedicalIntervention\Status\GetBodyPartHealthDescription.gek"
 	ref GetPlayerBodyHealthMapUDF = CompileScript "SaintsMedicalIntervention\Status\GetPlayerBodyHealthMap.gek"
 	ref GetPlayerBodyStatusMapUDF = CompileScript "SaintsMedicalIntervention\Status\GetPlayerBodyStatusMap.gek"
 	ref GetTreatmentSkillLevelUDF = CompileScript "SaintsMedicalIntervention\Requirements\GetTreatmentSkillLevel.gek"
 	ref OnTriageMenuConfirmUDF = CompileScript "SaintsMedicalIntervention\Activation\OnTriageMenuConfirm.gek"
+
+	; UDFs (Local)
+
+	ref GetBodyPartHealthDecoration = (begin function { short iBodyPartHealth } 
+		if iBodyPartHealth == 0
+			SetFunctionValue "*"
+		else
+			SetFunctionValue ""
+		endif
+	end)
 
 	; Settings
 
@@ -20,21 +31,30 @@ begin function { ref rInvRef }
 
 	array_var aBodyStatusMap = Call GetPlayerBodyStatusMapUDF
 	array_var aBodyHealthMap = Call GetPlayerBodyHealthMapUDF
+
 	array_var aMenuButtons = Ar_Construct "array"
+	array_var aMenuButtonTargetKeys = Ar_Construct "array"
+	array_var aMenuButtonIsFail = Ar_Construct "array"
 
 	; Skill
 
 	short iCurrentSkill = Player.GetActorValue Medicine
 
-	; Body Part Options
+	; Bag Option
 
-	array_var aMenuTreatmentButtons = Ar_Construct "array"
-	array_var aMenuTreatmentButtonsDisabled = Ar_Construct "array"
+	short iBodyMinSkill = Call GetTreatmentSkillLevelUDF "all"
+	string_var sMenuButtonAll = Sv_Construct "[Medicine %g/%g] All Body Parts" iCurrentSkill iBodyMinSkill
+
+	Ar_Append aMenuButtons, sMenuButtonAll
+	Ar_Append aMenuButtonTargetKeys, "all"
+	Ar_Append aMenuButtonIsFail, (eval !(iCurrentSkill >= iBodyMinSkill))
+
+	; Body Part Options
 
 	foreach (array_var aElement <- aKeys)
 		string_var sKey = *aElement
 
-		short iMinSkill = Call GetTreatmentSkillLevelUDF sKey
+		short iPlayerSkill = Call GetTreatmentSkillLevelUDF sKey
 		short iBodyPartHealth = aBodyHealthMap[$sKey]
 		short bBodyPartIsCrippled = eval (iBodyPartHealth == 0)
 
@@ -44,18 +64,21 @@ begin function { ref rInvRef }
 
 		string_var sPartDescription = aDescriptionByKey[$sKey]
 		string_var sPartHealthDescription = Call GetBodyPartHealthDescriptionUDF sKey iBodyPartHealth
+		string_var sPartHealthDecoration = Call GetBodyPartHealthDecoration iBodyPartHealth
 		string_var sStateDescription = sPartHealthDescription
 
 		if eval bShowNumericBodyPartHealth
 			let sStateDescription := (Sv_Construct "%z, %g%%" sPartHealthDescription iBodyPartHealth)
 		endif
 
-		string_var sLabel = Sv_Construct "[Medicine %g/%g] %z (%z)" iCurrentSkill iMinSkill sPartDescription sStateDescription
-		short bPlayerHasSufficientSkill = eval iCurrentSkill >= iMinSkill
+		let sStateDescription := sPartHealthDecoration + sStateDescription + sPartHealthDecoration
 
-		Ar_Append aMenuButtons, sLabel
-		Ar_Append aMenuTreatmentButtons, $sKey
-		Ar_Append aMenuTreatmentButtonsDisabled, (!bPlayerHasSufficientSkill)
+		string_var sMenuButton = Sv_Construct "[Medicine %g/%g] %z (%z)" iCurrentSkill iPlayerSkill sPartDescription sStateDescription
+		short bPlayerHasSufficientSkill = eval iCurrentSkill >= iPlayerSkill
+
+		Ar_Append aMenuButtons, sMenuButton
+		Ar_Append aMenuButtonTargetKeys, $sKey
+		Ar_Append aMenuButtonIsFail, (!bPlayerHasSufficientSkill)
 
 		Sv_Destruct sPartDescription, sPartHealthDescription, sStateDescription
 	loop
@@ -63,7 +86,7 @@ begin function { ref rInvRef }
 	; Cancel Option
 
 	Ar_Append aMenuButtons, "Cancel"
-	Ar_Append aMenuTreatmentButtonsDisabled, 0
+	Ar_Append aMenuButtonIsFail, 0
 
 	; Build Dialog
 
@@ -76,13 +99,14 @@ begin function { ref rInvRef }
 	string_var sMenuButtons = Sv_Join aMenuButtons, "|"
 	string_var sMenu = Sv_Construct "^%z^%z|%z" sMenuTitle sMenuIntro sMenuButtons
 
-	Player.AuxiliaryVariableSetFromArray "*SMI_TreatmentDialogBodyParts" aMenuTreatmentButtons
-	Player.AuxiliaryVariableSetFromArray "*SMI_MenuFailOptions" aMenuTreatmentButtonsDisabled
+	Player.AuxiliaryVariableSetFromArray "*SMI_TreatmentDialogBodyParts" aMenuButtonTargetKeys
+	Player.AuxiliaryVariableSetFromArray "*SMI_MenuFailOptions" aMenuButtonIsFail
 
 	MessageBoxExAlt (begin function { short iOption }
 		Player.AuxiliaryVariableErase "*SMI_MenuFailOptions"
 		Call OnTriageMenuConfirmUDF iOption
 	end) "%z" sMenu
+	Call AlignMessageMenuButtonsUDF
 
 	; Clean-Up
 
@@ -93,7 +117,7 @@ begin function { ref rInvRef }
 	let aBodyStatusMap := Ar_Null
 	let aBodyHealthMap := Ar_Null
 	let aMenuButtons := Ar_Null
-	let aMenuTreatmentButtons := Ar_Null
-	let aMenuTreatmentButtonsDisabled := Ar_Null
+	let aMenuButtonTargetKeys := Ar_Null
+	let aMenuButtonIsFail := Ar_Null
 
 end

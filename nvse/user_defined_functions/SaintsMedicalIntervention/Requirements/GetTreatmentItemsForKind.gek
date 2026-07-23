@@ -1,5 +1,9 @@
 begin function { string_var sKey }
 
+	ref GetBodyItems = (begin function {} 
+		SetFunctionValue Ar_List NVDoctorBag
+	end)
+
 	ref GetHeadItems = (begin function {} 
 		SetFunctionValue Ar_List SurgicalTweasers01, SurgicalTubing
 	end)
@@ -12,7 +16,9 @@ begin function { string_var sKey }
 		SetFunctionValue Ar_List MedicalBrace
 	end)
 
-	if eval sKey == "head"
+	if eval sKey == "all"
+		SetFunctionValue (Call GetBodyItems)
+	elseif eval sKey == "head"
 		SetFunctionValue (Call GetHeadItems)
 	elseif eval sKey == "torso"
 		SetFunctionValue (Call GetTorsoItems)
