@@ -24,7 +24,7 @@ begin function { ref rBaseItem, ref rInvRef, short bIsActivationNotPrevented, sh
 
 	; Open Triage
 
-	Call OpenTriageMenuUDF rInvRef
+	Call OpenTriageMenuUDF
 
 	; Clean-Up
 

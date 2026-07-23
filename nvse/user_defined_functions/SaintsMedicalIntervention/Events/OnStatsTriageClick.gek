@@ -3,7 +3,7 @@ begin function { short iMenuId, short iTileId, string_var sTileName }
 	; UDFs
 
 	ref GetConfigUDF = CompileScript "SaintsMedicalIntervention\Configuration\GetConfig.gek"
-	ref OpenTriageMenuForAnyDoctorsBagUDF = CompileScript "SaintsMedicalIntervention\Activation\OpenTriageMenuForAnyDoctorsBag.gek"
+	ref OpenTriageMenuUDF = CompileScript "SaintsMedicalIntervention\Activation\OpenTriageMenu.gek"
 
 	; Config Check
 
@@ -17,7 +17,7 @@ begin function { short iMenuId, short iTileId, string_var sTileName }
 
 	; Open Triage
 
-	Call OpenTriageMenuForAnyDoctorsBagUDF
+	Call OpenTriageMenuUDF
 
 	; Clean-Up
 

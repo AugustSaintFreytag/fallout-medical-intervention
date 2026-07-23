@@ -3,7 +3,7 @@ begin function { ref rBaseItem, array_var aEventState }
 	; UDFs
 
 	ref GetConfigUDF = CompileScript "SaintsMedicalIntervention\Configuration\GetConfig.gek"
-	ref OpenTriageMenuForAnyDoctorsBagUDF = CompileScript "SaintsMedicalIntervention\Activation\OpenTriageMenuForAnyDoctorsBag.gek"
+	ref OpenTriageMenuUDF = CompileScript "SaintsMedicalIntervention\Activation\OpenTriageMenu.gek"
 
 	; Item Check
 
@@ -23,7 +23,7 @@ begin function { ref rBaseItem, array_var aEventState }
 	; Handle
 
 	let aEventState["bIsActivationNotPrevented"] := 0
-	Call OpenTriageMenuForAnyDoctorsBagUDF
+	Call OpenTriageMenuUDF
 
 	; Clean-Up
 
