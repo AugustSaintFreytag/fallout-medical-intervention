@@ -5,7 +5,6 @@ begin function { string_var sKey }
 
 	; UDFs
 
-	ref AlignMessageMenuButtonsUDF = CompileScript "SaintsMedicalIntervention\Interface\AlignMessageMenuButtons.gek"
 	ref GetBodyPartConcernDescriptionUDF = CompileScript "SaintsMedicalIntervention\Status\GetBodyPartConcernDescription.gek"
 	ref GetBodyPartDescriptionUDF = CompileScript "SaintsMedicalIntervention\Status\GetBodyPartDescription.gek"
 	ref GetBodyPartHealthDescriptionUDF = CompileScript "SaintsMedicalIntervention\Status\GetBodyPartHealthDescription.gek"
@@ -15,8 +14,7 @@ begin function { string_var sKey }
 	ref GetTreatmentSkillDescriptionUDF = CompileScript "SaintsMedicalIntervention\Requirements\GetTreatmentSkillDescription.gek"
 	ref GetTreatmentSkillLevelUDF = CompileScript "SaintsMedicalIntervention\Requirements\GetTreatmentSkillLevel.gek"
 	ref OnTreatmentMenuConfirmUDF = CompileScript "SaintsMedicalIntervention\Activation\OnTreatmentMenuConfirm.gek"
-	ref GetInvRefsForIndexCollectionUDF = CompileScript "SaintsMedicalIntervention\Requirements\GetInvRefsForIndexCollection.gek"
-	ref MapFirstInCollectionUDF = CompileScript "SaintsMedicalIntervention\Utility\MapFirstInCollection.gek"
+	ref HasRequiredTreatmentItemsUDF = CompileScript "SaintsMedicalIntervention\Requirements\HasRequiredTreatmentItems.gek"
 	ref GetTreatmentItemDescriptionBlockUDF = CompileScript "SaintsMedicalIntervention\Requirements\GetTreatmentItemDescriptionBlock.gek"
 
 	; Settings
@@ -44,17 +42,7 @@ begin function { string_var sKey }
 	; Treatment Buttons
 
 	array_var aTreatmentItems = Call GetTreatmentItemsForKindUDF sKey
-	array_var aAllItemInvRefs = Call GetInvRefsForIndexCollectionUDF aTreatmentItems
-	array_var aUsableInvRefs = Call MapFirstInCollectionUDF aAllItemInvRefs
-
-	short bPlayerHasSufficientItems = eval (Ar_Size aTreatmentItems) > 0
-
-	foreach array_var aInvRefElement <- aUsableInvRefs
-		if eval !(*aInvRefElement)
-			let bPlayerHasSufficientItems := 0
-			break
-		endif
-	loop
+	short bPlayerHasSufficientItems = Call HasRequiredTreatmentItemsUDF aTreatmentItems
 
 	array_var aItemBlockDescriptions = Ar_Construct "array"
 
@@ -100,7 +88,6 @@ begin function { string_var sKey }
 	Player.AuxiliaryVariableSetString "*SMI_TreatmentDialogBodyPartKey" ($sKey)
 
 	MessageBoxExAlt OnTreatmentMenuConfirmUDF "%z" sMenu
-	Call AlignMessageMenuButtonsUDF
 
 	; Clean-Up
 
@@ -110,8 +97,6 @@ begin function { string_var sKey }
 	let aPlayerBodyHealthMap := Ar_Null
 	let aMenuButtons := Ar_Null
 	let aTreatmentItems := Ar_Null
-	let aAllItemInvRefs := Ar_Null
-	let aUsableInvRefs := Ar_Null
 	let aMenuFailOptions := Ar_Null
 
 end

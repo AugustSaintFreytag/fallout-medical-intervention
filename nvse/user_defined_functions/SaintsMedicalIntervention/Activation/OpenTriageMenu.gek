@@ -2,7 +2,6 @@ begin function { ref rInvRef }
 
 	; UDFs
 
-	ref AlignMessageMenuButtonsUDF = CompileScript "SaintsMedicalIntervention\Interface\AlignMessageMenuButtons.gek"
 	ref GetBodyPartOptionTextUDF = CompileScript "SaintsMedicalIntervention\Interface\GetBodyPartOptionText.gek"
 	ref GetPlayerBodyHealthMapUDF = CompileScript "SaintsMedicalIntervention\Status\GetPlayerBodyHealthMap.gek"
 	ref GetTreatmentSkillLevelUDF = CompileScript "SaintsMedicalIntervention\Requirements\GetTreatmentSkillLevel.gek"
@@ -73,7 +72,6 @@ begin function { ref rInvRef }
 		Player.AuxiliaryVariableErase "*SMI_MenuFailOptions"
 		Call OnTriageMenuConfirmUDF iOption
 	end) "%z" sMenu
-	Call AlignMessageMenuButtonsUDF
 
 	; Clean-Up
 
