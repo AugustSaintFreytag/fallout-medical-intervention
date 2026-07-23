@@ -5,12 +5,14 @@ begin function { short iOption }
 	ref OpenTriageMenuUDF = CompileScript "SaintsMedicalIntervention\Activation\OpenTriageMenu.gek"
 	ref OpenTreatmentMenuUDF = CompileScript "SaintsMedicalIntervention\Activation\OpenTreatmentMenu.gek"
 	ref GetBodyPartDescriptionUDF = CompileScript "SaintsMedicalIntervention\Status\GetBodyPartDescription.gek"
+	ref GetBodyPartHealthDescriptionUDF = CompileScript "SaintsMedicalIntervention\Status\GetBodyPartHealthDescription.gek"
 	ref GetTreatmentItemsForKindUDF = CompileScript "SaintsMedicalIntervention\Requirements\GetTreatmentItemsForKind.gek"
-	ref MapFirstInCollectionUDF = CompileScript "SaintsMedicalIntervention\Utility\MapFirstInCollection.gek"
 	ref HasRequiredTreatmentItemsUDF = CompileScript "SaintsMedicalIntervention\Requirements\HasRequiredTreatmentItems.gek"
 	ref GetNameListUDF = CompileScript "SaintsMedicalIntervention\Utility\GetNameList.gek"
-	ref RestoreAllBodyPartsBySkillUDF = CompileScript "SaintsMedicalIntervention\Status\RestoreAllBodyPartsBySkill.gek"
-	ref RestoreBodyPartBySkillUDF = CompileScript "SaintsMedicalIntervention\Status\RestoreBodyPartBySkill.gek"
+	ref PlayTreatmentSoundUDF = CompileScript "SaintsMedicalIntervention\Activation\PlayTreatmentSound.gek"
+	ref PlayTreatmentAnimationUDF = CompileScript "SaintsMedicalIntervention\Activation\PlayTreatmentAnimation.gek"
+	ref OnTreatmentPerformUDF = CompileScript "SaintsMedicalIntervention\Activation\OnTreatmentPerform.gek"
+	ref OnTreatmentCompleteUDF = CompileScript "SaintsMedicalIntervention\Activation\OnTreatmentComplete.gek"
 
 	; Routing
 
@@ -25,6 +27,8 @@ begin function { short iOption }
 		; Return to Diagnosis
 		Player.AuxiliaryVariableErase "*SMI_MenuFailOptions"
 		Player.AuxiliaryVariableErase "*SMI_TreatmentDialogBodyPartKey"
+
+		CloseActiveMenu
 		Call OpenTriageMenuUDF
 		return
 	endif
@@ -59,8 +63,10 @@ begin function { short iOption }
 		let aTreatmentItems := Ar_Null
 		return
 	endif
+
 	string_var sTreatmentItemNames = Call GetNameListUDF aTreatmentItems
-	string_var sPartDescription = Call GetBodyPartDescriptionUDF sKey
+	string_var sPartDescription = Sv_ToLower (Call GetBodyPartDescriptionUDF sKey)
+	string_var sPartHealthDescription = Sv_ToLower (Call GetBodyPartHealthDescriptionUDF sKey)
 
 	PrintC "Confirmed treatment for limb '%z' with items %z." sKey sTreatmentItemNames
 
@@ -71,22 +77,21 @@ begin function { short iOption }
 		Player.RemoveItem rTreatmentItem 1 1
 	loop
 
-	if eval sKey == "all"
-		Call RestoreAllBodyPartsBySkillUDF
-	else
-		Call RestoreBodyPartBySkillUDF sKey
-	endif
+	; Persist Completion Message
 
-	; Space for sound playback.
+	string_var sCompleteMessage = Sv_Construct "interface\icons\pipboyimages\itsmejesushchrist\message icons\glow_doctor.dds|You've used %z to treat your %z %z." sTreatmentItemNames sPartHealthDescription sPartDescription
+	Player.AuxiliaryVariableSetString "*SMI_TreatmentCompleteMessage" ($sCompleteMessage)
 
-	MessageExAlt 4 "interface\icons\pipboyimages\itsmejesushchrist\message icons\glow_doctor.dds|You've used %z to treat your %z." sTreatmentItemNames sPartDescription
+	; Perform Treatment
+
+	Call PlayTreatmentSoundUDF
+	Call PlayTreatmentAnimationUDF OnTreatmentPerformUDF OnTreatmentCompleteUDF
 
 	; Clean-Up
 
 	Player.AuxiliaryVariableErase "*SMI_MenuFailOptions"
-	Player.AuxiliaryVariableErase "*SMI_TreatmentDialogBodyPartKey"
 
-	Sv_Destruct sKey, sTreatmentItemNames, sPartDescription
+	Sv_Destruct sKey, sTreatmentItemNames, sPartDescription, sCompleteMessage
 	let aTreatmentItems := Ar_Null
 
 end

@@ -1,0 +1,22 @@
+begin function { ref MidCallbackUDF, ref DoneCallbackUDF }
+
+	; Close Pip-Boy
+
+	if GetPipBoyMode != 0
+		TogglePipBoy
+	endif
+
+	; Fade Out
+
+	ApplyImageSpaceModifier FadeToBlackISFX
+
+	; Main
+
+	CallAfter 1.0 (begin function { ref CallbackUDF }
+		SetGameHour (GameHour + 0.15)
+		Call CallbackUDF
+	end) 0 MidCallbackUDF
+
+	CallWhen DoneCallbackUDF ({} => IsImagespaceActive FadeToBlackISFX == 0)
+
+end

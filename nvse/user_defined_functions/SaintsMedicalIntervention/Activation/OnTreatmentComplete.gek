@@ -1,0 +1,12 @@
+begin function {}
+
+	string_var sMessage = Player.AuxiliaryVariableGetString "*SMI_TreatmentCompleteMessage"
+
+	if eval sMessage
+		MessageExAlt 4 "%z" sMessage
+	endif
+
+	Player.AuxiliaryVariableErase "*SMI_TreatmentCompleteMessage"
+	Sv_Destruct sMessage
+
+end
