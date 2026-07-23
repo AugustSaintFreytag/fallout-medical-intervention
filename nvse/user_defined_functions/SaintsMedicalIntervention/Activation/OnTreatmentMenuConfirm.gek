@@ -7,6 +7,7 @@ begin function { short iOption }
 	ref GetBodyPartDescriptionUDF = CompileScript "SaintsMedicalIntervention\Status\GetBodyPartDescription.gek"
 	ref GetTreatmentItemsForKindUDF = CompileScript "SaintsMedicalIntervention\Requirements\GetTreatmentItemsForKind.gek"
 	ref MapFirstInCollectionUDF = CompileScript "SaintsMedicalIntervention\Utility\MapFirstInCollection.gek"
+	ref HasRequiredTreatmentItemsUDF = CompileScript "SaintsMedicalIntervention\Requirements\HasRequiredTreatmentItems.gek"
 	ref GetNameListUDF = CompileScript "SaintsMedicalIntervention\Utility\GetNameList.gek"
 	ref RestoreAllBodyPartsBySkillUDF = CompileScript "SaintsMedicalIntervention\Status\RestoreAllBodyPartsBySkill.gek"
 	ref RestoreBodyPartBySkillUDF = CompileScript "SaintsMedicalIntervention\Status\RestoreBodyPartBySkill.gek"
@@ -45,6 +46,19 @@ begin function { short iOption }
 	endif
 
 	array_var aTreatmentItems = Call GetTreatmentItemsForKindUDF sKey
+	short bHasRequiredItems = Call HasRequiredTreatmentItemsUDF aTreatmentItems
+
+	if eval !bHasRequiredItems
+		Player.AuxiliaryVariableErase "*SMI_MenuFailOptions"
+
+		CloseActiveMenu
+		Call OpenTreatmentMenuUDF sKey
+		MessageExAlt 2 "Interface\Icons\Message Icons\glow_message_vaultboy_sad.dds|You do not have all of the items required for this treatment."
+
+		Sv_Destruct sKey
+		let aTreatmentItems := Ar_Null
+		return
+	endif
 	string_var sTreatmentItemNames = Call GetNameListUDF aTreatmentItems
 	string_var sPartDescription = Call GetBodyPartDescriptionUDF sKey
 
