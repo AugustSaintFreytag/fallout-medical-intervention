@@ -1,4 +1,4 @@
-begin function {}
+begin function { float fMaxRestoreFactor }
 
 	; UDFs
 
@@ -11,7 +11,7 @@ begin function {}
 	foreach array_var aPartElement <- aPartKeys 
 		string_var sKey = *aPartElement
 
-		Call RestoreBodyPartBySkillUDF sKey
+		Call RestoreBodyPartBySkillUDF sKey fMaxRestoreFactor
 		Sv_Destruct sKey
 	loop
 

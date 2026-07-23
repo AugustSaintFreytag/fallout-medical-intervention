@@ -1,66 +1,16 @@
 ; UDFs
 
-ref OpenTriageMenuUDF = CompileScript "SaintsMedicalIntervention\Activation\OpenTriageMenu.gek"
-ref OnMessageMenuOpenUDF = CompileScript "SaintsMedicalIntervention\Interface\OnMessageMenuOpen.gek"
-ref OnMenuMouseoverUDF = CompileScript "SaintsMedicalIntervention\Interface\OnMenuMouseover.gek"
-
-; UDFs (Local)
-
-ref GetAnyDoctorsBagInvRef = (begin function {}
-	array_var aDoctorsBagsInvRefs = Player.GetInvRefsForItem NVDoctorBag
-
-	if eval (Ar_Size aDoctorsBagsInvRefs) == 0
-		SetFunctionValue 0
-		let aDoctorsBagsInvRefs := Ar_Null
-		return
-	endif
-
-	ref rInvRef = aDoctorsBagsInvRefs[0]
-	SetFunctionValue rInvRef
-
-	let aDoctorsBagsInvRefs := Ar_Null
-end)
-
-ref OpenTriageMenuForDoctorsBagInvRef = (begin function { ref rInvRef } 
-	Call OpenTriageMenuUDF rInvRef
-end)
-
-ref OpenTriageMenuForAnyDoctorsBag = (begin function {} 
-	ref rInvRef = Call GetAnyDoctorsBagInvRef
-
-	if eval rInvRef == 0
-		return
-	endif
-
-	Call OpenTriageMenuForDoctorsBagInvRef rInvRef
-end)
+ref OnMessageMenuOpenUDF = CompileScript "SaintsMedicalIntervention\Events\OnMessageMenuOpen.gek"
+ref OnMenuMouseoverUDF = CompileScript "SaintsMedicalIntervention\Events\OnMenuMouseover.gek"
+ref OnPreActivateInventoryItemUDF = CompileScript "SaintsMedicalIntervention\Events\OnPreActivateInventoryItem.gek"
+ref OnQuickSelectPreActivateInventoryItemUDF = CompileScript "SaintsMedicalIntervention\Events\OnQuickSelectPreActivateInventoryItem.gek"
+ref OnStatsTriageClickUDF = CompileScript "SaintsMedicalIntervention\Events\OnStatsTriageClick.gek"
 
 ; Events
 
 SetOnMenuOpenEventHandler OnMessageMenuOpenUDF 1 1001
 SetOnMouseoverChangeEventHandler OnMenuMouseoverUDF 1 1001
 
-SetEventHandlerAlt "ShowOff:OnPreActivateInventoryItem" (begin function { ref rBaseItem, ref rInvRef, short bIsActivationNotPrevented, short iActivatedHotkey }
-	if eval rBaseItem != NVDoctorBag
-		SetFunctionValue 1
-		return
-	endif
-
-	Call OpenTriageMenuForDoctorsBagInvRef rInvRef
-	SetFunctionValue 0
-end)
-
-SetEventHandlerAlt "QuickSelect:OnPreActivateInventoryItem" (begin function { ref rBaseItem, array_var aEventState }
-	PrintC "Reached SMI event handler for QuickSelect interaction with item '%z'." (GetName rBaseItem)
-
-	if eval rBaseItem != NVDoctorBag
-		return
-	endif
-
-	let aEventState["bIsActivationNotPrevented"] := 0
-	Call OpenTriageMenuForAnyDoctorsBag
-end)
-
-SetOnMenuClickEventHandler (begin function { short iMenuId, short iTileId, string_var sTileName } 
-	Call OpenTriageMenuForAnyDoctorsBag
-end) 1 "StatsMenu#1059"
+SetEventHandlerAlt "ShowOff:OnPreActivateInventoryItem" OnPreActivateInventoryItemUDF
+SetEventHandlerAlt "QuickSelect:OnPreActivateInventoryItem" OnQuickSelectPreActivateInventoryItemUDF
+SetOnMenuClickEventHandler OnStatsTriageClickUDF 1 "StatsMenu#1059"

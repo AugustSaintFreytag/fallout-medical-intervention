@@ -1,8 +1,4 @@
-begin function { string_var sKey }
-
-	; Settings
-
-	float fMaxRestoreFactor = 0.8
+begin function { string_var sKey, float fMaxRestoreFactor }
 
 	; UDFs
 
@@ -25,7 +21,7 @@ begin function { string_var sKey }
 	float fSkillFactor = iSkillDiff / iSkillRange
 	short iRestoredCondition = Floor (100.0 * fMaxRestoreFactor * fSkillFactor)
 
-	let iRestoredCondition := GetMinOf 1, iRestoredCondition
+	let iRestoredCondition := GetMaxOf 1, iRestoredCondition
 
 	PrintC "Restoring condition for '%z' by %g (min skill: %g, player skill: %g, factor: %.2f)." sKey iRestoredCondition iMinSkill iPlayerSkill fSkillFactor
 	Call RestoreBodyPartUDF sKey iRestoredCondition

@@ -1,0 +1,26 @@
+begin function { short iMenuId, short iTileId, string_var sTileName }
+
+	; UDFs
+
+	ref GetConfigUDF = CompileScript "SaintsMedicalIntervention\Configuration\GetConfig.gek"
+	ref OpenTriageMenuForAnyDoctorsBagUDF = CompileScript "SaintsMedicalIntervention\Activation\OpenTriageMenuForAnyDoctorsBag.gek"
+
+	; Config Check
+
+	array_var aConfig = Call GetConfigUDF
+
+	if eval !aConfig["bEnableTriage"]
+		let aConfig := Ar_Null
+		Player.EquipItemAlt NVDoctorBag 0 0
+		return
+	endif
+
+	; Open Triage
+
+	Call OpenTriageMenuForAnyDoctorsBagUDF
+
+	; Clean-Up
+
+	let aConfig := Ar_Null
+
+end

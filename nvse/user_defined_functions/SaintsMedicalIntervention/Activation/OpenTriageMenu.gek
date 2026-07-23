@@ -6,10 +6,21 @@ begin function { ref rInvRef }
 	ref GetPlayerBodyHealthMapUDF = CompileScript "SaintsMedicalIntervention\Status\GetPlayerBodyHealthMap.gek"
 	ref GetTreatmentSkillLevelUDF = CompileScript "SaintsMedicalIntervention\Requirements\GetTreatmentSkillLevel.gek"
 	ref OnTriageMenuConfirmUDF = CompileScript "SaintsMedicalIntervention\Activation\OnTriageMenuConfirm.gek"
+	ref GetConfigUDF = CompileScript "SaintsMedicalIntervention\Configuration\GetConfig.gek"
 
-	; Settings
+	; Configuration
 
-	short bShowOnlyCrippledBodyParts = 0
+	array_var aConfig = Call GetConfigUDF
+
+	if eval !aConfig["bEnableTriage"]
+		let aConfig := Ar_Null
+		return
+	endif
+
+	short bShowOnlyCrippledBodyParts = aConfig["bShowOnlyCrippledBodyParts"]
+	short iShowBodyPartHealth = aConfig["iShowBodyPartHealth"]
+	short bShowBodyPartHealthEmphasis = aConfig["bShowBodyPartHealthEmphasis"]
+	short iShowSkillRequirements = aConfig["iShowSkillRequirements"]
 
 	array_var aKeys = Ar_List "head", "torso", "leftarm", "rightarm", "leftleg", "rightleg", "all"
 
@@ -39,7 +50,7 @@ begin function { ref rInvRef }
 			continue
 		endif
 
-		string_var sMenuButton = Call GetBodyPartOptionTextUDF sKey iBodyPartHealth iPlayerSkill iMinSkill
+		string_var sMenuButton = Call GetBodyPartOptionTextUDF sKey iBodyPartHealth iPlayerSkill iMinSkill iShowBodyPartHealth bShowBodyPartHealthEmphasis iShowSkillRequirements
 
 		short bPlayerHasSufficientSkill = eval iPlayerSkill >= iMinSkill
 
@@ -88,5 +99,6 @@ begin function { ref rInvRef }
 	let aMenuButtonTargetKeys := Ar_Null
 	let aMenuButtonIsFail := Ar_Null
 	let aMenuButtonTextAlign := Ar_Null
+	let aConfig := Ar_Null
 
 end

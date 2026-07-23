@@ -1,0 +1,34 @@
+begin function { ref rBaseItem, ref rInvRef, short bIsActivationNotPrevented, short iActivatedHotkey }
+
+	; UDFs
+
+	ref GetConfigUDF = CompileScript "SaintsMedicalIntervention\Configuration\GetConfig.gek"
+	ref OpenTriageMenuUDF = CompileScript "SaintsMedicalIntervention\Activation\OpenTriageMenu.gek"
+
+	; Item Check
+
+	if eval rBaseItem != NVDoctorBag
+		SetFunctionValue 1
+		return
+	endif
+
+	; Config Check
+
+	array_var aConfig = Call GetConfigUDF
+
+	if eval !aConfig["bEnableTriage"]
+		let aConfig := Ar_Null
+		SetFunctionValue 1
+		return
+	endif
+
+	; Open Triage
+
+	Call OpenTriageMenuUDF rInvRef
+
+	; Clean-Up
+
+	let aConfig := Ar_Null
+	SetFunctionValue 0
+
+end

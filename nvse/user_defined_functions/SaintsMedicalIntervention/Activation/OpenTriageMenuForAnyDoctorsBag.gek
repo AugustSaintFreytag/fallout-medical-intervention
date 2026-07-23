@@ -1,0 +1,21 @@
+begin function {}
+
+	; UDFs
+
+	ref OpenTriageMenuUDF = CompileScript "SaintsMedicalIntervention\Activation\OpenTriageMenu.gek"
+
+	; Main
+
+	array_var aDoctorsBagsInvRefs = Player.GetInvRefsForItem NVDoctorBag
+
+	if eval (Ar_Size aDoctorsBagsInvRefs) == 0
+		let aDoctorsBagsInvRefs := Ar_Null
+		return
+	endif
+
+	ref rInvRef = aDoctorsBagsInvRefs[0]
+	Call OpenTriageMenuUDF rInvRef
+
+	let aDoctorsBagsInvRefs := Ar_Null
+
+end
