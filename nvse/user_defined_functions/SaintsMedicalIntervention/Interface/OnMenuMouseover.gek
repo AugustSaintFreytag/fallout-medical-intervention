@@ -28,7 +28,7 @@ begin function { short iMenuId }
 		return
 	endif
 
-	array_var aFailOptions = Player.AuxiliaryVariableGetAsArray "*SMI_MenuFailOptions"
+	array_var aFailOptions = Player.AuxiliaryVariableGetAsArray "*MenuButtonsHighlightColor"
 	short iNumOptions = Ar_Size aFailOptions
 
 	if eval iNumOptions == 0
