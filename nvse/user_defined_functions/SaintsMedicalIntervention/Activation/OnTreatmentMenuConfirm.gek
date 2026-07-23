@@ -18,14 +18,16 @@ begin function { short iOption }
 
 	if iOption == 2
 		; Cancel
-		Player.AuxiliaryVariableErase "*SMI_MenuFailOptions"
+		Player.AuxiliaryVariableErase "*MenuButtonsHighlightColor"
+		Player.AuxiliaryVariableErase "*MenuButtonTextAlign"
 		Player.AuxiliaryVariableErase "*SMI_TreatmentDialogBodyPartKey"
 		return
 	endif
 
 	if iOption == 1
 		; Return to Diagnosis
-		Player.AuxiliaryVariableErase "*SMI_MenuFailOptions"
+		Player.AuxiliaryVariableErase "*MenuButtonsHighlightColor"
+		Player.AuxiliaryVariableErase "*MenuButtonTextAlign"
 		Player.AuxiliaryVariableErase "*SMI_TreatmentDialogBodyPartKey"
 
 		CloseActiveMenu
@@ -34,7 +36,8 @@ begin function { short iOption }
 	endif
 
 	if iOption != 0
-		Player.AuxiliaryVariableErase "*SMI_MenuFailOptions"
+		Player.AuxiliaryVariableErase "*MenuButtonsHighlightColor"
+		Player.AuxiliaryVariableErase "*MenuButtonTextAlign"
 		Player.AuxiliaryVariableErase "*SMI_TreatmentDialogBodyPartKey"
 		return
 	endif
@@ -43,7 +46,8 @@ begin function { short iOption }
 
 	if eval !sKey
 		MessageExAlt 2 "Interface\Icons\Message Icons\glow_message_vaultboy_thinking.dds|The selected treatment is no longer available."
-		Player.AuxiliaryVariableErase "*SMI_MenuFailOptions"
+		Player.AuxiliaryVariableErase "*MenuButtonsHighlightColor"
+		Player.AuxiliaryVariableErase "*MenuButtonTextAlign"
 		Player.AuxiliaryVariableErase "*SMI_TreatmentDialogBodyPartKey"
 		Sv_Destruct sKey
 		return
@@ -53,7 +57,8 @@ begin function { short iOption }
 	short bHasRequiredItems = Call HasRequiredTreatmentItemsUDF aTreatmentItems
 
 	if eval !bHasRequiredItems
-		Player.AuxiliaryVariableErase "*SMI_MenuFailOptions"
+		Player.AuxiliaryVariableErase "*MenuButtonsHighlightColor"
+		Player.AuxiliaryVariableErase "*MenuButtonTextAlign"
 
 		CloseActiveMenu
 		Call OpenTreatmentMenuUDF sKey
@@ -89,7 +94,8 @@ begin function { short iOption }
 
 	; Clean-Up
 
-	Player.AuxiliaryVariableErase "*SMI_MenuFailOptions"
+	Player.AuxiliaryVariableErase "*MenuButtonsHighlightColor"
+	Player.AuxiliaryVariableErase "*MenuButtonTextAlign"
 
 	Sv_Destruct sKey, sTreatmentItemNames, sPartDescription, sCompleteMessage
 	let aTreatmentItems := Ar_Null

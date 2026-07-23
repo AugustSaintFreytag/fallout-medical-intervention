@@ -84,7 +84,10 @@ begin function { string_var sKey }
 	; Open Menu
 
 	array_var aMenuFailOptions = Ar_List (!bPlayerHasSufficientItems), 0, 0
-	Player.AuxiliaryVariableSetFromArray "*SMI_MenuFailOptions" aMenuFailOptions
+	array_var aMenuButtonTextAlign = Ar_List 1, 0, 0
+	
+	Player.AuxiliaryVariableSetFromArray "*MenuButtonsHighlightColor" aMenuFailOptions
+	Player.AuxiliaryVariableSetFromArray "*MenuButtonTextAlign" aMenuButtonTextAlign
 	Player.AuxiliaryVariableSetString "*SMI_TreatmentDialogBodyPartKey" ($sKey)
 
 	MessageBoxExAlt OnTreatmentMenuConfirmUDF "%z" sMenu
@@ -98,5 +101,6 @@ begin function { string_var sKey }
 	let aMenuButtons := Ar_Null
 	let aTreatmentItems := Ar_Null
 	let aMenuFailOptions := Ar_Null
+	let aMenuButtonTextAlign := Ar_Null
 
 end

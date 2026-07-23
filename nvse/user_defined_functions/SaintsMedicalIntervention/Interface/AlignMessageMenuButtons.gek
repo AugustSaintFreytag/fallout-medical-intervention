@@ -1,39 +1,37 @@
 begin function {}
 
-	; Only alter the message buttons belonging to this mod's triage and treatment menus.
-
-	array_var aOptions = Player.AuxiliaryVariableGetAsArray "*SMI_MenuFailOptions"
-	short iNumOptions = Ar_Size aOptions
+	array_var aButtonTextAlign = Player.AuxiliaryVariableGetAsArray "*MenuButtonTextAlign"
+	short iNumOptions = Ar_Size aButtonTextAlign
 
 	if iNumOptions == 0
-		let aOptions := Ar_Null
+		let aButtonTextAlign := Ar_Null
 		return
 	endif
 
 	string_var sBasePath = "MessageMenu/NOGLOW_BRANCH/MM_MainRect/MM_ButtonList"
 	string_var sTextPath
-	short iOption = 1 ; Skip cancel button (last)
+	short iOption = 0
 
 	while iOption < iNumOptions
-		let sTextPath := Sv_Construct "%z/MM_Button:%g/ListItemText" sBasePath iOption
+		if aButtonTextAlign[iOption]
+			short iTileIndex = iNumOptions - 1 - iOption
 
-		; Avoid reducing the wrap width twice when both the menu-open fallback and
-		; the direct post-MessageBoxExAlt call process the same set of buttons.
-		short iTextX = GetUIFloatAlt (sTextPath + "/x")
+			if iTileIndex == 0
+				let sTextPath := sBasePath + "/MM_Button/ListItemText"
+			else
+				let sTextPath := Sv_Construct "%z/MM_Button:%g/ListItemText" sBasePath iTileIndex
+			endif
 
-		; if iTextX != 15
-		; 	short iWrapWidth = GetUIFloatAlt (sTextPath + "/wrapwidth")
-		; 	SetUIFloatAlt (sTextPath + "/wrapwidth") (iWrapWidth - 25)
-		; endif
+			SetUIFloatAlt (sTextPath + "/justify") 0 ; &left;
+			SetUIFloatAlt (sTextPath + "/x") 15
 
-		SetUIFloatAlt (sTextPath + "/justify") 0 ; &left;
-		SetUIFloatAlt (sTextPath + "/x") 15
+			Sv_Destruct sTextPath
+		endif
 
-		Sv_Destruct sTextPath
 		let iOption += 1
 	loop
 
 	Sv_Destruct sBasePath
-	let aOptions := Ar_Null
+	let aButtonTextAlign := Ar_Null
 
 end

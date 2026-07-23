@@ -20,6 +20,7 @@ begin function { ref rInvRef }
 	array_var aMenuButtons = Ar_Construct "array"
 	array_var aMenuButtonTargetKeys = Ar_Construct "array"
 	array_var aMenuButtonIsFail = Ar_Construct "array"
+	array_var aMenuButtonTextAlign = Ar_Construct "array"
 
 	; Skill
 
@@ -45,6 +46,7 @@ begin function { ref rInvRef }
 		Ar_Append aMenuButtons, sMenuButton
 		Ar_Append aMenuButtonTargetKeys, $sKey
 		Ar_Append aMenuButtonIsFail, (!bPlayerHasSufficientSkill)
+		Ar_Append aMenuButtonTextAlign, 1
 
 		Sv_Destruct sMenuButton
 	loop
@@ -53,6 +55,7 @@ begin function { ref rInvRef }
 
 	Ar_Append aMenuButtons, "Cancel"
 	Ar_Append aMenuButtonIsFail, 0
+	Ar_Append aMenuButtonTextAlign, 0
 
 	; Build Dialog
 
@@ -66,10 +69,12 @@ begin function { ref rInvRef }
 	string_var sMenu = Sv_Construct "^%z^%z|%z" sMenuTitle sMenuIntro sMenuButtons
 
 	Player.AuxiliaryVariableSetFromArray "*SMI_TreatmentDialogBodyParts" aMenuButtonTargetKeys
-	Player.AuxiliaryVariableSetFromArray "*SMI_MenuFailOptions" aMenuButtonIsFail
+	Player.AuxiliaryVariableSetFromArray "*MenuButtonsHighlightColor" aMenuButtonIsFail
+	Player.AuxiliaryVariableSetFromArray "*MenuButtonTextAlign" aMenuButtonTextAlign
 
 	MessageBoxExAlt (begin function { short iOption }
-		Player.AuxiliaryVariableErase "*SMI_MenuFailOptions"
+		Player.AuxiliaryVariableErase "*MenuButtonsHighlightColor"
+		Player.AuxiliaryVariableErase "*MenuButtonTextAlign"
 		Call OnTriageMenuConfirmUDF iOption
 	end) "%z" sMenu
 
@@ -82,5 +87,6 @@ begin function { ref rInvRef }
 	let aMenuButtons := Ar_Null
 	let aMenuButtonTargetKeys := Ar_Null
 	let aMenuButtonIsFail := Ar_Null
+	let aMenuButtonTextAlign := Ar_Null
 
 end
