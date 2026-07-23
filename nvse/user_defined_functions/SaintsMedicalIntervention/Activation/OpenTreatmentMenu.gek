@@ -71,7 +71,7 @@ begin function { string_var sKey }
 
 	string_var sMenuTitle = "Field Treatment"
 	string_var sBodyPartDescriptionLower = Sv_ToLower sBodyPartDescription
-	string_var sMenuIntroPart = Sv_Construct "The diagnosis for your %z is: %z." sBodyPartDescriptionLower sBodyPartHealthDescription
+	string_var sMenuIntroPart = Sv_Construct "The diagnosis for your %z is: %z (%g%%)." sBodyPartDescriptionLower sBodyPartHealthDescription iBodyPartHealth
 	string_var sMenuIntroSkill = Sv_Construct "%rYour expertise in treating %z is: %z." sBodyPartConcernDescription sSkillDescription
 
 	if eval sKey == "all"
