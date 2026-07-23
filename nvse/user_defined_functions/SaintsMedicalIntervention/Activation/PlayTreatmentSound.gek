@@ -1,0 +1,14 @@
+begin function {}
+
+	; Main
+
+	ref rSound = TempCloneForm UIMenuFocus 1
+
+	SetSoundTraitNumeric rSound 3 -6.0
+	SetSoundTraitNumeric rSound 2 10.0
+
+	SetSoundSourceFile rSound "fx\ui\fieldsurgery\"
+
+	Player.PlaySound rSound 1
+
+end
