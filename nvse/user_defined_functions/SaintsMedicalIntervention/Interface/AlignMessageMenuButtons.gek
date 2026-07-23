@@ -1,0 +1,39 @@
+begin function {}
+
+	; Only alter the message buttons belonging to this mod's triage and treatment menus.
+
+	array_var aOptions = Player.AuxiliaryVariableGetAsArray "*SMI_MenuFailOptions"
+	short iNumOptions = Ar_Size aOptions
+
+	if iNumOptions == 0
+		let aOptions := Ar_Null
+		return
+	endif
+
+	string_var sBasePath = "MessageMenu/NOGLOW_BRANCH/MM_MainRect/MM_ButtonList"
+	string_var sTextPath
+	short iOption = 1 ; Skip cancel button (last)
+
+	while iOption < iNumOptions
+		let sTextPath := Sv_Construct "%z/MM_Button:%g/ListItemText" sBasePath iOption
+
+		; Avoid reducing the wrap width twice when both the menu-open fallback and
+		; the direct post-MessageBoxExAlt call process the same set of buttons.
+		short iTextX = GetUIFloatAlt (sTextPath + "/x")
+
+		; if iTextX != 15
+		; 	short iWrapWidth = GetUIFloatAlt (sTextPath + "/wrapwidth")
+		; 	SetUIFloatAlt (sTextPath + "/wrapwidth") (iWrapWidth - 25)
+		; endif
+
+		SetUIFloatAlt (sTextPath + "/justify") 0 ; &left;
+		SetUIFloatAlt (sTextPath + "/x") 15
+
+		Sv_Destruct sTextPath
+		let iOption += 1
+	loop
+
+	Sv_Destruct sBasePath
+	let aOptions := Ar_Null
+
+end

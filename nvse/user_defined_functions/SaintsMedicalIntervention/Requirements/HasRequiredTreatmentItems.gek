@@ -1,0 +1,16 @@
+begin function { array_var aTreatmentItems }
+
+	short bHasRequiredItems = eval (Ar_Size aTreatmentItems) > 0
+
+	foreach array_var aTreatmentItemElement <- aTreatmentItems
+		ref rTreatmentItem = *aTreatmentItemElement
+
+		if eval (Player.GetItemCount rTreatmentItem) < 1
+			let bHasRequiredItems := 0
+			break
+		endif
+	loop
+
+	SetFunctionValue bHasRequiredItems
+
+end

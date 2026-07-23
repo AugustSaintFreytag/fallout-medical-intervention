@@ -2,7 +2,7 @@ begin function { ref rItem }
 
 	; Settings
 
-	short bOnlyShowNumIfLacking = 1
+	short iNumDisplayMode = 0 ; 0 = Never show, 1 = Only show when lacking, 2 = Always show
 
 	; Main
 
@@ -11,7 +11,7 @@ begin function { ref rItem }
 
 	string_var sDescription = ""
 	
-	if eval (bOnlyShowNumIfLacking && iNumPlayerItems >= iNumRequiredItems)
+	if eval (iNumDisplayMode == 0 || (iNumDisplayMode == 1 && iNumPlayerItems >= iNumRequiredItems))
 		let sDescription := Sv_Construct "[%z]" (GetName rItem)
 	else
 		let sDescription := Sv_Construct "[%z %g/%g]" (GetName rItem) iNumPlayerItems iNumRequiredItems

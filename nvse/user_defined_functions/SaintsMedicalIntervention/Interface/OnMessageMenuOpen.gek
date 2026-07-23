@@ -1,0 +1,11 @@
+begin function { short iMenuId }
+
+	; UDFs
+
+	ref AlignMessageMenuButtonsUDF = CompileScript "SaintsMedicalIntervention\Interface\AlignMessageMenuButtons.gek"
+
+	; Main
+	
+	Call AlignMessageMenuButtonsUDF
+
+end
