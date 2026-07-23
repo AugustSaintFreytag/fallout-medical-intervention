@@ -3,33 +3,19 @@ begin function { ref rInvRef }
 	; UDFs
 
 	ref AlignMessageMenuButtonsUDF = CompileScript "SaintsMedicalIntervention\Interface\AlignMessageMenuButtons.gek"
-	ref GetBodyPartHealthDescriptionUDF = CompileScript "SaintsMedicalIntervention\Status\GetBodyPartHealthDescription.gek"
+	ref GetBodyPartOptionTextUDF = CompileScript "SaintsMedicalIntervention\Interface\GetBodyPartOptionText.gek"
 	ref GetPlayerBodyHealthMapUDF = CompileScript "SaintsMedicalIntervention\Status\GetPlayerBodyHealthMap.gek"
-	ref GetPlayerBodyStatusMapUDF = CompileScript "SaintsMedicalIntervention\Status\GetPlayerBodyStatusMap.gek"
 	ref GetTreatmentSkillLevelUDF = CompileScript "SaintsMedicalIntervention\Requirements\GetTreatmentSkillLevel.gek"
 	ref OnTriageMenuConfirmUDF = CompileScript "SaintsMedicalIntervention\Activation\OnTriageMenuConfirm.gek"
-
-	; UDFs (Local)
-
-	ref GetBodyPartHealthDecoration = (begin function { short iBodyPartHealth } 
-		if iBodyPartHealth == 0
-			SetFunctionValue "*"
-		else
-			SetFunctionValue ""
-		endif
-	end)
 
 	; Settings
 
 	short bShowOnlyCrippledBodyParts = 0
-	short bShowNumericBodyPartHealth = 0
 
-	array_var aKeys = Ar_List "head", "torso", "leftarm", "rightarm", "leftleg", "rightleg"
-	array_var aDescriptionByKey = Ar_Map "head"::"Head", "torso"::"Torso", "leftarm"::"Left Arm", "rightarm"::"Right Arm", "leftleg"::"Left Leg", "rightleg"::"Right Leg"
+	array_var aKeys = Ar_List "head", "torso", "leftarm", "rightarm", "leftleg", "rightleg", "all"
 
 	; Main
 
-	array_var aBodyStatusMap = Call GetPlayerBodyStatusMapUDF
 	array_var aBodyHealthMap = Call GetPlayerBodyHealthMapUDF
 
 	array_var aMenuButtons = Ar_Construct "array"
@@ -38,23 +24,14 @@ begin function { ref rInvRef }
 
 	; Skill
 
-	short iCurrentSkill = Player.GetActorValue Medicine
-
-	; Bag Option
-
-	short iBodyMinSkill = Call GetTreatmentSkillLevelUDF "all"
-	string_var sMenuButtonAll = Sv_Construct "[Medicine %g/%g] All Body Parts" iCurrentSkill iBodyMinSkill
-
-	Ar_Append aMenuButtons, sMenuButtonAll
-	Ar_Append aMenuButtonTargetKeys, "all"
-	Ar_Append aMenuButtonIsFail, (eval !(iCurrentSkill >= iBodyMinSkill))
+	short iPlayerSkill = Player.GetActorValue Medicine
 
 	; Body Part Options
 
 	foreach (array_var aElement <- aKeys)
 		string_var sKey = *aElement
 
-		short iPlayerSkill = Call GetTreatmentSkillLevelUDF sKey
+		short iMinSkill = Call GetTreatmentSkillLevelUDF sKey
 		short iBodyPartHealth = aBodyHealthMap[$sKey]
 		short bBodyPartIsCrippled = eval (iBodyPartHealth == 0)
 
@@ -62,25 +39,15 @@ begin function { ref rInvRef }
 			continue
 		endif
 
-		string_var sPartDescription = aDescriptionByKey[$sKey]
-		string_var sPartHealthDescription = Call GetBodyPartHealthDescriptionUDF sKey iBodyPartHealth
-		string_var sPartHealthDecoration = Call GetBodyPartHealthDecoration iBodyPartHealth
-		string_var sStateDescription = sPartHealthDescription
+		string_var sMenuButton = Call GetBodyPartOptionTextUDF sKey iBodyPartHealth iPlayerSkill iMinSkill
 
-		if eval bShowNumericBodyPartHealth
-			let sStateDescription := (Sv_Construct "%z, %g%%" sPartHealthDescription iBodyPartHealth)
-		endif
-
-		let sStateDescription := sPartHealthDecoration + sStateDescription + sPartHealthDecoration
-
-		string_var sMenuButton = Sv_Construct "[Medicine %g/%g] %z (%z)" iCurrentSkill iPlayerSkill sPartDescription sStateDescription
-		short bPlayerHasSufficientSkill = eval iCurrentSkill >= iPlayerSkill
+		short bPlayerHasSufficientSkill = eval iPlayerSkill >= iMinSkill
 
 		Ar_Append aMenuButtons, sMenuButton
 		Ar_Append aMenuButtonTargetKeys, $sKey
 		Ar_Append aMenuButtonIsFail, (!bPlayerHasSufficientSkill)
 
-		Sv_Destruct sPartDescription, sPartHealthDescription, sStateDescription
+		Sv_Destruct sMenuButton
 	loop
 
 	; Cancel Option
@@ -113,8 +80,6 @@ begin function { ref rInvRef }
 	Sv_Destruct sMenuTitle, sMenuIntro, sMenuButtons, sMenu
 
 	let aKeys := Ar_Null
-	let aDescriptionByKey := Ar_Null
-	let aBodyStatusMap := Ar_Null
 	let aBodyHealthMap := Ar_Null
 	let aMenuButtons := Ar_Null
 	let aMenuButtonTargetKeys := Ar_Null

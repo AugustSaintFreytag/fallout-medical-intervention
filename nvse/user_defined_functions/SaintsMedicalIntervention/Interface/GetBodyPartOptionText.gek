@@ -1,0 +1,50 @@
+begin function { string_var sKey, short iBodyPartHealth, short iPlayerSkill, short iMinSkill }
+
+	; UDFs
+
+	ref GetBodyPartDescriptionUDF = CompileScript "SaintsMedicalIntervention\Status\GetBodyPartDescription.gek"
+	ref GetBodyPartHealthDescriptionUDF = CompileScript "SaintsMedicalIntervention\Status\GetBodyPartHealthDescription.gek"
+
+	; Settings
+
+	short iShowBodyPartHealth = 2 ; 0 = None, 1 = Show description, 2 = Show numeric, 3 = Show description and numeric
+	short bShowBodyPartHealthEmphasis = 1 ; Whether to show an asterisk for crippled parts
+	short bShowSkill = 1 ; 0 = No skill, 1 = Only show min skill, 2 = Show player and min skill
+
+	; Main
+
+	string_var sPartDescription = Call GetBodyPartDescriptionUDF sKey
+
+	if eval sKey == "all"
+		let sPartDescription := "All Body Parts"
+	endif
+
+	string_var sText = ""
+
+	if bShowSkill == 2
+		let sText := Sv_Construct "[Medicine %g/%g] %z" iPlayerSkill iMinSkill sPartDescription
+	elseif bShowSkill == 1
+		let sText := Sv_Construct "[Medicine %g] %z" iMinSkill sPartDescription
+	else
+		let sText := Sv_Construct "%z" sPartDescription
+	endif
+
+	if iShowBodyPartHealth > 0
+		string_var sPartHealthDescription = Call GetBodyPartHealthDescriptionUDF sKey iBodyPartHealth
+
+		if iShowBodyPartHealth == 3
+			let sPartHealthDescription := Sv_Construct "%z, %g%%" sPartHealthDescription iBodyPartHealth
+		elseif iShowBodyPartHealth == 2
+			let sPartHealthDescription := Sv_Construct "%g%%" iBodyPartHealth
+		endif
+
+		if eval bShowBodyPartHealthEmphasis && iBodyPartHealth == 0
+			let sPartHealthDescription := "*" + sPartHealthDescription + "*"
+		endif
+
+		let sText += " (" + sPartHealthDescription + ")"
+	endif
+
+	SetFunctionValue sText
+
+end
