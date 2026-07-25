@@ -1,7 +1,7 @@
 begin function {}
 
-	array_var aButtonTextAlign = Player.AuxiliaryVariableGetAsArray "*MenuButtonTextAlign"
-	short iNumOptions = Ar_Size aButtonTextAlign
+	array_var aButtonTextAlign = (Player.AuxiliaryVariableGetAsArray "*MenuButtonTextAlign")
+	short iNumOptions = (Ar_Size aButtonTextAlign)
 
 	if iNumOptions == 0
 		let aButtonTextAlign := Ar_Null
@@ -13,13 +13,14 @@ begin function {}
 	short iOption = 0
 
 	while iOption < iNumOptions
-		if aButtonTextAlign[iOption]
+		if eval aButtonTextAlign[iOption]
+			; Message Menu button tiles are enumerated from bottom to top.
 			short iTileIndex = iNumOptions - 1 - iOption
 
 			if iTileIndex == 0
 				let sTextPath := sBasePath + "/MM_Button/ListItemText"
 			else
-				let sTextPath := Sv_Construct "%z/MM_Button:%g/ListItemText" sBasePath iTileIndex
+				let sTextPath := (Sv_Construct "%z/MM_Button:%g/ListItemText" sBasePath iTileIndex)
 			endif
 
 			SetUIFloatAlt (sTextPath + "/justify") 0 ; &left;
