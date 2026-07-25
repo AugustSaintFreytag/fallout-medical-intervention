@@ -74,7 +74,7 @@ begin function { string_var sKey }
 	string_var sMenuIntroSkill = Sv_Construct "%rYour expertise in treating %z is: %z." sBodyPartConcernDescription sSkillDescription
 
 	if eval sKey == "all"
-		let sMenuIntroSkill := "%rThe amount restored for each body part is dependent on your skill."
+		let sMenuIntroSkill := "%rMinor injuries will be treated and crippled limbs restored based on your skill."
 	endif
 
 	string_var sMenuButtons = Sv_Join aMenuButtons, "|"
