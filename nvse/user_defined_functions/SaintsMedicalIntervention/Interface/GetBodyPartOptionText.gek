@@ -32,7 +32,7 @@ begin function { string_var sKey, short iBodyPartHealth, short iPlayerSkill, sho
 			let sPartHealthDescription := Sv_Construct "%g%%" iBodyPartHealth
 		endif
 
-		if eval bShowBodyPartHealthEmphasis && iBodyPartHealth == 0
+		if eval bShowBodyPartHealthEmphasis && sKey != "all" && iBodyPartHealth == 0
 			let sPartHealthDescription := "*" + sPartHealthDescription + "*"
 		endif
 
