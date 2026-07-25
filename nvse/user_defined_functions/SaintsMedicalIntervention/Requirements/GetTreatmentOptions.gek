@@ -1,0 +1,57 @@
+begin function { string_var sKey, short iBodyPartHealth }
+
+	; UDFs
+
+	ref GetPreferredStimpakUDF = CompileScript "SaintsMedicalIntervention\Requirements\GetPreferredStimpak.gek"
+	ref GetStimpakRestoreFactorUDF = CompileScript "SaintsMedicalIntervention\Requirements\GetStimpakRestoreFactor.gek"
+	ref GetTreatmentItemsForKindUDF = CompileScript "SaintsMedicalIntervention\Requirements\GetTreatmentItemsForKind.gek"
+	ref GetConfigUDF = CompileScript "SaintsMedicalIntervention\Configuration\GetConfig.gek"
+
+	; Main
+
+	array_var aTreatmentOptions = (Ar_Construct "array")
+	array_var aTreatmentOption = (Ar_Construct "stringmap")
+	array_var aTreatmentItems
+
+	if eval sKey == "all" || iBodyPartHealth == 0
+		; Field Surgery
+		array_var aConfig = (Call GetConfigUDF)
+
+		let aTreatmentItems := (Call GetTreatmentItemsForKindUDF sKey)
+		let aTreatmentOption["items"] := aTreatmentItems
+		let aTreatmentOption["restoreFactor"] := aConfig["fMaxRestoreFactor"]
+		let aTreatmentOption["restoreMode"] := 0
+		let aTreatmentOption["verb"] := "Treat"
+		Ar_Append aTreatmentOptions, aTreatmentOption
+
+		let aConfig := Ar_Null
+	else
+		; Stimpak Option
+		ref rPreferredStimpak = (Call GetPreferredStimpakUDF)
+
+		let aTreatmentItems := (Ar_List rPreferredStimpak)
+		let aTreatmentOption["items"] := aTreatmentItems
+		let aTreatmentOption["restoreFactor"] := (Call GetStimpakRestoreFactorUDF rPreferredStimpak)
+		let aTreatmentOption["restoreMode"] := 1
+		let aTreatmentOption["verb"] := "Inject"
+		Ar_Append aTreatmentOptions, aTreatmentOption
+
+		; Supplies Option
+		let aTreatmentOption := (Ar_Construct "stringmap")
+		let aTreatmentItems := (Ar_List SurgicalTubing)
+		let aTreatmentOption["items"] := aTreatmentItems
+		let aTreatmentOption["restoreFactor"] := 0.2
+		let aTreatmentOption["restoreMode"] := 1
+		let aTreatmentOption["verb"] := "Treat"
+		Ar_Append aTreatmentOptions, aTreatmentOption
+	endif
+
+	SetFunctionValue aTreatmentOptions
+
+	; Clean-Up
+
+	let aTreatmentOptions := Ar_Null
+	let aTreatmentOption := Ar_Null
+	let aTreatmentItems := Ar_Null
+
+end
