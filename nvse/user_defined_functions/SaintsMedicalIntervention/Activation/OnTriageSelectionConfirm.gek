@@ -1,0 +1,80 @@
+begin function { string_var sKey }
+
+	; UDFs
+
+	ref GetConfigUDF = CompileScript "SaintsMedicalIntervention\Configuration\GetConfig.gek"
+	ref OpenTriageMenuUDF = CompileScript "SaintsMedicalIntervention\Activation\OpenTriageMenu.gek"
+	ref OpenTreatmentMenuUDF = CompileScript "SaintsMedicalIntervention\Treatment\OpenTreatmentMenu.gek"
+	ref GetTreatmentSkillLevelUDF = CompileScript "SaintsMedicalIntervention\Treatment\GetTreatmentSkillLevel.gek"
+	ref GetBodyPartConcernDescriptionUDF = CompileScript "SaintsMedicalIntervention\Status\GetBodyPartConcernDescription.gek"
+	ref GetPlayerBodyHealthMapUDF = CompileScript "SaintsMedicalIntervention\Status\GetPlayerBodyHealthMap.gek"
+
+	; Validation
+
+	short bIsValidKey = eval sKey == "head" || sKey == "torso" || sKey == "leftarm" || sKey == "rightarm" || sKey == "leftleg" || sKey == "rightleg" || sKey == "all"
+
+	if eval !bIsValidKey
+		return
+	endif
+
+	array_var aConfig = Call GetConfigUDF
+
+	if eval !aConfig["bEnableTriage"]
+		let aConfig := Ar_Null
+		return
+	endif
+
+	; Preconditions
+
+	short bFromOverview = MenuMode 1001
+	short bPlayerHasDoctorsBag = eval (Player.GetItemCount NVDoctorBag) > 0
+
+	if eval !bPlayerHasDoctorsBag
+		if bFromOverview
+			CloseActiveMenu
+			Call OpenTriageMenuUDF
+		endif
+
+		MessageExAlt 2 "Interface\Icons\Message Icons\glow_message_vaultboy_sad.dds|You need a Doctor's Bag to perform field treatment."
+		let aConfig := Ar_Null
+		return
+	endif
+
+	array_var aPlayerBodyHealthMap = Call GetPlayerBodyHealthMapUDF
+	short iBodyPartHealth = aPlayerBodyHealthMap[$sKey]
+	short bBodyPartIsHealthy = eval sKey != "all" && iBodyPartHealth > 0
+	short iRequiredSkill = Call GetTreatmentSkillLevelUDF sKey bBodyPartIsHealthy
+	short iCurrentSkill = Player.GetActorValue Medicine
+
+	if eval iCurrentSkill < iRequiredSkill
+		string_var sPartConcernDescription = Call GetBodyPartConcernDescriptionUDF sKey
+
+		if bFromOverview
+			CloseActiveMenu
+			Call OpenTriageMenuUDF
+		endif
+
+		MessageExAlt 2 "Interface\Icons\Message Icons\glow_message_vaultboy_sad.dds|You cannot treat %z with your current Medicine skill (%g/%g)." sPartConcernDescription iCurrentSkill iRequiredSkill
+
+		Sv_Destruct sPartConcernDescription
+		let aPlayerBodyHealthMap := Ar_Null
+		let aConfig := Ar_Null
+		return
+	endif
+
+	; Open Treatment
+
+	Player.AuxiliaryVariableSetString "*SMI_TreatmentDialogBodyPartKey" ($sKey)
+
+	if bFromOverview
+		CloseActiveMenu
+	endif
+
+	Call OpenTreatmentMenuUDF sKey
+
+	; Clean-Up
+
+	let aPlayerBodyHealthMap := Ar_Null
+	let aConfig := Ar_Null
+
+end

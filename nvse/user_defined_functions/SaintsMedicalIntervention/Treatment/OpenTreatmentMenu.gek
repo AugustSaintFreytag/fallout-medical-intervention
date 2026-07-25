@@ -2,18 +2,19 @@ begin function { string_var sKey }
 
 	; UDFs
 
-	ref ClearTreatmentMenuStateUDF = CompileScript "SaintsMedicalIntervention\Activation\ClearTreatmentMenuState.gek"
+	ref ClearTreatmentMenuStateUDF = CompileScript "SaintsMedicalIntervention\Treatment\ClearTreatmentMenuState.gek"
 	ref GetBodyPartConcernDescriptionUDF = CompileScript "SaintsMedicalIntervention\Status\GetBodyPartConcernDescription.gek"
 	ref GetBodyPartDescriptionUDF = CompileScript "SaintsMedicalIntervention\Status\GetBodyPartDescription.gek"
 	ref GetBodyPartHealthDescriptionUDF = CompileScript "SaintsMedicalIntervention\Status\GetBodyPartHealthDescription.gek"
 	ref GetPlayerBodyHealthMapUDF = CompileScript "SaintsMedicalIntervention\Status\GetPlayerBodyHealthMap.gek"
-	ref GetTreatmentOptionsUDF = CompileScript "SaintsMedicalIntervention\Requirements\GetTreatmentOptions.gek"
-	ref GetTreatmentSkillDescriptionUDF = CompileScript "SaintsMedicalIntervention\Requirements\GetTreatmentSkillDescription.gek"
-	ref GetTreatmentSkillLevelUDF = CompileScript "SaintsMedicalIntervention\Requirements\GetTreatmentSkillLevel.gek"
-	ref HasRequiredTreatmentItemsUDF = CompileScript "SaintsMedicalIntervention\Requirements\HasRequiredTreatmentItems.gek"
-	ref GetTreatmentItemDescriptionBlockUDF = CompileScript "SaintsMedicalIntervention\Requirements\GetTreatmentItemDescriptionBlock.gek"
-	ref OnTreatmentMenuConfirmUDF = CompileScript "SaintsMedicalIntervention\Activation\OnTreatmentMenuConfirm.gek"
+	ref GetTreatmentOptionsUDF = CompileScript "SaintsMedicalIntervention\Treatment\GetTreatmentOptions.gek"
+	ref GetTreatmentSkillDescriptionUDF = CompileScript "SaintsMedicalIntervention\Treatment\GetTreatmentSkillDescription.gek"
+	ref GetTreatmentSkillLevelUDF = CompileScript "SaintsMedicalIntervention\Treatment\GetTreatmentSkillLevel.gek"
+	ref HasRequiredTreatmentItemsUDF = CompileScript "SaintsMedicalIntervention\Treatment\HasRequiredTreatmentItems.gek"
+	ref GetTreatmentItemDescriptionBlockUDF = CompileScript "SaintsMedicalIntervention\Treatment\GetTreatmentItemDescriptionBlock.gek"
+	ref OnTreatmentMenuConfirmUDF = CompileScript "SaintsMedicalIntervention\Treatment\OnTreatmentMenuConfirm.gek"
 	ref GetConfigUDF = CompileScript "SaintsMedicalIntervention\Configuration\GetConfig.gek"
+	ref EncodeTreatmentOptionToStringUDF = CompileScript "SaintsMedicalIntervention\Treatment\EncodeTreatmentOptionToString.gek"
 
 	; Main
 
@@ -42,6 +43,7 @@ begin function { string_var sKey }
 	array_var aMenuButtons = (Ar_Construct "array")
 	array_var aMenuFailOptions = (Ar_Construct "array")
 	array_var aMenuButtonTextAlign = (Ar_Construct "array")
+	array_var aEncodedTreatmentOptions = Ar_Construct "array"
 
 	short iOptionCount = (Ar_Size aTreatmentOptions)
 	short iOption = 0
@@ -49,6 +51,15 @@ begin function { string_var sKey }
 	while iOption < iOptionCount
 		array_var aTreatmentOption = aTreatmentOptions[iOption]
 		array_var aTreatmentItems = aTreatmentOption["items"]
+		string_var sEncodedTreatmentOption = Call EncodeTreatmentOptionToStringUDF aTreatmentOption
+
+		if eval !sEncodedTreatmentOption
+			Sv_Destruct sEncodedTreatmentOption
+			let aTreatmentOption := Ar_Null
+			let aTreatmentItems := Ar_Null
+			let iOption += 1
+			continue
+		endif
 
 		short bPlayerHasSufficientItems = Call HasRequiredTreatmentItemsUDF aTreatmentItems
 		array_var aItemBlockDescriptions = Ar_Construct "array"
@@ -67,13 +78,14 @@ begin function { string_var sKey }
 		Ar_Append aMenuButtons, sTreatmentButton
 		Ar_Append aMenuFailOptions, (!bPlayerHasSufficientItems)
 		Ar_Append aMenuButtonTextAlign, 1
+		Ar_Append aEncodedTreatmentOptions, sEncodedTreatmentOption
 
-		Sv_Destruct sItemBlockDescriptions, sTreatmentButton
+		Sv_Destruct sEncodedTreatmentOption, sItemBlockDescriptions, sTreatmentButton
 		let aItemBlockDescriptions := Ar_Null
 		let iOption += 1
 	loop
 
-	Ar_Append aMenuButtons, "Return to Diagnosis"
+	Ar_Append aMenuButtons, "Overview"
 	Ar_Append aMenuButtons, "Cancel"
 	Ar_Append aMenuFailOptions, 0
 	Ar_Append aMenuFailOptions, 0
@@ -99,7 +111,7 @@ begin function { string_var sKey }
 	Player.AuxiliaryVariableSetFromArray "*MenuButtonsHighlightColor" aMenuFailOptions
 	Player.AuxiliaryVariableSetFromArray "*MenuButtonTextAlign" aMenuButtonTextAlign
 	Player.AuxiliaryVariableSetString "*SMI_TreatmentDialogBodyPartKey" ($sKey)
-	Player.AuxStringMapArraySetFromArray "*SMI_TreatmentDialogOptions" aTreatmentOptions
+	Player.AuxiliaryVariableSetFromArray "*SMI_TreatmentDialogOptions" aEncodedTreatmentOptions
 
 	MessageBoxExAlt OnTreatmentMenuConfirmUDF "%z" sMenu
 
@@ -116,5 +128,6 @@ begin function { string_var sKey }
 	let aMenuButtons := Ar_Null
 	let aMenuFailOptions := Ar_Null
 	let aMenuButtonTextAlign := Ar_Null
+	let aEncodedTreatmentOptions := Ar_Null
 
 end
