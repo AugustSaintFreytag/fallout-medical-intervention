@@ -1,17 +1,25 @@
-begin function { string_var sKey }
+begin function { string_var sKey, short bIsMinor }
+
+	short iRequiredSkill
 
 	if eval sKey == "all"
-		SetFunctionValue 20
+		let iRequiredSkill := 20
 	elseif eval sKey == "head"
-		SetFunctionValue 80
+		let iRequiredSkill := 80
 	elseif eval sKey == "torso"
-		SetFunctionValue 60
+		let iRequiredSkill := 60
 	elseif eval (sKey == "leftarm" || sKey == "rightarm")
-		SetFunctionValue 40
+		let iRequiredSkill := 40
 	elseif eval (sKey == "leftleg" || sKey == "rightleg")
-		SetFunctionValue 30
+		let iRequiredSkill := 30
 	else
-		SetFunctionValue 0
+		let iRequiredSkill := 0
 	endif
+
+	if eval bIsMinor && sKey != "all"
+		let iRequiredSkill := iRequiredSkill / 2
+	endif
+
+	SetFunctionValue iRequiredSkill
 
 end

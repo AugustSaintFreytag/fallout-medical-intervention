@@ -42,9 +42,10 @@ begin function { ref rInvRef }
 	foreach (array_var aElement <- aKeys)
 		string_var sKey = *aElement
 
-		short iMinSkill = Call GetTreatmentSkillLevelUDF sKey
 		short iBodyPartHealth = aBodyHealthMap[$sKey]
 		short bBodyPartIsCrippled = eval (iBodyPartHealth == 0)
+		short bBodyPartIsHealthy = eval sKey != "all" && !bBodyPartIsCrippled
+		short iMinSkill = (Call GetTreatmentSkillLevelUDF sKey bBodyPartIsHealthy)
 
 		if eval !bBodyPartIsCrippled && bShowOnlyCrippledBodyParts
 			continue
