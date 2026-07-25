@@ -1,0 +1,10 @@
+begin function {}
+
+	if eval !(MenuMode 1003)
+		return
+	endif
+
+	short bPlayerHasDoctorsBag = eval (Player.GetItemCount NVDoctorBag) > 0
+	SetUIFloatAlt "StatsMenu/GLOW_BRANCH/stats_status_container/stats_triage_button/target" (bPlayerHasDoctorsBag)
+
+end

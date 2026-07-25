@@ -1,0 +1,7 @@
+begin function { short iMenuMode }
+
+	ref UpdateStatsMenuUDF = CompileScript "SaintsMedicalIntervention\Interface\UpdateStatsMenu.gek"
+	
+	Call UpdateStatsMenuUDF
+
+end
