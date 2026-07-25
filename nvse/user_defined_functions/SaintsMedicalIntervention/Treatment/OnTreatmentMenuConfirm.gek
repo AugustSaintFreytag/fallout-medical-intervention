@@ -113,7 +113,7 @@ begin function { short iOption }
 		CloseActiveMenu
 
 		Call OpenTreatmentMenuUDF sKey
-		MessageExAlt 2 "Interface\Icons\Message Icons\glow_message_vaultboy_sad.dds|You do not have the items required for this treatment."
+		MessageExAlt 2 "Interface\Icons\Message Icons\glow_message_vaultboy_sad.dds|You do not have the items required to perform this treatment."
 
 		Sv_Destruct sKey, sEncodedTreatmentOption
 		let aEncodedTreatmentOptions := Ar_Null
