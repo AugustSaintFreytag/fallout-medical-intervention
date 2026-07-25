@@ -1,0 +1,19 @@
+begin function { short bKeepBodyPartKey }
+
+	; UDFs
+
+	ref ClearTreatmentOptionStateUDF = CompileScript "SaintsMedicalIntervention\Activation\ClearTreatmentOptionState.gek"
+
+	; Main
+
+	Player.AuxiliaryVariableErase "*MenuButtonsHighlightColor"
+	Player.AuxiliaryVariableErase "*MenuButtonTextAlign"
+	Call ClearTreatmentOptionStateUDF
+
+	if eval !bKeepBodyPartKey
+		Player.AuxiliaryVariableErase "*SMI_TreatmentDialogBodyPartKey"
+		Player.AuxiliaryVariableErase "*SMI_TreatmentRestoreFactor"
+		Player.AuxiliaryVariableErase "*SMI_TreatmentRestoreMode"
+	endif
+
+end

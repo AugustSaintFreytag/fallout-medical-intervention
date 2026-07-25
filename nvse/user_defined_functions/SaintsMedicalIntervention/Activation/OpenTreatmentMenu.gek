@@ -1,106 +1,119 @@
 begin function { string_var sKey }
 
-	; Fetch items, player medicine skill, skill requirement.
-	; Explain item use, offer option to heal. Item alternatives included if available.
-
 	; UDFs
 
+	ref ClearTreatmentMenuStateUDF = CompileScript "SaintsMedicalIntervention\Activation\ClearTreatmentMenuState.gek"
 	ref GetBodyPartConcernDescriptionUDF = CompileScript "SaintsMedicalIntervention\Status\GetBodyPartConcernDescription.gek"
 	ref GetBodyPartDescriptionUDF = CompileScript "SaintsMedicalIntervention\Status\GetBodyPartDescription.gek"
 	ref GetBodyPartHealthDescriptionUDF = CompileScript "SaintsMedicalIntervention\Status\GetBodyPartHealthDescription.gek"
 	ref GetPlayerBodyHealthMapUDF = CompileScript "SaintsMedicalIntervention\Status\GetPlayerBodyHealthMap.gek"
-	ref GetTreatmentItemGroupDescriptionUDF = CompileScript "SaintsMedicalIntervention\Requirements\GetTreatmentItemGroupDescription.gek"
-	ref GetTreatmentItemsForKindUDF = CompileScript "SaintsMedicalIntervention\Requirements\GetTreatmentItemsForKind.gek"
+	ref GetTreatmentOptionsUDF = CompileScript "SaintsMedicalIntervention\Requirements\GetTreatmentOptions.gek"
 	ref GetTreatmentSkillDescriptionUDF = CompileScript "SaintsMedicalIntervention\Requirements\GetTreatmentSkillDescription.gek"
 	ref GetTreatmentSkillLevelUDF = CompileScript "SaintsMedicalIntervention\Requirements\GetTreatmentSkillLevel.gek"
-	ref OnTreatmentMenuConfirmUDF = CompileScript "SaintsMedicalIntervention\Activation\OnTreatmentMenuConfirm.gek"
 	ref HasRequiredTreatmentItemsUDF = CompileScript "SaintsMedicalIntervention\Requirements\HasRequiredTreatmentItems.gek"
 	ref GetTreatmentItemDescriptionBlockUDF = CompileScript "SaintsMedicalIntervention\Requirements\GetTreatmentItemDescriptionBlock.gek"
+	ref OnTreatmentMenuConfirmUDF = CompileScript "SaintsMedicalIntervention\Activation\OnTreatmentMenuConfirm.gek"
 	ref GetConfigUDF = CompileScript "SaintsMedicalIntervention\Configuration\GetConfig.gek"
 
 	; Main
 
-	array_var aConfig = Call GetConfigUDF
+	Call ClearTreatmentMenuStateUDF 0
+
+	array_var aConfig = (Call GetConfigUDF)
 	short iShowItemRequirements = aConfig["iShowItemRequirements"]
-	short iCurrentSkill = Player.GetActorValue Medicine
-	short iPlayerSkill = Call GetTreatmentSkillLevelUDF sKey
+	short iCurrentSkill = (Player.GetActorValue Medicine)
 
-	string_var sBodyPartDescription = Call GetBodyPartDescriptionUDF sKey
-	string_var sBodyPartConcernDescription = Call GetBodyPartConcernDescriptionUDF sKey
-	string_var sSkillDescription = Call GetTreatmentSkillDescriptionUDF iCurrentSkill iPlayerSkill
-
-	array_var aPlayerBodyHealthMap = Call GetPlayerBodyHealthMapUDF
+	array_var aPlayerBodyHealthMap = (Call GetPlayerBodyHealthMapUDF)
 	short iBodyPartHealth = aPlayerBodyHealthMap[$sKey]
+	short bBodyPartIsHealthy = eval sKey != "all" && iBodyPartHealth > 0
+	short iRequiredSkill = (Call GetTreatmentSkillLevelUDF sKey bBodyPartIsHealthy)
 
-	string_var sBodyPartHealthDescription = Call GetBodyPartHealthDescriptionUDF sKey iBodyPartHealth
+	string_var sBodyPartDescription = (Call GetBodyPartDescriptionUDF sKey)
+	string_var sBodyPartConcernDescription = (Call GetBodyPartConcernDescriptionUDF sKey)
+	string_var sSkillDescription = (Call GetTreatmentSkillDescriptionUDF iCurrentSkill iRequiredSkill)
+	string_var sBodyPartHealthDescription = (Call GetBodyPartHealthDescriptionUDF sKey iBodyPartHealth)
+
+	; Treatment Options
+
+	array_var aTreatmentOptions = (Call GetTreatmentOptionsUDF sKey iBodyPartHealth)
+	array_var aTreatmentOption
+	array_var aTreatmentItems
 
 	; Buttons
 
-	array_var aMenuButtons = Ar_Construct "array"
+	array_var aMenuButtons = (Ar_Construct "array")
+	array_var aMenuFailOptions = (Ar_Construct "array")
+	array_var aMenuButtonTextAlign = (Ar_Construct "array")
+	short iOptionCount = (Ar_Size aTreatmentOptions)
+	short iOption = 0
 
-	; Treatment Buttons
+	while iOption < iOptionCount
+		let aTreatmentOption := aTreatmentOptions[iOption]
+		let aTreatmentItems := aTreatmentOption["items"]
+		short bPlayerHasSufficientItems = (Call HasRequiredTreatmentItemsUDF aTreatmentItems)
+		array_var aItemBlockDescriptions = (Ar_Construct "array")
 
-	array_var aTreatmentItems = Call GetTreatmentItemsForKindUDF sKey
-	short bPlayerHasSufficientItems = Call HasRequiredTreatmentItemsUDF aTreatmentItems
+		foreach array_var aElement <- aTreatmentItems
+			ref rItem = *aElement
+			string_var sItemDescriptionBlock = (Call GetTreatmentItemDescriptionBlockUDF rItem iShowItemRequirements)
 
-	array_var aItemBlockDescriptions = Ar_Construct "array"
+			Ar_Append aItemBlockDescriptions, sItemDescriptionBlock
+			Sv_Destruct sItemDescriptionBlock
+		loop
 
-	foreach array_var aElement <- aTreatmentItems
-		ref rItem = *aElement
-		string_var sItemDescriptionBlock = Call GetTreatmentItemDescriptionBlockUDF rItem iShowItemRequirements
+		string_var sItemBlockDescriptions = (Sv_Join aItemBlockDescriptions, " ")
+		string_var sTreatmentButton = (Sv_Construct "%z %z %z" sItemBlockDescriptions (aTreatmentOption["verb"]) sBodyPartDescription)
 
-		Ar_Append aItemBlockDescriptions, sItemDescriptionBlock
-		Sv_Destruct sItemDescriptionBlock
+		Ar_Append aMenuButtons, sTreatmentButton
+		Ar_Append aMenuFailOptions, (!bPlayerHasSufficientItems)
+		Ar_Append aMenuButtonTextAlign, 1
+
+		Sv_Destruct sItemBlockDescriptions, sTreatmentButton
+		let aItemBlockDescriptions := Ar_Null
+		let iOption += 1
 	loop
-
-	string_var sItemBlockDescriptions = Sv_Join aItemBlockDescriptions, " "
-	string_var sTreatmentButton = Sv_Construct "%z Treat %z" sItemBlockDescriptions sBodyPartDescription
-
-	Ar_Append aMenuButtons, sTreatmentButton
-
-	Sv_Destruct sItemBlockDescriptions
-	let aItemBlockDescriptions := Ar_Null
-
-	; Conclusion
 
 	Ar_Append aMenuButtons, "Return to Diagnosis"
 	Ar_Append aMenuButtons, "Cancel"
+	Ar_Append aMenuFailOptions, 0
+	Ar_Append aMenuFailOptions, 0
+	Ar_Append aMenuButtonTextAlign, 0
+	Ar_Append aMenuButtonTextAlign, 0
 
 	; Menu
 
 	string_var sMenuTitle = "Field Treatment"
-	string_var sBodyPartDescriptionLower = Sv_ToLower sBodyPartDescription
-	string_var sMenuIntroPart = Sv_Construct "The diagnosis for your %z is: %z (%g%%)." sBodyPartDescriptionLower sBodyPartHealthDescription iBodyPartHealth
-	string_var sMenuIntroSkill = Sv_Construct "%rYour expertise in treating %z is: %z." sBodyPartConcernDescription sSkillDescription
+	string_var sBodyPartDescriptionLower = (Sv_ToLower sBodyPartDescription)
+	string_var sMenuIntroPart = (Sv_Construct "The diagnosis for your %z is: %z (%g%%)." sBodyPartDescriptionLower sBodyPartHealthDescription iBodyPartHealth)
+	string_var sMenuIntroSkill = (Sv_Construct "%rYour expertise in treating %z is: %z." sBodyPartConcernDescription sSkillDescription)
 
 	if eval sKey == "all"
 		let sMenuIntroSkill := "%rMinor injuries will be treated and crippled limbs restored based on your skill."
 	endif
 
-	string_var sMenuButtons = Sv_Join aMenuButtons, "|"
-	string_var sMenu = Sv_Construct "^%z^%z%z|%z" sMenuTitle sMenuIntroPart sMenuIntroSkill sMenuButtons
+	string_var sMenuButtons = (Sv_Join aMenuButtons, "|")
+	string_var sMenu = (Sv_Construct "^%z^%z%z|%z" sMenuTitle sMenuIntroPart sMenuIntroSkill sMenuButtons)
 
 	; Open Menu
 
-	array_var aMenuFailOptions = Ar_List (!bPlayerHasSufficientItems), 0, 0
-	array_var aMenuButtonTextAlign = Ar_List 1, 0, 0
-	
 	Player.AuxiliaryVariableSetFromArray "*MenuButtonsHighlightColor" aMenuFailOptions
 	Player.AuxiliaryVariableSetFromArray "*MenuButtonTextAlign" aMenuButtonTextAlign
 	Player.AuxiliaryVariableSetString "*SMI_TreatmentDialogBodyPartKey" ($sKey)
+	Player.AuxiliaryVariableSetFromArray "*SMI_TreatmentDialogOptions" aTreatmentOptions
 
 	MessageBoxExAlt OnTreatmentMenuConfirmUDF "%z" sMenu
 
 	; Clean-Up
 
-	Sv_Destruct sBodyPartDescription, sBodyPartConcernDescription, sSkillDescription, sBodyPartHealthDescription, sTreatmentButton
+	Sv_Destruct sBodyPartDescription, sBodyPartConcernDescription, sSkillDescription, sBodyPartHealthDescription
 	Sv_Destruct sMenuTitle, sBodyPartDescriptionLower, sMenuIntroPart, sMenuIntroSkill, sMenuButtons, sMenu
-
+	let aConfig := Ar_Null
 	let aPlayerBodyHealthMap := Ar_Null
-	let aMenuButtons := Ar_Null
+	let aTreatmentOptions := Ar_Null
+	let aTreatmentOption := Ar_Null
 	let aTreatmentItems := Ar_Null
+	let aMenuButtons := Ar_Null
 	let aMenuFailOptions := Ar_Null
 	let aMenuButtonTextAlign := Ar_Null
-	let aConfig := Ar_Null
 
 end
