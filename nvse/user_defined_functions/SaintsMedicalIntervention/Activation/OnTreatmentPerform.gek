@@ -4,20 +4,24 @@ begin function {}
 
 	ref RestoreAllBodyPartsBySkillUDF = CompileScript "SaintsMedicalIntervention\Status\RestoreAllBodyPartsBySkill.gek"
 	ref RestoreBodyPartBySkillUDF = CompileScript "SaintsMedicalIntervention\Status\RestoreBodyPartBySkill.gek"
+	ref GetConfigUDF = CompileScript "SaintsMedicalIntervention\Configuration\GetConfig.gek"
 
 	; Main
 
 	string_var sKey = Player.AuxiliaryVariableGetString "*SMI_TreatmentDialogBodyPartKey"
+	array_var aConfig = Call GetConfigUDF
+	float fMaxRestoreFactor = aConfig["fMaxRestoreFactor"]
 
 	if eval sKey == "all"
-		Call RestoreAllBodyPartsBySkillUDF
+		Call RestoreAllBodyPartsBySkillUDF fMaxRestoreFactor
 	elseif eval sKey
-		Call RestoreBodyPartBySkillUDF sKey
+		Call RestoreBodyPartBySkillUDF sKey fMaxRestoreFactor
 	endif
 
 	; Clean-Up
 
 	Player.AuxiliaryVariableErase "*SMI_TreatmentDialogBodyPartKey"
 	Sv_Destruct sKey
+	let aConfig := Ar_Null
 
 end

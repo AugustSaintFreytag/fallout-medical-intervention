@@ -16,13 +16,12 @@ begin function { string_var sKey }
 	ref OnTreatmentMenuConfirmUDF = CompileScript "SaintsMedicalIntervention\Activation\OnTreatmentMenuConfirm.gek"
 	ref HasRequiredTreatmentItemsUDF = CompileScript "SaintsMedicalIntervention\Requirements\HasRequiredTreatmentItems.gek"
 	ref GetTreatmentItemDescriptionBlockUDF = CompileScript "SaintsMedicalIntervention\Requirements\GetTreatmentItemDescriptionBlock.gek"
-
-	; Settings
-
-	short bRequireLiquidItem = 0
+	ref GetConfigUDF = CompileScript "SaintsMedicalIntervention\Configuration\GetConfig.gek"
 
 	; Main
 
+	array_var aConfig = Call GetConfigUDF
+	short iShowItemRequirements = aConfig["iShowItemRequirements"]
 	short iCurrentSkill = Player.GetActorValue Medicine
 	short iPlayerSkill = Call GetTreatmentSkillLevelUDF sKey
 
@@ -48,7 +47,7 @@ begin function { string_var sKey }
 
 	foreach array_var aElement <- aTreatmentItems
 		ref rItem = *aElement
-		string_var sItemDescriptionBlock = Call GetTreatmentItemDescriptionBlockUDF rItem
+		string_var sItemDescriptionBlock = Call GetTreatmentItemDescriptionBlockUDF rItem iShowItemRequirements
 
 		Ar_Append aItemBlockDescriptions, sItemDescriptionBlock
 		Sv_Destruct sItemDescriptionBlock
@@ -102,5 +101,6 @@ begin function { string_var sKey }
 	let aTreatmentItems := Ar_Null
 	let aMenuFailOptions := Ar_Null
 	let aMenuButtonTextAlign := Ar_Null
+	let aConfig := Ar_Null
 
 end

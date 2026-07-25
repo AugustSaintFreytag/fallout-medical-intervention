@@ -1,0 +1,113 @@
+{
+    "modName": "SaintsMedicalIntervention",
+    "displayName": "Medical Intervention",
+    "description": "Configure field-treatment behavior and presentation.",
+    "saveFile": "SaintsMedicalIntervention.ini",
+    "minMCMVersion": 1.00,
+    "minModVersion": 1.00,
+    "requirements": [
+        { "type": "file", "file": "NVSE/plugins/scripts/ln_SaintsMedicalIntervention.txt" }
+    ],
+    "submenus": {
+        "0": {
+            "listTitle": "Settings",
+            "pageTitle": "Settings",
+            "active": 1,
+            "columns": 1,
+            "enable": 1,
+            "options": {
+                "1": {
+                    "title": "General",
+                    "enable": 1,
+                    "type": 0
+                },
+                "2": {
+                    "title": "Enable Field Treatment",
+                    "enable": 1,
+                    "type": 5,
+                    "mouse": "Route Doctor's Bag use and the Stats shortcut into field treatment.",
+                    "vars": [{ "configINI": "General:bEnableTriage", "default": 1 }]
+                },
+                "3": {
+                    "title": "Diagnosis Menu",
+                    "enable": 1,
+                    "type": 0
+                },
+                "4": {
+                    "title": "Crippled Body Parts Only",
+                    "enable": 1,
+                    "type": 5,
+                    "mouse": "Hide body parts that are not crippled from the diagnosis menu.",
+                    "vars": [{ "configINI": "TriageMenu:bShowOnlyCrippledBodyParts", "default": 0 }]
+                },
+                "5": {
+                    "title": "Body-Part Condition",
+                    "enable": 1,
+                    "type": 1,
+                    "mouse": "Choose how body-part condition is displayed in the diagnosis menu.",
+                    "strings": [
+                        "Hidden",
+                        "Description",
+                        "Percentage",
+                        "Description and percentage"
+                    ],
+                    "vars": [{ "configINI": "TriageMenu:iShowBodyPartHealth", "default": 2 }]
+                },
+                "6": {
+                    "title": "Emphasize Crippled Parts",
+                    "enable": 1,
+                    "type": 5,
+                    "mouse": "Emphasize the condition text for crippled body parts.",
+                    "vars": [{ "configINI": "TriageMenu:bShowBodyPartHealthEmphasis", "default": 1 }]
+                },
+                "7": {
+                    "title": "Medicine Requirements",
+                    "enable": 1,
+                    "type": 1,
+                    "mouse": "Choose how Medicine skill requirements are displayed.",
+                    "strings": [
+                        "Hidden",
+                        "Required skill",
+                        "Current and required skill"
+                    ],
+                    "vars": [{ "configINI": "TriageMenu:iShowSkillRequirements", "default": 1 }]
+                },
+                "8": {
+                    "title": "Treatment Menu",
+                    "enable": 1,
+                    "type": 0
+                },
+                "9": {
+                    "title": "Item Requirements",
+                    "enable": 1,
+                    "type": 1,
+                    "mouse": "Choose when treatment-item inventory counts are displayed.",
+                    "strings": [
+                        "Hide counts",
+                        "Show counts when unmet",
+                        "Always show counts"
+                    ],
+                    "vars": [{ "configINI": "TreatmentMenu:iShowItemRequirements", "default": 0 }]
+                },
+                "10": {
+                    "title": "Healing",
+                    "enable": 1,
+                    "type": 0
+                },
+                "11": {
+                    "title": "Maximum Restoration",
+                    "enable": 1,
+                    "type": 2.5,
+                    "mouse": "Set the maximum fraction of limb condition restored at Medicine 100.",
+                    "vars": [{ "configINI": "Treatment:fMaxRestoreFactor", "default": 0.8 }],
+                    "scale": {
+                        "valueDecimal": 2,
+                        "valueIncrement": 0.05,
+                        "valueMin": 0.05,
+                        "valueMax": 1.0
+                    }
+                }
+            }
+        }
+    }
+}

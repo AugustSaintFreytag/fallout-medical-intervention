@@ -1,0 +1,22 @@
+begin function {}
+
+	; MCM writes directly to this file. Reload the cache so changes are visible
+	; on the next interaction, while retaining default-aware reads.
+	ReloadIniCache "SaintsMedicalIntervention.ini"
+
+	array_var aConfig = Ar_Construct "stringmap"
+
+	let aConfig["bEnableTriage"] := eval GetINIFloat_Cached "General:bEnableTriage" "SaintsMedicalIntervention.ini" 1
+
+	let aConfig["bShowOnlyCrippledBodyParts"] := eval GetINIFloat_Cached "TriageMenu:bShowOnlyCrippledBodyParts" "SaintsMedicalIntervention.ini" 0
+	let aConfig["iShowBodyPartHealth"] := Clamp (GetINIFloat_Cached "TriageMenu:iShowBodyPartHealth" "SaintsMedicalIntervention.ini" 2) 0 3
+	let aConfig["bShowBodyPartHealthEmphasis"] := eval GetINIFloat_Cached "TriageMenu:bShowBodyPartHealthEmphasis" "SaintsMedicalIntervention.ini" 1
+	let aConfig["iShowSkillRequirements"] := Clamp (GetINIFloat_Cached "TriageMenu:iShowSkillRequirements" "SaintsMedicalIntervention.ini" 1) 0 2
+
+	let aConfig["iShowItemRequirements"] := Clamp (GetINIFloat_Cached "TreatmentMenu:iShowItemRequirements" "SaintsMedicalIntervention.ini" 0) 0 2
+
+	let aConfig["fMaxRestoreFactor"] := Clamp (GetINIFloat_Cached "Treatment:fMaxRestoreFactor" "SaintsMedicalIntervention.ini" 0.8) 0 1
+
+	SetFunctionValue aConfig
+
+end
