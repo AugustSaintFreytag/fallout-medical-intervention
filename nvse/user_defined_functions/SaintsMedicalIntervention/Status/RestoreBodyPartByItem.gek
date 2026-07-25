@@ -1,0 +1,16 @@
+begin function { string_var sKey, float fRestoreFactor }
+
+	; UDFs
+
+	ref RestoreBodyPartUDF = CompileScript "SaintsMedicalIntervention\Status\RestoreBodyPart.gek"
+
+	; Main
+
+	short iPlayerSkill = Player.GetActorValue Medicine
+	float fSkillFactor = 0.5 + (iPlayerSkill / 200.0)
+	short iRestoredCondition = (Floor (100.0 * fRestoreFactor * fSkillFactor))
+
+	let iRestoredCondition := (GetMaxOf 1, iRestoredCondition)
+	Call RestoreBodyPartUDF sKey iRestoredCondition
+
+end

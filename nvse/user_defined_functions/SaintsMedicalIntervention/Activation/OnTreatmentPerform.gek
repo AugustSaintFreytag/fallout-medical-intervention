@@ -3,25 +3,28 @@ begin function {}
 	; UDFs
 
 	ref RestoreAllBodyPartsBySkillUDF = CompileScript "SaintsMedicalIntervention\Status\RestoreAllBodyPartsBySkill.gek"
+	ref RestoreBodyPartByItemUDF = CompileScript "SaintsMedicalIntervention\Status\RestoreBodyPartByItem.gek"
 	ref RestoreBodyPartBySkillUDF = CompileScript "SaintsMedicalIntervention\Status\RestoreBodyPartBySkill.gek"
-	ref GetConfigUDF = CompileScript "SaintsMedicalIntervention\Configuration\GetConfig.gek"
 
 	; Main
 
-	string_var sKey = Player.AuxiliaryVariableGetString "*SMI_TreatmentDialogBodyPartKey"
-	array_var aConfig = Call GetConfigUDF
-	float fMaxRestoreFactor = aConfig["fMaxRestoreFactor"]
+	string_var sKey = (Player.AuxiliaryVariableGetString "*SMI_TreatmentDialogBodyPartKey")
+	float fRestoreFactor = (Player.AuxiliaryVariableGetFloat "*SMI_TreatmentRestoreFactor")
+	short iRestoreMode = (Player.AuxiliaryVariableGetFloat "*SMI_TreatmentRestoreMode")
 
-	if eval sKey == "all"
-		Call RestoreAllBodyPartsBySkillUDF fMaxRestoreFactor
-	elseif eval sKey
-		Call RestoreBodyPartBySkillUDF sKey fMaxRestoreFactor
+	if eval iRestoreMode == 0 && sKey == "all"
+		Call RestoreAllBodyPartsBySkillUDF fRestoreFactor
+	elseif eval iRestoreMode == 0 && sKey
+		Call RestoreBodyPartBySkillUDF sKey fRestoreFactor
+	elseif eval iRestoreMode == 1 && sKey && sKey != "all"
+		Call RestoreBodyPartByItemUDF sKey fRestoreFactor
 	endif
 
 	; Clean-Up
 
 	Player.AuxiliaryVariableErase "*SMI_TreatmentDialogBodyPartKey"
+	Player.AuxiliaryVariableErase "*SMI_TreatmentRestoreFactor"
+	Player.AuxiliaryVariableErase "*SMI_TreatmentRestoreMode"
 	Sv_Destruct sKey
-	let aConfig := Ar_Null
 
 end

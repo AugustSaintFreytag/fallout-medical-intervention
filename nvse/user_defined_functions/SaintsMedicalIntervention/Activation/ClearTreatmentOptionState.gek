@@ -1,0 +1,7 @@
+begin function {}
+
+	; Main
+
+	Player.AuxiliaryVariableErase "*SMI_TreatmentDialogOptions"
+
+end

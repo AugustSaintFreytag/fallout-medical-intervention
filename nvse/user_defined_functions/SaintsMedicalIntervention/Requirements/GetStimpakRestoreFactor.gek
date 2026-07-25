@@ -1,0 +1,20 @@
+begin function { ref rStimpak }
+
+	; Forms
+
+	ref rExpiredStimpak = (GetFormFromMod "AguaFria.esm" "61A8")
+	ref rHomemadeStimpak = (GetFormFromMod "AguaFria.esm" "61A9")
+
+	; Main
+
+	if eval rExpiredStimpak && rStimpak == rExpiredStimpak
+		SetFunctionValue 0.6
+	elseif eval rHomemadeStimpak && rStimpak == rHomemadeStimpak
+		SetFunctionValue 0.7
+	elseif rStimpak == NVSuperStimpak
+		SetFunctionValue 1.0
+	else
+		SetFunctionValue 0.8
+	endif
+
+end

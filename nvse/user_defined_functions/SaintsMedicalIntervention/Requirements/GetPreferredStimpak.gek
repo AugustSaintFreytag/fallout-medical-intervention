@@ -1,0 +1,34 @@
+begin function {}
+
+	; Forms
+
+	ref rExpiredStimpak = (GetFormFromMod "AguaFria.esm" "61A8")
+	ref rHomemadeStimpak = (GetFormFromMod "AguaFria.esm" "61A9")
+
+	; Main
+
+	if eval rExpiredStimpak && (Player.GetItemCount rExpiredStimpak) > 0
+		SetFunctionValue rExpiredStimpak
+		return
+	endif
+
+	if eval rHomemadeStimpak && (Player.GetItemCount rHomemadeStimpak) > 0
+		SetFunctionValue rHomemadeStimpak
+		return
+	endif
+
+	if eval (Player.GetItemCount Stimpak) > 0
+		SetFunctionValue Stimpak
+		return
+	endif
+
+	if eval (Player.GetItemCount NVSuperStimpak) > 0
+		SetFunctionValue NVSuperStimpak
+		return
+	endif
+
+	; Use the standard Stimpak as the visible unmet requirement.
+
+	SetFunctionValue Stimpak
+
+end
