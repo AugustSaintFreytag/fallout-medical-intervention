@@ -2,6 +2,6 @@ begin function {}
 
 	; Main
 
-	Player.AuxiliaryVariableErase "*SMI_TreatmentDialogOptions"
+	Player.AuxStringMapArrayDestroy "*SMI_TreatmentDialogOptions"
 
 end

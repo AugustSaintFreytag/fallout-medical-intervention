@@ -35,34 +35,34 @@ begin function { string_var sKey }
 
 	; Treatment Options
 
-	array_var aTreatmentOptions = (Call GetTreatmentOptionsUDF sKey iBodyPartHealth)
-	array_var aTreatmentOption
-	array_var aTreatmentItems
+	array_var aTreatmentOptions = Call GetTreatmentOptionsUDF sKey iBodyPartHealth
 
 	; Buttons
 
 	array_var aMenuButtons = (Ar_Construct "array")
 	array_var aMenuFailOptions = (Ar_Construct "array")
 	array_var aMenuButtonTextAlign = (Ar_Construct "array")
+
 	short iOptionCount = (Ar_Size aTreatmentOptions)
 	short iOption = 0
 
 	while iOption < iOptionCount
-		let aTreatmentOption := aTreatmentOptions[iOption]
-		let aTreatmentItems := aTreatmentOption["items"]
-		short bPlayerHasSufficientItems = (Call HasRequiredTreatmentItemsUDF aTreatmentItems)
-		array_var aItemBlockDescriptions = (Ar_Construct "array")
+		array_var aTreatmentOption = aTreatmentOptions[iOption]
+		array_var aTreatmentItems = aTreatmentOption["items"]
+
+		short bPlayerHasSufficientItems = Call HasRequiredTreatmentItemsUDF aTreatmentItems
+		array_var aItemBlockDescriptions = Ar_Construct "array"
 
 		foreach array_var aElement <- aTreatmentItems
 			ref rItem = *aElement
-			string_var sItemDescriptionBlock = (Call GetTreatmentItemDescriptionBlockUDF rItem iShowItemRequirements)
+			string_var sItemDescriptionBlock = Call GetTreatmentItemDescriptionBlockUDF rItem iShowItemRequirements
 
 			Ar_Append aItemBlockDescriptions, sItemDescriptionBlock
 			Sv_Destruct sItemDescriptionBlock
 		loop
 
-		string_var sItemBlockDescriptions = (Sv_Join aItemBlockDescriptions, " ")
-		string_var sTreatmentButton = (Sv_Construct "%z %z %z" sItemBlockDescriptions (aTreatmentOption["verb"]) sBodyPartDescription)
+		string_var sItemBlockDescriptions = Sv_Join aItemBlockDescriptions, " "
+		string_var sTreatmentButton = Sv_Construct "%z %z %z" sItemBlockDescriptions (aTreatmentOption["verb"]) sBodyPartDescription
 
 		Ar_Append aMenuButtons, sTreatmentButton
 		Ar_Append aMenuFailOptions, (!bPlayerHasSufficientItems)
@@ -83,12 +83,12 @@ begin function { string_var sKey }
 	; Menu
 
 	string_var sMenuTitle = "Field Treatment"
-	string_var sBodyPartDescriptionLower = (Sv_ToLower sBodyPartDescription)
+	string_var sBodyPartDescriptionLower = Sv_ToLower sBodyPartDescription
 	string_var sMenuIntroPart = (Sv_Construct "The diagnosis for your %z is: %z (%g%%)." sBodyPartDescriptionLower sBodyPartHealthDescription iBodyPartHealth)
 	string_var sMenuIntroSkill = (Sv_Construct "%rYour expertise in treating %z is: %z." sBodyPartConcernDescription sSkillDescription)
 
 	if eval sKey == "all"
-		let sMenuIntroSkill := "%rMinor injuries will be treated and crippled limbs restored based on your skill."
+		let sMenuIntroSkill := "%rInjuries and crippled limbs will be restored based on your skill."
 	endif
 
 	string_var sMenuButtons = (Sv_Join aMenuButtons, "|")
@@ -99,7 +99,7 @@ begin function { string_var sKey }
 	Player.AuxiliaryVariableSetFromArray "*MenuButtonsHighlightColor" aMenuFailOptions
 	Player.AuxiliaryVariableSetFromArray "*MenuButtonTextAlign" aMenuButtonTextAlign
 	Player.AuxiliaryVariableSetString "*SMI_TreatmentDialogBodyPartKey" ($sKey)
-	Player.AuxiliaryVariableSetFromArray "*SMI_TreatmentDialogOptions" aTreatmentOptions
+	Player.AuxStringMapArraySetFromArray "*SMI_TreatmentDialogOptions" aTreatmentOptions
 
 	MessageBoxExAlt OnTreatmentMenuConfirmUDF "%z" sMenu
 
@@ -107,6 +107,7 @@ begin function { string_var sKey }
 
 	Sv_Destruct sBodyPartDescription, sBodyPartConcernDescription, sSkillDescription, sBodyPartHealthDescription
 	Sv_Destruct sMenuTitle, sBodyPartDescriptionLower, sMenuIntroPart, sMenuIntroSkill, sMenuButtons, sMenu
+
 	let aConfig := Ar_Null
 	let aPlayerBodyHealthMap := Ar_Null
 	let aTreatmentOptions := Ar_Null
