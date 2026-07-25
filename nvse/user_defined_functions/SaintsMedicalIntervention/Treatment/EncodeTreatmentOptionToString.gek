@@ -1,0 +1,63 @@
+begin function { array_var aTreatmentOption }
+
+	; Encodes a treatment-option stringmap as:
+	; restoreFactor###restoreMode###verb###itemRef[###itemRef...]
+	; Caller is responsible for Sv_Destruct on the returned string.
+
+	; Validation
+
+	if eval (Ar_Size aTreatmentOption) <= 0 || !(Ar_HasKey aTreatmentOption, "items") || !(Ar_HasKey aTreatmentOption, "restoreFactor") || !(Ar_HasKey aTreatmentOption, "restoreMode") || !(Ar_HasKey aTreatmentOption, "verb")
+		PrintC "Could not encode treatment option, invalid model format."
+		return
+	endif
+
+	array_var aTreatmentItems = aTreatmentOption["items"]
+
+	if eval (Ar_Size aTreatmentItems) <= 0
+		PrintC "Could not encode treatment option, missing treatment items."
+		let aTreatmentItems := Ar_Null
+		return
+	endif
+
+	; Components
+
+	float fRestoreFactor = aTreatmentOption["restoreFactor"]
+	short iRestoreMode = aTreatmentOption["restoreMode"]
+
+	string_var sRestoreFactor = Sv_Construct "%.9f" fRestoreFactor
+	string_var sRestoreMode = Sv_Construct "%g" iRestoreMode
+
+	array_var aComponents = Ar_List sRestoreFactor, sRestoreMode, aTreatmentOption["verb"]
+
+	foreach array_var aTreatmentItemElement <- aTreatmentItems
+		ref rTreatmentItem = *aTreatmentItemElement
+
+		if eval !(IsFormValid rTreatmentItem)
+			PrintC "Could not encode treatment option, treatment item '%n' is invalid." rTreatmentItem
+
+			Sv_Destruct sRestoreFactor, sRestoreMode
+			let aTreatmentItems := Ar_Null
+			let aComponents := Ar_Null
+			return
+		endif
+
+		string_var sTreatmentItem = $RefToString rTreatmentItem
+		Ar_Append aComponents, sTreatmentItem
+		Sv_Destruct sTreatmentItem
+	loop
+
+	; Encode
+
+	string_var sEncodedTreatmentOption = Sv_Join aComponents, "###"
+
+	PrintC "Returning encoded treatment option as '%z'." sEncodedTreatmentOption
+
+	SetFunctionValue sEncodedTreatmentOption
+
+	; Clean-Up
+
+	Sv_Destruct sRestoreFactor, sRestoreMode
+	let aTreatmentItems := Ar_Null
+	let aComponents := Ar_Null
+
+end

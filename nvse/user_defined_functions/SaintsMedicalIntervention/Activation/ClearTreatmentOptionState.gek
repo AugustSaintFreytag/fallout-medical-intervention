@@ -1,7 +1,0 @@
-begin function {}
-
-	; Main
-
-	Player.AuxStringMapArrayDestroy "*SMI_TreatmentDialogOptions"
-
-end

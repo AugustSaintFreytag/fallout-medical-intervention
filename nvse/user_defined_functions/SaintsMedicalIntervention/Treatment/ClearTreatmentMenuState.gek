@@ -2,7 +2,7 @@ begin function { short bKeepBodyPartKey }
 
 	; UDFs
 
-	ref ClearTreatmentOptionStateUDF = CompileScript "SaintsMedicalIntervention\Activation\ClearTreatmentOptionState.gek"
+	ref ClearTreatmentOptionStateUDF = CompileScript "SaintsMedicalIntervention\Treatment\ClearTreatmentOptionState.gek"
 
 	; Main
 

@@ -1,0 +1,61 @@
+begin function { string_var sEncodedTreatmentOption }
+
+	; Decodes:
+	; restoreFactor###restoreMode###verb###itemRef[###itemRef...]
+	; Caller is responsible for Ar_Null on the returned stringmap.
+
+	; Components
+
+	array_var aComponents = Sv_Split sEncodedTreatmentOption, "###"
+	short iComponentCount = Ar_Size aComponents
+
+	if iComponentCount < 4
+		PrintC "Could not decode treatment option from string '%z'." sEncodedTreatmentOption
+		let aComponents := Ar_Null
+		SetFunctionValue Ar_Null
+		return
+	endif
+
+	; Items
+
+	array_var aTreatmentItems = Ar_Construct "array"
+	short iComponent = 3
+
+	while iComponent < iComponentCount
+		string_var sTreatmentItem = aComponents[iComponent]
+		ref rTreatmentItem = StringToRef ($sTreatmentItem)
+
+		if eval !(IsFormValid rTreatmentItem)
+			PrintC "Could not decode treatment option from string '%z', invalid decoded form from '%z'." sEncodedTreatmentOption sTreatmentItem
+			Sv_Destruct sTreatmentItem
+			let aTreatmentItems := Ar_Null
+			let aComponents := Ar_Null
+			SetFunctionValue Ar_Null
+			return
+		endif
+
+		Ar_Append aTreatmentItems, rTreatmentItem
+		Sv_Destruct sTreatmentItem
+		let iComponent += 1
+	loop
+
+	; Treatment Option
+
+	array_var aTreatmentOption = Ar_Construct "stringmap"
+	float fRestoreFactor = #(aComponents[0])
+	short iRestoreMode = #(aComponents[1])
+
+	let aTreatmentOption["items"] := aTreatmentItems
+	let aTreatmentOption["restoreFactor"] := fRestoreFactor
+	let aTreatmentOption["restoreMode"] := iRestoreMode
+	let aTreatmentOption["verb"] := aComponents[2]
+
+	SetFunctionValue aTreatmentOption
+
+	; Clean-Up
+
+	let aTreatmentItems := Ar_Null
+	let aTreatmentOption := Ar_Null
+	let aComponents := Ar_Null
+
+end
