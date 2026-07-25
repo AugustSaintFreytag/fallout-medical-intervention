@@ -12,3 +12,21 @@ true
 
 medical_intervention\lb_highlight_box_fail.xml::MessageMenu::MM_ButtonList
 true
+
+medical_intervention\paper_doll_head.xml::StatsMenu::stats_player_head
+true
+
+medical_intervention\paper_doll_torso.xml::StatsMenu::stats_player_torso
+true
+
+medical_intervention\paper_doll_leftarm.xml::StatsMenu::stats_player_leftarm
+true
+
+medical_intervention\paper_doll_rightarm.xml::StatsMenu::stats_player_rightarm
+true
+
+medical_intervention\paper_doll_leftleg.xml::StatsMenu::stats_player_leftleg
+true
+
+medical_intervention\paper_doll_rightleg.xml::StatsMenu::stats_player_rightleg
+true
