@@ -4,7 +4,71 @@ begin function {}
 		return
 	endif
 
+	; UDFs
+
+	ref GetConfigUDF = CompileScript "SaintsMedicalIntervention\Configuration\GetConfig.gek"
+
+	; Configuration
+
+	array_var aConfig = Call GetConfigUDF
+	short bEnableTriage = aConfig["bEnableTriage"]
+
+	; Doctor's Bag Shortcut
+
 	short bPlayerHasDoctorsBag = eval (Player.GetItemCount NVDoctorBag) > 0
 	SetUIFloatAlt "StatsMenu/GLOW_BRANCH/stats_status_container/stats_triage_button/target" (bPlayerHasDoctorsBag)
+
+	; Paper Doll
+	;
+	; Nested hit tiles inherit the exact geometry of each rendered body part.
+	; Disable native targets while field treatment is enabled so their
+	; hard-coded actions cannot run.
+
+	float fHeadHealth = GetUIFloatAlt "StatsMenu/GLOW_BRANCH/stats_status_container/stats_player_head/stats_player_head_pct/stats_player_head_pct_meter/_Value"
+	float fTorsoHealth = GetUIFloatAlt "StatsMenu/GLOW_BRANCH/stats_status_container/stats_player_head/stats_player_torso_pct/stats_player_torso_pct_meter/_Value"
+	float fLeftArmHealth = GetUIFloatAlt "StatsMenu/GLOW_BRANCH/stats_status_container/stats_player_head/stats_player_leftarm_pct/stats_player_leftarm_pct_meter/_Value"
+	float fRightArmHealth = GetUIFloatAlt "StatsMenu/GLOW_BRANCH/stats_status_container/stats_player_head/stats_player_rightarm_pct/stats_player_rightarm_pct_meter/_Value"
+	float fLeftLegHealth = GetUIFloatAlt "StatsMenu/GLOW_BRANCH/stats_status_container/stats_player_head/stats_player_leftleg_pct/stats_player_leftleg_pct_meter/_Value"
+	float fRightLegHealth = GetUIFloatAlt "StatsMenu/GLOW_BRANCH/stats_status_container/stats_player_head/stats_player_rightleg_pct/stats_player_rightleg_pct_meter/_Value"
+
+	short bHeadIsDamaged = eval fHeadHealth < 1
+	short bTorsoIsDamaged = eval fTorsoHealth < 1
+	short bLeftArmIsDamaged = eval fLeftArmHealth < 1
+	short bRightArmIsDamaged = eval fRightArmHealth < 1
+	short bLeftLegIsDamaged = eval fLeftLegHealth < 1
+	short bRightLegIsDamaged = eval fRightLegHealth < 1
+
+	string_var sHeadPath = "StatsMenu/GLOW_BRANCH/stats_status_container/stats_player_head"
+	string_var sTorsoPath = "StatsMenu/GLOW_BRANCH/stats_status_container/stats_player_head/stats_player_torso"
+	string_var sLeftArmPath = "StatsMenu/GLOW_BRANCH/stats_status_container/stats_player_head/stats_player_torso/stats_player_leftarm"
+	string_var sRightArmPath = "StatsMenu/GLOW_BRANCH/stats_status_container/stats_player_head/stats_player_torso/stats_player_rightarm"
+	string_var sLeftLegPath = "StatsMenu/GLOW_BRANCH/stats_status_container/stats_player_head/stats_player_torso/stats_player_leftleg"
+	string_var sRightLegPath = "StatsMenu/GLOW_BRANCH/stats_status_container/stats_player_head/stats_player_torso/stats_player_rightleg"
+
+	SetUIFloatAlt (sHeadPath + "/target") (eval !bEnableTriage && bHeadIsDamaged)
+	SetUIFloatAlt (sTorsoPath + "/target") (eval !bEnableTriage && bTorsoIsDamaged)
+	SetUIFloatAlt (sLeftArmPath + "/target") (eval !bEnableTriage && bLeftArmIsDamaged)
+	SetUIFloatAlt (sRightArmPath + "/target") (eval !bEnableTriage && bRightArmIsDamaged)
+	SetUIFloatAlt (sLeftLegPath + "/target") (eval !bEnableTriage && bLeftLegIsDamaged)
+	SetUIFloatAlt (sRightLegPath + "/target") (eval !bEnableTriage && bRightLegIsDamaged)
+
+	SetUIFloatAlt (sHeadPath + "/smi_pulse/_enabled") bEnableTriage
+	SetUIFloatAlt (sTorsoPath + "/smi_pulse/_enabled") bEnableTriage
+	SetUIFloatAlt (sLeftArmPath + "/smi_pulse/_enabled") bEnableTriage
+	SetUIFloatAlt (sRightArmPath + "/smi_pulse/_enabled") bEnableTriage
+	SetUIFloatAlt (sLeftLegPath + "/smi_pulse/_enabled") bEnableTriage
+	SetUIFloatAlt (sRightLegPath + "/smi_pulse/_enabled") bEnableTriage
+
+	SetUIFloatAlt (sHeadPath + "/smi_head_hit/_enabled") bEnableTriage
+	SetUIFloatAlt (sTorsoPath + "/smi_torso_hit/_enabled") bEnableTriage
+	SetUIFloatAlt (sLeftArmPath + "/smi_leftarm_hit/_enabled") bEnableTriage
+	SetUIFloatAlt (sRightArmPath + "/smi_rightarm_hit/_enabled") bEnableTriage
+	SetUIFloatAlt (sLeftLegPath + "/smi_leftleg_hit/_enabled") bEnableTriage
+	SetUIFloatAlt (sRightLegPath + "/smi_rightleg_hit/_enabled") bEnableTriage
+
+	; Clean-Up
+
+	Sv_Destruct sHeadPath, sTorsoPath, sLeftArmPath, sRightArmPath, sLeftLegPath, sRightLegPath
+	let aConfig := Ar_Null
 
 end

@@ -1,0 +1,56 @@
+begin function {}
+
+	if eval !(MenuMode 1003)
+		return
+	endif
+
+	string_var sHeadPath = "StatsMenu/GLOW_BRANCH/stats_status_container/stats_player_head"
+	string_var sTorsoPath = "StatsMenu/GLOW_BRANCH/stats_status_container/stats_player_head/stats_player_torso"
+	string_var sLeftArmPath = "StatsMenu/GLOW_BRANCH/stats_status_container/stats_player_head/stats_player_torso/stats_player_leftarm"
+	string_var sRightArmPath = "StatsMenu/GLOW_BRANCH/stats_status_container/stats_player_head/stats_player_torso/stats_player_rightarm"
+	string_var sLeftLegPath = "StatsMenu/GLOW_BRANCH/stats_status_container/stats_player_head/stats_player_torso/stats_player_leftleg"
+	string_var sRightLegPath = "StatsMenu/GLOW_BRANCH/stats_status_container/stats_player_head/stats_player_torso/stats_player_rightleg"
+
+	; The pulse layer is also the cached feature-enable state.
+
+	if eval (GetUIFloatAlt (sHeadPath + "/smi_pulse/_enabled")) != 1
+		Sv_Destruct sHeadPath, sTorsoPath, sLeftArmPath, sRightArmPath, sLeftLegPath, sRightLegPath
+		return
+	endif
+
+	string_var sHeadMeterPath = sHeadPath + "/stats_player_head_pct/stats_player_head_pct_meter/_Value"
+	string_var sTorsoMeterPath = sHeadPath + "/stats_player_torso_pct/stats_player_torso_pct_meter/_Value"
+	string_var sLeftArmMeterPath = sHeadPath + "/stats_player_leftarm_pct/stats_player_leftarm_pct_meter/_Value"
+	string_var sRightArmMeterPath = sHeadPath + "/stats_player_rightarm_pct/stats_player_rightarm_pct_meter/_Value"
+	string_var sLeftLegMeterPath = sHeadPath + "/stats_player_leftleg_pct/stats_player_leftleg_pct_meter/_Value"
+	string_var sRightLegMeterPath = sHeadPath + "/stats_player_rightleg_pct/stats_player_rightleg_pct_meter/_Value"
+
+	short bHoverHead = eval (GetUIFloatAlt (sHeadPath + "/smi_head_hit/mouseover")) == 1 && (GetUIFloatAlt (sHeadMeterPath)) < 1
+	short bHoverTorso = eval (GetUIFloatAlt (sTorsoPath + "/smi_torso_hit/mouseover")) == 1 && (GetUIFloatAlt (sTorsoMeterPath)) < 1
+	short bHoverLeftArm = eval (GetUIFloatAlt (sLeftArmPath + "/smi_leftarm_hit/mouseover")) == 1 && (GetUIFloatAlt (sLeftArmMeterPath)) < 1
+	short bHoverRightArm = eval (GetUIFloatAlt (sRightArmPath + "/smi_rightarm_hit/mouseover")) == 1 && (GetUIFloatAlt (sRightArmMeterPath)) < 1
+	short bHoverLeftLeg = eval (GetUIFloatAlt (sLeftLegPath + "/smi_leftleg_hit/mouseover")) == 1 && (GetUIFloatAlt (sLeftLegMeterPath)) < 1
+	short bHoverRightLeg = eval (GetUIFloatAlt (sRightLegPath + "/smi_rightleg_hit/mouseover")) == 1 && (GetUIFloatAlt (sRightLegMeterPath)) < 1
+
+	float fBlinkPhase = Player.AuxTimerTimeElapsed "*SMI_StatsBodyPartPulse"
+
+	if fBlinkPhase < 0
+		let fBlinkPhase := 0
+	endif
+
+	short iPulseMinAlpha = 50
+	short iPulseMaxAlpha = 255
+	float fPulseT = (Sin ((fBlinkPhase * 180) + 90) + 1) / 2
+	float fPulseAlpha = iPulseMinAlpha + ((iPulseMaxAlpha - iPulseMinAlpha) * fPulseT)
+
+	SetUIFloatAlt (sHeadPath + "/smi_pulse/alpha") (bHoverHead * fPulseAlpha)
+	SetUIFloatAlt (sTorsoPath + "/smi_pulse/alpha") (bHoverTorso * fPulseAlpha)
+	SetUIFloatAlt (sLeftArmPath + "/smi_pulse/alpha") (bHoverLeftArm * fPulseAlpha)
+	SetUIFloatAlt (sRightArmPath + "/smi_pulse/alpha") (bHoverRightArm * fPulseAlpha)
+	SetUIFloatAlt (sLeftLegPath + "/smi_pulse/alpha") (bHoverLeftLeg * fPulseAlpha)
+	SetUIFloatAlt (sRightLegPath + "/smi_pulse/alpha") (bHoverRightLeg * fPulseAlpha)
+
+	Sv_Destruct sHeadPath, sTorsoPath, sLeftArmPath, sRightArmPath, sLeftLegPath, sRightLegPath
+	Sv_Destruct sHeadMeterPath, sTorsoMeterPath, sLeftArmMeterPath, sRightArmMeterPath, sLeftLegMeterPath, sRightLegMeterPath
+
+end
