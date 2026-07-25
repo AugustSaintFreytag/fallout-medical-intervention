@@ -9,15 +9,15 @@ begin function { string_var sKey, short iBodyPartHealth }
 
 	; Main
 
-	array_var aTreatmentOptions = (Ar_Construct "array")
-	array_var aTreatmentOption = (Ar_Construct "stringmap")
+	array_var aTreatmentOptions = Ar_Construct "array"
+	array_var aTreatmentOption = Ar_Construct "stringmap"
 	array_var aTreatmentItems
 
 	if eval sKey == "all" || iBodyPartHealth == 0
 		; Field Surgery
-		array_var aConfig = (Call GetConfigUDF)
+		array_var aConfig = Call GetConfigUDF
 
-		let aTreatmentItems := (Call GetTreatmentItemsForKindUDF sKey)
+		let aTreatmentItems := Call GetTreatmentItemsForKindUDF sKey
 		let aTreatmentOption["items"] := aTreatmentItems
 		let aTreatmentOption["restoreFactor"] := aConfig["fMaxRestoreFactor"]
 		let aTreatmentOption["restoreMode"] := 0
@@ -27,18 +27,18 @@ begin function { string_var sKey, short iBodyPartHealth }
 		let aConfig := Ar_Null
 	else
 		; Stimpak Option
-		ref rPreferredStimpak = (Call GetPreferredStimpakUDF)
+		ref rPreferredStimpak = Call GetPreferredStimpakUDF
 
-		let aTreatmentItems := (Ar_List rPreferredStimpak)
+		let aTreatmentItems := Ar_List rPreferredStimpak
 		let aTreatmentOption["items"] := aTreatmentItems
-		let aTreatmentOption["restoreFactor"] := (Call GetStimpakRestoreFactorUDF rPreferredStimpak)
+		let aTreatmentOption["restoreFactor"] := Call GetStimpakRestoreFactorUDF rPreferredStimpak
 		let aTreatmentOption["restoreMode"] := 1
 		let aTreatmentOption["verb"] := "Inject"
 		Ar_Append aTreatmentOptions, aTreatmentOption
 
 		; Supplies Option
-		let aTreatmentOption := (Ar_Construct "stringmap")
-		let aTreatmentItems := (Ar_List SurgicalTubing)
+		let aTreatmentOption := Ar_Construct "stringmap"
+		let aTreatmentItems := Ar_List SurgicalTubing
 		let aTreatmentOption["items"] := aTreatmentItems
 		let aTreatmentOption["restoreFactor"] := 0.2
 		let aTreatmentOption["restoreMode"] := 1

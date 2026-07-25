@@ -15,50 +15,59 @@ begin function { short iOption }
 	ref OnTreatmentPerformUDF = CompileScript "SaintsMedicalIntervention\Activation\OnTreatmentPerform.gek"
 	ref OnTreatmentCompleteUDF = CompileScript "SaintsMedicalIntervention\Activation\OnTreatmentComplete.gek"
 
-	; Routing
+	; Options
 
-	array_var aTreatmentOptions = (Player.AuxiliaryVariableGetAsArray "*SMI_TreatmentDialogOptions")
-	short iOptionCount = (Ar_Size aTreatmentOptions)
+	array_var aTreatmentOptions = Player.AuxStringMapArrayGetAsArray "*SMI_TreatmentDialogOptions"
+	short iNumTreatmentOptions = Ar_Size aTreatmentOptions
 
-	if iOptionCount <= 0
+	; Pre-Check (Selection)
+
+	if iNumTreatmentOptions <= 0
 		Call ClearTreatmentMenuStateUDF 0
 		let aTreatmentOptions := Ar_Null
 		return
 	endif
 
-	if iOption == iOptionCount + 1
+	if iOption == (iNumTreatmentOptions + 1)
 		; Cancel
 		Call ClearTreatmentMenuStateUDF 0
 		let aTreatmentOptions := Ar_Null
 		return
 	endif
 
-	if iOption == iOptionCount
+	if iOption == iNumTreatmentOptions
 		; Return to Diagnosis
 		Call ClearTreatmentMenuStateUDF 0
 		CloseActiveMenu
 		Call OpenTriageMenuUDF
+		
 		let aTreatmentOptions := Ar_Null
 		return
 	endif
 
-	if eval iOption < 0 || iOption >= iOptionCount
+	if eval iOption < 0 || iOption >= iNumTreatmentOptions
 		Call ClearTreatmentMenuStateUDF 0
 		let aTreatmentOptions := Ar_Null
+
 		return
 	endif
 
+	; Pre-Check (Treatment)
+
 	string_var sKey = (Player.AuxiliaryVariableGetString "*SMI_TreatmentDialogBodyPartKey")
+
 	array_var aTreatmentOption = aTreatmentOptions[iOption]
 	array_var aTreatmentItems = aTreatmentOption["items"]
 
 	if eval !sKey || (Ar_Size aTreatmentOption) == 0 || (Ar_Size aTreatmentItems) == 0
 		MessageExAlt 2 "Interface\Icons\Message Icons\glow_message_vaultboy_thinking.dds|The selected treatment is no longer available."
 		Call ClearTreatmentMenuStateUDF 0
+		
 		Sv_Destruct sKey
 		let aTreatmentOptions := Ar_Null
 		let aTreatmentOption := Ar_Null
 		let aTreatmentItems := Ar_Null
+		
 		return
 	endif
 
@@ -68,18 +77,21 @@ begin function { short iOption }
 	if eval fRestoreFactor < 0 || fRestoreFactor > 1 || (iRestoreMode != 0 && iRestoreMode != 1) || (iRestoreMode == 1 && fRestoreFactor == 0)
 		MessageExAlt 2 "Interface\Icons\Message Icons\glow_message_vaultboy_thinking.dds|The selected treatment is no longer available."
 		Call ClearTreatmentMenuStateUDF 0
+		
 		Sv_Destruct sKey
 		let aTreatmentOptions := Ar_Null
 		let aTreatmentOption := Ar_Null
 		let aTreatmentItems := Ar_Null
+		
 		return
 	endif
 
-	short bHasRequiredItems = (Call HasRequiredTreatmentItemsUDF aTreatmentItems)
+	short bHasRequiredItems = Call HasRequiredTreatmentItemsUDF aTreatmentItems
 
 	if eval !bHasRequiredItems
 		Call ClearTreatmentMenuStateUDF 1
 		CloseActiveMenu
+
 		Call OpenTreatmentMenuUDF sKey
 		MessageExAlt 2 "Interface\Icons\Message Icons\glow_message_vaultboy_sad.dds|You do not have all of the items required for this treatment."
 
@@ -90,11 +102,15 @@ begin function { short iOption }
 		return
 	endif
 
-	string_var sTreatmentItemNames = (Call GetNameListUDF aTreatmentItems)
-	string_var sPartDescription = (Sv_ToLower (Call GetBodyPartDescriptionUDF sKey))
-	array_var aPlayerBodyHealthMap = (Call GetPlayerBodyHealthMapUDF)
+	; Treatment
+
+	string_var sTreatmentItemNames = Call GetNameListUDF aTreatmentItems
+	string_var sPartDescription = Sv_ToLower (Call GetBodyPartDescriptionUDF sKey)
+	
+	array_var aPlayerBodyHealthMap = Call GetPlayerBodyHealthMapUDF
 	short iBodyPartHealth = aPlayerBodyHealthMap[$sKey]
-	string_var sPartHealthDescription = (Sv_ToLower (Call GetBodyPartHealthDescriptionUDF sKey iBodyPartHealth))
+	
+	string_var sPartHealthDescription = Sv_ToLower (Call GetBodyPartHealthDescriptionUDF sKey iBodyPartHealth)
 
 	; PrintC "Confirmed treatment for limb '%z' with items %z." sKey sTreatmentItemNames
 
@@ -108,19 +124,22 @@ begin function { short iOption }
 	; Persist Completion Message
 
 	string_var sCompleteMessage = (Sv_Construct "interface\icons\pipboyimages\itsmejesushchrist\message icons\glow_doctor.dds|You've used %z to treat your %z %z." sTreatmentItemNames sPartHealthDescription sPartDescription)
+	
 	Player.AuxiliaryVariableSetString "*SMI_TreatmentCompleteMessage" ($sCompleteMessage)
-	Player.AuxiliaryVariableSetFloat "*SMI_TreatmentRestoreFactor" fRestoreFactor
-	Player.AuxiliaryVariableSetFloat "*SMI_TreatmentRestoreMode" iRestoreMode
+	Player.AuxiliaryVariableSetFloat "*SMI_TreatmentRestoreFactor" (fRestoreFactor)
+	Player.AuxiliaryVariableSetFloat "*SMI_TreatmentRestoreMode" (iRestoreMode)
 
 	; Perform Treatment
 
 	Call ClearTreatmentMenuStateUDF 1
+
 	Call PlayTreatmentSoundUDF
 	Call PlayTreatmentAnimationUDF OnTreatmentPerformUDF OnTreatmentCompleteUDF
 
 	; Clean-Up
 
 	Sv_Destruct sKey, sTreatmentItemNames, sPartDescription, sPartHealthDescription, sCompleteMessage
+
 	let aTreatmentOptions := Ar_Null
 	let aTreatmentOption := Ar_Null
 	let aTreatmentItems := Ar_Null
