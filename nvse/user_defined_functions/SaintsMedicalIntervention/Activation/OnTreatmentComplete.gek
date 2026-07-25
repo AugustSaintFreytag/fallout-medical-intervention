@@ -1,10 +1,22 @@
 begin function {}
 
+	; UDFs
+
+	ref UpdateStatsMenuUDF = CompileScript "SaintsMedicalIntervention\Interface\UpdateStatsMenu.gek"
+
+	; Message
+
 	string_var sMessage = Player.AuxiliaryVariableGetString "*SMI_TreatmentCompleteMessage"
 
 	if eval sMessage
 		MessageExAlt 4 "%z" sMessage
 	endif
+
+	; UI
+
+	Call UpdateStatsMenuUDF
+
+	; Clean-Up
 
 	Player.AuxiliaryVariableErase "*SMI_TreatmentCompleteMessage"
 	Sv_Destruct sMessage

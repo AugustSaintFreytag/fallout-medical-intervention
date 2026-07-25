@@ -1,6 +1,7 @@
 ; UDFs
 
 ref OnMessageMenuOpenUDF = CompileScript "SaintsMedicalIntervention\Events\OnMessageMenuOpen.gek"
+ref OnStatsMenuOpenUDF = CompileScript "SaintsMedicalIntervention\Events\OnStatsMenuOpen.gek"
 ref OnMenuMouseoverUDF = CompileScript "SaintsMedicalIntervention\Events\OnMenuMouseover.gek"
 ref OnPreActivateInventoryItemUDF = CompileScript "SaintsMedicalIntervention\Events\OnPreActivateInventoryItem.gek"
 ref OnQuickSelectPreActivateInventoryItemUDF = CompileScript "SaintsMedicalIntervention\Events\OnQuickSelectPreActivateInventoryItem.gek"
@@ -9,6 +10,7 @@ ref OnStatsTriageClickUDF = CompileScript "SaintsMedicalIntervention\Events\OnSt
 ; Events
 
 SetOnMenuOpenEventHandler OnMessageMenuOpenUDF 1 1001
+SetOnMenuOpenEventHandler OnStatsMenuOpenUDF 1 1003
 SetOnMouseoverChangeEventHandler OnMenuMouseoverUDF 1 1001
 
 SetEventHandlerAlt "ShowOff:OnPreActivateInventoryItem" OnPreActivateInventoryItemUDF
