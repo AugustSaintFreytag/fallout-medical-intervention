@@ -2,7 +2,6 @@ begin function { string_var sKey }
 
 	; UDFs
 
-	ref GetConfigUDF = CompileScript "SaintsMedicalIntervention\Configuration\GetConfig.gek"
 	ref OpenTriageMenuUDF = CompileScript "SaintsMedicalIntervention\Activation\OpenTriageMenu.gek"
 	ref OpenTreatmentMenuUDF = CompileScript "SaintsMedicalIntervention\Activation\OpenTreatmentMenu.gek"
 	ref GetTreatmentSkillLevelUDF = CompileScript "SaintsMedicalIntervention\Treatment\GetTreatmentSkillLevel.gek"
@@ -18,8 +17,6 @@ begin function { string_var sKey }
 		return
 	endif
 
-	array_var aConfig = Call GetConfigUDF
-
 	; Preconditions
 
 	short bFromOverview = MenuMode 1001
@@ -32,7 +29,6 @@ begin function { string_var sKey }
 		endif
 
 		MessageExAlt 2 "Interface\Icons\Message Icons\glow_message_vaultboy_sad.dds|You need a Doctor's Bag to perform field treatment."
-		let aConfig := Ar_Null
 		return
 	endif
 
@@ -54,7 +50,6 @@ begin function { string_var sKey }
 
 		Sv_Destruct sPartConcernDescription
 		let aPlayerBodyHealthMap := Ar_Null
-		let aConfig := Ar_Null
 		return
 	endif
 
@@ -71,6 +66,5 @@ begin function { string_var sKey }
 	; Clean-Up
 
 	let aPlayerBodyHealthMap := Ar_Null
-	let aConfig := Ar_Null
 
 end

@@ -12,11 +12,6 @@ begin function { ref rInvRef }
 
 	array_var aConfig = Call GetConfigUDF
 
-	if eval !aConfig["bEnableTriage"]
-		let aConfig := Ar_Null
-		return
-	endif
-
 	short bShowOnlyCrippledBodyParts = aConfig["bShowOnlyCrippledBodyParts"]
 	short iShowBodyPartHealth = aConfig["iShowBodyPartHealth"]
 	short bShowBodyPartHealthEmphasis = aConfig["bShowBodyPartHealthEmphasis"]
