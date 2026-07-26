@@ -1,7 +1,5 @@
 begin function { short iMenuId, short iTileId, string_var sTileName }
 
-	PrintC "Received click on '%z'." sTileName
-
 	; UDFs
 
 	ref GetConfigUDF = CompileScript "SaintsMedicalIntervention\Configuration\GetConfig.gek"
