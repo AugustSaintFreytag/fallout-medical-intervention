@@ -1,0 +1,14 @@
+begin function { short iCurrentSkill, short iRequiredSkill, short iShowSkillRequirements }
+
+	string_var sDescription = ""
+
+	if iShowSkillRequirements == 2
+		let sDescription := Sv_Construct "[Medicine %g/%g]" iCurrentSkill iRequiredSkill
+	elseif iShowSkillRequirements == 1
+		let sDescription := Sv_Construct "[Medicine %g]" iRequiredSkill
+	endif
+
+	SetFunctionValue sDescription
+	Sv_Destruct sDescription
+
+end

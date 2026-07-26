@@ -4,7 +4,7 @@ begin function { short iOption }
 
 	ref ClearTreatmentMenuStateUDF = CompileScript "SaintsMedicalIntervention\Treatment\ClearTreatmentMenuState.gek"
 	ref OpenTriageMenuUDF = CompileScript "SaintsMedicalIntervention\Activation\OpenTriageMenu.gek"
-	ref OpenTreatmentMenuUDF = CompileScript "SaintsMedicalIntervention\Treatment\OpenTreatmentMenu.gek"
+	ref OpenTreatmentMenuUDF = CompileScript "SaintsMedicalIntervention\Activation\OpenTreatmentMenu.gek"
 	ref GetBodyPartDescriptionUDF = CompileScript "SaintsMedicalIntervention\Status\GetBodyPartDescription.gek"
 	ref GetBodyPartHealthDescriptionUDF = CompileScript "SaintsMedicalIntervention\Status\GetBodyPartHealthDescription.gek"
 	ref GetPlayerBodyHealthMapUDF = CompileScript "SaintsMedicalIntervention\Status\GetPlayerBodyHealthMap.gek"

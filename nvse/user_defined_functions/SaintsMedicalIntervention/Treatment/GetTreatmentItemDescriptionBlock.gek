@@ -1,4 +1,4 @@
-begin function { ref rItem, short iShowItemRequirements }
+begin function { ref rItem, short iShowItemNumRequirements }
 
 	; Main
 
@@ -6,13 +6,14 @@ begin function { ref rItem, short iShowItemRequirements }
 	short iNumPlayerItems = Player.GetItemCount rItem
 
 	string_var sDescription = ""
-	
-	if eval (iShowItemRequirements == 0 || (iShowItemRequirements == 1 && iNumPlayerItems >= iNumRequiredItems))
+
+	if eval (iShowItemNumRequirements == 0 || (iShowItemNumRequirements == 1 && iNumPlayerItems >= iNumRequiredItems))
 		let sDescription := Sv_Construct "[%z]" (GetName rItem)
 	else
 		let sDescription := Sv_Construct "[%z %g/%g]" (GetName rItem) iNumPlayerItems iNumRequiredItems
 	endif
 
 	SetFunctionValue sDescription
+	Sv_Destruct sDescription
 
 end

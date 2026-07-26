@@ -1,0 +1,106 @@
+begin function { string_var sKey }
+
+	; UDFs
+
+	ref GetPlayerBodyHealthMapUDF = CompileScript "SaintsMedicalIntervention\Status\GetPlayerBodyHealthMap.gek"
+	ref GetTreatmentSkillLevelUDF = CompileScript "SaintsMedicalIntervention\Treatment\GetTreatmentSkillLevel.gek"
+	ref GetTreatmentOptionsUDF = CompileScript "SaintsMedicalIntervention\Treatment\GetTreatmentOptions.gek"
+	ref HasRequiredTreatmentItemsUDF = CompileScript "SaintsMedicalIntervention\Treatment\HasRequiredTreatmentItems.gek"
+
+	; Result
+
+	array_var aPreview = Ar_Construct "stringmap"
+
+	; TODO: Allow `text` to be empty and preview box to not show in XML when empty.
+
+	; Triage Item
+
+	if eval (Player.GetItemCount NVDoctorBag) <= 0
+		let aPreview["text"] := "Need Doctor's Bag"
+		let aPreview["possible"] := 0
+
+		SetFunctionValue aPreview
+
+		let aPreview := Ar_Null
+		return
+	endif
+
+	; Requirements
+	
+	array_var aPlayerBodyHealthMap = Call GetPlayerBodyHealthMapUDF
+	
+	short iBodyPartHealth = aPlayerBodyHealthMap[$sKey]
+	short bBodyPartIsMinor = eval sKey != "all" && iBodyPartHealth > 0
+	short iCurrentSkill = Player.GetActorValue Medicine
+	short iRequiredSkill = Call GetTreatmentSkillLevelUDF sKey bBodyPartIsMinor
+
+	; Skill
+
+	if iCurrentSkill < iRequiredSkill
+		let aPreview["text"] := (Sv_Construct "Need Medicine %g+" iRequiredSkill)
+		let aPreview["possible"] := 0
+
+		SetFunctionValue aPreview
+
+		let aPreview := Ar_Null
+		let aPlayerBodyHealthMap := Ar_Null
+		return
+	endif
+
+	; Treatment Option List
+	
+	array_var aTreatmentOptions = Call GetTreatmentOptionsUDF sKey iBodyPartHealth
+	short iTreatmentOptionIndex = 0 ; Can later be derived from aux var state, cycled by wheel input.
+
+	if eval (Ar_Size aTreatmentOptions) <= 0
+		; Unusual edge case but worth checking.
+		let aPreview["text"] := "No Options"
+		let aPreview["possible"] := 0
+
+		SetFunctionValue aPreview
+
+		let aPreview := Ar_Null
+		let aPlayerBodyHealthMap := Ar_Null
+		let aTreatmentOptions := Ar_Null
+		return
+	endif
+
+	; Treatment Option
+
+	array_var aTreatmentOption = aTreatmentOptions[iTreatmentOptionIndex]
+	array_var aTreatmentItems = aTreatmentOption["items"]
+	
+	short bHasTreatmentItems = Call HasRequiredTreatmentItems aTreatmentItems
+
+	array_var aItemNames = Ar_Construct "array"
+
+	foreach array_var aElement <- aTreatmentItems
+		Ar_Append aItemNames, (GetName (*aElement))
+	loop
+
+	string_var sItemNames = Sv_Join aItemNames, ", "
+
+	if eval !(bHasTreatmentItems)
+		let aPreview["text"] := (Sv_Construct "Need %z" sItemNames)
+		let aPreview["possible"] := 0
+	else
+		let aPreview["text"] := (Sv_Construct "Apply %z" sItemNames)
+		let aPreview["possible"] := 1
+	endif
+
+	; Return
+
+	SetFunctionValue aPreview
+
+	; Clean-Up
+
+	Sv_Destruct sItemNames
+
+	let aPreview := Ar_Null
+	let aPlayerBodyHealthMap := Ar_Null
+	let aTreatmentOptions := Ar_Null
+	let aTreatmentOption := Ar_Null
+	let aTreatmentItems := Ar_Null
+	let aItemNames := Ar_Null
+
+end

@@ -21,7 +21,7 @@ begin function { string_var sKey }
 	Call ClearTreatmentMenuStateUDF 0
 
 	array_var aConfig = (Call GetConfigUDF)
-	short iShowItemRequirements = aConfig["iShowItemRequirements"]
+	short iShowItemNumRequirements = aConfig["iShowItemNumRequirements"]
 	short iCurrentSkill = (Player.GetActorValue Medicine)
 
 	array_var aPlayerBodyHealthMap = (Call GetPlayerBodyHealthMapUDF)
@@ -66,7 +66,7 @@ begin function { string_var sKey }
 
 		foreach array_var aElement <- aTreatmentItems
 			ref rItem = *aElement
-			string_var sItemDescriptionBlock = Call GetTreatmentItemDescriptionBlockUDF rItem iShowItemRequirements
+			string_var sItemDescriptionBlock = Call GetTreatmentItemDescriptionBlockUDF rItem iShowItemNumRequirements
 
 			Ar_Append aItemBlockDescriptions, sItemDescriptionBlock
 			Sv_Destruct sItemDescriptionBlock
@@ -96,11 +96,11 @@ begin function { string_var sKey }
 
 	string_var sMenuTitle = "Field Treatment"
 	string_var sBodyPartDescriptionLower = Sv_ToLower sBodyPartDescription
-	string_var sMenuIntroPart = (Sv_Construct "The diagnosis for your %z is: %z (%g%%)." sBodyPartDescriptionLower sBodyPartHealthDescription iBodyPartHealth)
-	string_var sMenuIntroSkill = (Sv_Construct "%rYour expertise in treating %z is: %z." sBodyPartConcernDescription sSkillDescription)
+	string_var sMenuIntroPart = (Sv_Construct "Diagnosis for your %z: %z (%g%%)." sBodyPartDescriptionLower sBodyPartHealthDescription iBodyPartHealth)
+	string_var sMenuIntroSkill = (Sv_Construct "%rExpertise in treating %z: %z." sBodyPartConcernDescription sSkillDescription)
 
 	if eval sKey == "all"
-		let sMenuIntroSkill := "%rInjuries and crippled limbs will be restored based on your skill."
+		let sMenuIntroSkill := "%rInjuries and crippled limbs will be restored based on skill."
 	endif
 
 	string_var sMenuButtons = (Sv_Join aMenuButtons, "|")
