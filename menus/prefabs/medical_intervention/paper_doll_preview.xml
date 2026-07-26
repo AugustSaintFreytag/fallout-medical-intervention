@@ -68,6 +68,7 @@
 				<copy src="globals" trait="_VUI+FontY_"/>
 				<mul>0.75</mul>
 			</add>
+			<sub>1</sub>
 		</y>
 		<wrapwidth>
 			<copy src="parent" trait="width"/>
