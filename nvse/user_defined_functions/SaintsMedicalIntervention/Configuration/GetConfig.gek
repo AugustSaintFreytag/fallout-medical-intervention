@@ -19,6 +19,8 @@ begin function {}
 	let aConfig["iShowItemNumRequirements"] := Clamp (GetINIFloat_Cached "TreatmentMenu:iShowItemNumRequirements" "SaintsMedicalIntervention.ini" 0) 0 2
 
 	let aConfig["fMaxRestoreFactor"] := Clamp (GetINIFloat_Cached "Treatment:fMaxRestoreFactor" "SaintsMedicalIntervention.ini" 0.85) 0 1
+	let aConfig["bShowAnimationForMajorTreatment"] := eval GetINIFloat_Cached "Treatment:bShowAnimationForMajorTreatment" "SaintsMedicalIntervention.ini" 1
+	let aConfig["bShowAnimationForMinorTreatment"] := eval GetINIFloat_Cached "Treatment:bShowAnimationForMinorTreatment" "SaintsMedicalIntervention.ini" 0
 
 	SetFunctionValue aConfig
 
