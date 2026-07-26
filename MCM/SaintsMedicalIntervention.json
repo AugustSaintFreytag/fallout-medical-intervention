@@ -17,30 +17,65 @@
             "enable": 1,
             "options": {
                 "1": {
-                    "title": "General",
+                    "title": "Pip-Boy",
                     "enable": 1,
                     "type": 0
                 },
                 "2": {
-                    "title": "Enable Field Treatment",
+                    "title": "Paper-Doll Treatment",
                     "enable": 1,
-                    "type": 5,
-                    "mouse": "Route Doctor's Bag use and the Stats shortcut into field treatment.",
-                    "vars": [{ "configINI": "General:bEnableTriage", "default": 1 }]
+                    "type": 1,
+                    "mouse": "Choose what happens when a damaged body part is selected on the Pip-Boy Stats screen.",
+                    "strings": [
+                        "Disabled",
+                        "Vanilla Doctor's Bag",
+                        "Open treatment menu",
+                        "Quick treatment"
+                    ],
+                    "vars": [{ "configINI": "PipBoy:iPipBoyPaperDollTreatment", "default": 3 }]
                 },
                 "3": {
+                    "title": "Paper-Doll Preview",
+                    "enable": 1,
+                    "type": 5,
+                    "mouse": "Show treatment requirements and the selected quick treatment while hovering over a damaged body part.",
+                    "vars": [{ "configINI": "PipBoy:bPipBoyPaperDollTreatmentPreview", "default": 1 }]
+                },
+                "4": {
+                    "title": "Stats Doctor's Bag",
+                    "enable": 1,
+                    "type": 1,
+                    "mouse": "Choose what the Doctor's Bag shortcut on the Pip-Boy Stats screen does.",
+                    "strings": [
+                        "Vanilla use",
+                        "Open diagnosis menu"
+                    ],
+                    "vars": [{ "configINI": "PipBoy:iPipBoyDoctorsBagBehavior", "default": 1 }]
+                },
+                "5": {
+                    "title": "Inventory Doctor's Bag",
+                    "enable": 1,
+                    "type": 1,
+                    "mouse": "Choose what using a Doctor's Bag from the inventory, a hotkey, or QuickSelect does.",
+                    "strings": [
+                        "Vanilla use",
+                        "Open diagnosis menu"
+                    ],
+                    "vars": [{ "configINI": "PipBoy:iInventoryDoctorsBagBehavior", "default": 0 }]
+                },
+                "6": {
                     "title": "Diagnosis Menu",
                     "enable": 1,
                     "type": 0
                 },
-                "4": {
+                "7": {
                     "title": "Crippled Body Parts Only",
                     "enable": 1,
                     "type": 5,
                     "mouse": "Hide body parts that are not crippled from the diagnosis menu.",
                     "vars": [{ "configINI": "TriageMenu:bShowOnlyCrippledBodyParts", "default": 0 }]
                 },
-                "5": {
+                "8": {
                     "title": "Body-Part Condition",
                     "enable": 1,
                     "type": 1,
@@ -53,14 +88,14 @@
                     ],
                     "vars": [{ "configINI": "TriageMenu:iShowBodyPartHealth", "default": 2 }]
                 },
-                "6": {
+                "9": {
                     "title": "Emphasize Crippled Parts",
                     "enable": 1,
                     "type": 5,
                     "mouse": "Emphasize the condition text for crippled body parts.",
                     "vars": [{ "configINI": "TriageMenu:bShowBodyPartHealthEmphasis", "default": 1 }]
                 },
-                "7": {
+                "10": {
                     "title": "Medicine Requirements",
                     "enable": 1,
                     "type": 1,
@@ -72,12 +107,12 @@
                     ],
                     "vars": [{ "configINI": "TriageMenu:iShowSkillRequirements", "default": 1 }]
                 },
-                "8": {
+                "11": {
                     "title": "Treatment Menu",
                     "enable": 1,
                     "type": 0
                 },
-                "9": {
+                "12": {
                     "title": "Item Requirements",
                     "enable": 1,
                     "type": 1,
@@ -87,19 +122,19 @@
                         "Show counts when unmet",
                         "Always show counts"
                     ],
-                    "vars": [{ "configINI": "TreatmentMenu:iShowItemRequirements", "default": 0 }]
+                    "vars": [{ "configINI": "TreatmentMenu:iShowItemNumRequirements", "default": 0 }]
                 },
-                "10": {
+                "13": {
                     "title": "Healing",
                     "enable": 1,
                     "type": 0
                 },
-                "11": {
+                "14": {
                     "title": "Maximum Restoration",
                     "enable": 1,
                     "type": 2.5,
                     "mouse": "Set the maximum fraction of limb condition restored at Medicine 100.",
-                    "vars": [{ "configINI": "Treatment:fMaxRestoreFactor", "default": 0.8 }],
+                    "vars": [{ "configINI": "Treatment:fMaxRestoreFactor", "default": 0.85 }],
                     "scale": {
                         "valueDecimal": 2,
                         "valueIncrement": 0.05,
