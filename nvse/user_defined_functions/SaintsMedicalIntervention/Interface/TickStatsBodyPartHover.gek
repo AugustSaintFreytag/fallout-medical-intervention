@@ -16,6 +16,7 @@ begin function {}
 
 	ref GetTreatmentRequirementPreviewUDF = CompileScript "SaintsMedicalIntervention\Treatment\GetTreatmentRequirementPreview.gek"
 	ref SetStatsBodyPartColorsUDF = CompileScript "SaintsMedicalIntervention\Interface\SetStatsBodyPartColors.gek"
+	ref PlayInteractionSoundUDF = CompileScript "SaintsMedicalIntervention\Treatment\PlayInteractionSound.gek"
 
 	; Paths
 
@@ -48,6 +49,7 @@ begin function {}
 	string_var sRightArmCrippledPath = sHeadPath + "/stats_player_rightarm_crippled"
 	string_var sLeftLegCrippledPath = sHeadPath + "/stats_player_leftleg_crippled"
 	string_var sRightLegCrippledPath = sHeadPath + "/stats_player_rightleg_crippled"
+	short bTreatmentPreviewEnabled = eval (GetUIFloatAlt (sHeadPath + "/smi_head_hit/_preview_enabled")) == 1
 
 	; The hit layer is also the cached feature-enable state.
 
@@ -136,6 +138,8 @@ begin function {}
 		Player.AuxTimerStop "*SMI_StatsBodyPartBrightnessPulse"
 		; MenuMode + seconds + auto-remove + auto-restart + ignore MenuMode TimeMult.
 		Player.AuxTimerStart "*SMI_StatsBodyPartBrightnessPulse" fPulseDuration 93
+
+		Call PlayInteractionSoundUDF 3
 	endif
 
 	float fPulsePhase = Player.AuxTimerTimeElapsed "*SMI_StatsBodyPartBrightnessPulse"
@@ -207,7 +211,7 @@ begin function {}
 			let aPreview := Ar_Null
 		endif
 
-		SetUIFloatAlt (sPreviewPath + "/visible") 1
+		SetUIFloatAlt (sPreviewPath + "/visible") bTreatmentPreviewEnabled
 	endif
 
 	; Clean-Up

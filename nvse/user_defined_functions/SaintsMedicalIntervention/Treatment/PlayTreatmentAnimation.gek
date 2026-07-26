@@ -13,7 +13,6 @@ begin function { ref MidCallbackUDF, ref DoneCallbackUDF }
 	; Main
 
 	CallAfter 1.0 (begin function { ref CallbackUDF }
-		SetGameHour (GameHour + 0.15)
 		Call CallbackUDF
 	end) 0 MidCallbackUDF
 

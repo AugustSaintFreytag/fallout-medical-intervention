@@ -9,7 +9,7 @@ begin function { short iMenuId, short iTileId, string_var sTileName }
 
 	array_var aConfig = Call GetConfigUDF
 
-	if eval !aConfig["bEnableTriage"]
+	if eval aConfig["iPipBoyDoctorsBagBehavior"] == 0
 		let aConfig := Ar_Null
 		Player.EquipItemAlt NVDoctorBag 0 0
 		return

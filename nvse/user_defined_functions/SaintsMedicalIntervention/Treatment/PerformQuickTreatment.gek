@@ -1,0 +1,80 @@
+begin function { string_var sKey }
+
+	; UDFs
+
+	ref GetBodyPartDescriptionUDF = CompileScript "SaintsMedicalIntervention\Status\GetBodyPartDescription.gek"
+	ref GetBodyPartConcernDescriptionUDF = CompileScript "SaintsMedicalIntervention\Status\GetBodyPartConcernDescription.gek"
+	ref GetPlayerBodyHealthMapUDF = CompileScript "SaintsMedicalIntervention\Status\GetPlayerBodyHealthMap.gek"
+	ref GetTreatmentOptionsUDF = CompileScript "SaintsMedicalIntervention\Treatment\GetTreatmentOptions.gek"
+	ref GetTreatmentSkillLevelUDF = CompileScript "SaintsMedicalIntervention\Treatment\GetTreatmentSkillLevel.gek"
+	ref PerformTreatmentOptionUDF = CompileScript "SaintsMedicalIntervention\Treatment\PerformTreatmentOption.gek"
+
+	; Validation
+
+	short bIsValidKey = eval sKey == "head" || sKey == "torso" || sKey == "leftarm" || sKey == "rightarm" || sKey == "leftleg" || sKey == "rightleg"
+
+	if eval !bIsValidKey
+		PrintC "Cannot perform quick treatment with invalid key '%z'." sKey
+		return
+	endif
+
+	if eval (Player.GetItemCount NVDoctorBag) <= 0
+		MessageExAlt 2 "Interface\Icons\Message Icons\glow_message_vaultboy_sad.dds|You need a Doctor's Bag to perform field treatment."
+		return
+	endif
+
+	string_var sBodyPartDescription = Sv_ToLower (Call GetBodyPartDescriptionUDF sKey)
+	array_var aPlayerBodyHealthMap = Call GetPlayerBodyHealthMapUDF
+	short iBodyPartHealth = aPlayerBodyHealthMap[$sKey]
+
+	if iBodyPartHealth >= 100
+		MessageExAlt 2 "Interface\Icons\Message Icons\glow_message_vaultboy_thinking.dds|Your %z does not require treatment." sBodyPartDescription
+		let aPlayerBodyHealthMap := Ar_Null
+		Sv_Destruct sBodyPartDescription
+		return
+	endif
+
+	short bBodyPartIsMinor = eval iBodyPartHealth > 0
+	short iRequiredSkill = Call GetTreatmentSkillLevelUDF sKey bBodyPartIsMinor
+	short iCurrentSkill = Player.GetActorValue Medicine
+
+	if iCurrentSkill < iRequiredSkill
+		string_var sPartConcernDescription = Call GetBodyPartConcernDescriptionUDF sKey
+		MessageExAlt 2 "Interface\Icons\Message Icons\glow_message_vaultboy_sad.dds|You cannot treat %z with your current Medicine skill (%g/%g)." sPartConcernDescription iCurrentSkill iRequiredSkill
+
+		Sv_Destruct sBodyPartDescription, sPartConcernDescription
+		let aPlayerBodyHealthMap := Ar_Null
+		return
+	endif
+
+	; The first treatment option is the selection advertised by the hover preview.
+
+	array_var aTreatmentOptions = Call GetTreatmentOptionsUDF sKey iBodyPartHealth
+
+	if eval (Ar_Size aTreatmentOptions) <= 0
+		MessageExAlt 2 "Interface\Icons\Message Icons\glow_message_vaultboy_thinking.dds|No treatment is currently available for that body part."
+
+		Sv_Destruct sBodyPartDescription, sPartConcernDescription
+		let aPlayerBodyHealthMap := Ar_Null
+		let aTreatmentOptions := Ar_Null
+		return
+	endif
+
+	array_var aTreatmentOption = aTreatmentOptions[0]
+	short iTreatmentResult = Call PerformTreatmentOptionUDF sKey aTreatmentOption
+
+	if iTreatmentResult == 0
+		MessageExAlt 2 "Interface\Icons\Message Icons\glow_message_vaultboy_thinking.dds|The selected treatment is no longer available."
+	elseif iTreatmentResult == 1
+		MessageExAlt 2 "Interface\Icons\Message Icons\glow_message_vaultboy_sad.dds|You do not have the items required to perform this treatment."
+	endif
+
+	; Clean-Up
+
+	Sv_Destruct sBodyPartDescription, sPartConcernDescription
+
+	let aPlayerBodyHealthMap := Ar_Null
+	let aTreatmentOptions := Ar_Null
+	let aTreatmentOption := Ar_Null
+
+end

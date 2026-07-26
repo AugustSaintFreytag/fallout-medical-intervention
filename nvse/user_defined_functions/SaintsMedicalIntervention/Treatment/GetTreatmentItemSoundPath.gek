@@ -1,0 +1,13 @@
+begin function { short iItemKind }
+
+	if iItemKind == 1
+		SetFunctionValue "fx\ui\triage\supplies\"
+	elseif iItemKind == 2
+		SetFunctionValue "fx\ui\triage\stimpak\"
+	elseif iItemKind == 3
+		SetFunctionValue "fx\ui\triage\brace\"
+	else
+		SetFunctionValue "fx\ui\triage\supplies\"
+	endif
+
+end
