@@ -1,6 +1,9 @@
 medical_intervention\triage_button.xml::StatsMenu::stats_status_container
 true
 
+medical_intervention\paper_doll_preview.xml::StatsMenu::stats_status_container
+true
+
 Stentorious\PipBoyUITweaks\MapMenu\ySIDataYButtonIcon.xml::@prefabs\medical_intervention\triage_button.xml::stats_triage_button
 #..\ySI\ySI.xml
 
@@ -11,4 +14,22 @@ medical_intervention\doctors_bag_button_disable.xml::StatsMenu::stats_drbag_butt
 true
 
 medical_intervention\lb_highlight_box_fail.xml::MessageMenu::MM_ButtonList
+true
+
+medical_intervention\paper_doll_head.xml::StatsMenu::stats_player_head
+true
+
+medical_intervention\paper_doll_torso.xml::StatsMenu::stats_player_torso
+true
+
+medical_intervention\paper_doll_leftarm.xml::StatsMenu::stats_player_leftarm
+true
+
+medical_intervention\paper_doll_rightarm.xml::StatsMenu::stats_player_rightarm
+true
+
+medical_intervention\paper_doll_leftleg.xml::StatsMenu::stats_player_leftleg
+true
+
+medical_intervention\paper_doll_rightleg.xml::StatsMenu::stats_player_rightleg
 true

@@ -6,6 +6,8 @@ ref OnMenuMouseoverUDF = CompileScript "SaintsMedicalIntervention\Events\OnMenuM
 ref OnPreActivateInventoryItemUDF = CompileScript "SaintsMedicalIntervention\Events\OnPreActivateInventoryItem.gek"
 ref OnQuickSelectPreActivateInventoryItemUDF = CompileScript "SaintsMedicalIntervention\Events\OnQuickSelectPreActivateInventoryItem.gek"
 ref OnStatsTriageClickUDF = CompileScript "SaintsMedicalIntervention\Events\OnStatsTriageClick.gek"
+ref OnStatsBodyPartClickUDF = CompileScript "SaintsMedicalIntervention\Events\OnStatsBodyPartClick.gek"
+ref TickStatsBodyPartHoverUDF = CompileScript "SaintsMedicalIntervention\Interface\TickStatsBodyPartHover.gek"
 
 ; Events
 
@@ -15,4 +17,12 @@ SetOnMouseoverChangeEventHandler OnMenuMouseoverUDF 1 1001
 
 SetEventHandlerAlt "ShowOff:OnPreActivateInventoryItem" OnPreActivateInventoryItemUDF
 SetEventHandlerAlt "QuickSelect:OnPreActivateInventoryItem" OnQuickSelectPreActivateInventoryItemUDF
+
 SetOnMenuClickEventHandler OnStatsTriageClickUDF 1 "StatsMenu#1059"
+SetOnMenuClickEventHandler OnStatsBodyPartClickUDF 1 "StatsMenu#1061"
+SetOnMenuClickEventHandler OnStatsBodyPartClickUDF 1 "StatsMenu#1063"
+SetOnMenuClickEventHandler OnStatsBodyPartClickUDF 1 "StatsMenu#1065"
+SetOnMenuClickEventHandler OnStatsBodyPartClickUDF 1 "StatsMenu#1067"
+SetOnMenuClickEventHandler OnStatsBodyPartClickUDF 1 "StatsMenu#1069"
+SetOnMenuClickEventHandler OnStatsBodyPartClickUDF 1 "StatsMenu#1071"
+SetGameMainLoopCallback TickStatsBodyPartHoverUDF 1 1 2

@@ -4,7 +4,127 @@ begin function {}
 		return
 	endif
 
+	; UDFs
+
+	ref GetConfigUDF = CompileScript "SaintsMedicalIntervention\Configuration\GetConfig.gek"
+	ref SetStatsBodyPartColorsUDF = CompileScript "SaintsMedicalIntervention\Interface\SetStatsBodyPartColors.gek"
+
+	; Configuration
+
+	array_var aConfig = Call GetConfigUDF
+	short bEnableTriage = aConfig["bEnableTriage"]
+
+	; Doctor's Bag Shortcut
+
 	short bPlayerHasDoctorsBag = eval (Player.GetItemCount NVDoctorBag) > 0
 	SetUIFloatAlt "StatsMenu/GLOW_BRANCH/stats_status_container/stats_triage_button/target" (bPlayerHasDoctorsBag)
+
+	; Paper Doll
+	;
+	; Nested hit tiles inherit the exact geometry of each rendered body part.
+	; Disable native targets while field treatment is enabled so their
+	; hard-coded actions cannot run.
+
+	Player.AuxiliaryVariableErase "*SMI_StatsBodyPartHoverKey"
+	Player.AuxTimerStop "*SMI_StatsBodyPartBrightnessPulse"
+
+	Call SetStatsBodyPartColorsUDF "none" 0
+	
+	SetUIFloatAlt "StatsMenu/GLOW_BRANCH/stats_status_container/smi_treatment_preview/visible" 0
+	SetUIFloatAlt "StatsMenu/GLOW_BRANCH/stats_status_container/smi_treatment_preview/_failure" 0
+
+	float fHeadHealth = GetUIFloatAlt "StatsMenu/GLOW_BRANCH/stats_status_container/stats_player_head/stats_player_head_pct/stats_player_head_pct_meter/_Value"
+	float fTorsoHealth = GetUIFloatAlt "StatsMenu/GLOW_BRANCH/stats_status_container/stats_player_head/stats_player_torso_pct/stats_player_torso_pct_meter/_Value"
+	float fLeftArmHealth = GetUIFloatAlt "StatsMenu/GLOW_BRANCH/stats_status_container/stats_player_head/stats_player_leftarm_pct/stats_player_leftarm_pct_meter/_Value"
+	float fRightArmHealth = GetUIFloatAlt "StatsMenu/GLOW_BRANCH/stats_status_container/stats_player_head/stats_player_rightarm_pct/stats_player_rightarm_pct_meter/_Value"
+	float fLeftLegHealth = GetUIFloatAlt "StatsMenu/GLOW_BRANCH/stats_status_container/stats_player_head/stats_player_leftleg_pct/stats_player_leftleg_pct_meter/_Value"
+	float fRightLegHealth = GetUIFloatAlt "StatsMenu/GLOW_BRANCH/stats_status_container/stats_player_head/stats_player_rightleg_pct/stats_player_rightleg_pct_meter/_Value"
+
+	short bHeadIsDamaged = eval fHeadHealth < 1
+	short bTorsoIsDamaged = eval fTorsoHealth < 1
+	short bLeftArmIsDamaged = eval fLeftArmHealth < 1
+	short bRightArmIsDamaged = eval fRightArmHealth < 1
+	short bLeftLegIsDamaged = eval fLeftLegHealth < 1
+	short bRightLegIsDamaged = eval fRightLegHealth < 1
+
+	string_var sHeadPath = "StatsMenu/GLOW_BRANCH/stats_status_container/stats_player_head"
+	string_var sTorsoPath = "StatsMenu/GLOW_BRANCH/stats_status_container/stats_player_head/stats_player_torso"
+	string_var sLeftArmPath = "StatsMenu/GLOW_BRANCH/stats_status_container/stats_player_head/stats_player_torso/stats_player_leftarm"
+	string_var sRightArmPath = "StatsMenu/GLOW_BRANCH/stats_status_container/stats_player_head/stats_player_torso/stats_player_rightarm"
+	string_var sLeftLegPath = "StatsMenu/GLOW_BRANCH/stats_status_container/stats_player_head/stats_player_torso/stats_player_leftleg"
+	string_var sRightLegPath = "StatsMenu/GLOW_BRANCH/stats_status_container/stats_player_head/stats_player_torso/stats_player_rightleg"
+	string_var sFacePath = sHeadPath + "/stats_player_face"
+
+	string_var sHeadMeterDecorationPath = sHeadPath + "/stats_player_head_pct"
+	string_var sTorsoMeterDecorationPath = sHeadPath + "/stats_player_torso_pct"
+	string_var sLeftArmMeterDecorationPath = sHeadPath + "/stats_player_leftarm_pct"
+	string_var sRightArmMeterDecorationPath = sHeadPath + "/stats_player_rightarm_pct"
+	string_var sLeftLegMeterDecorationPath = sHeadPath + "/stats_player_leftleg_pct"
+	string_var sRightLegMeterDecorationPath = sHeadPath + "/stats_player_rightleg_pct"
+
+	string_var sHeadMeterPath = sHeadMeterDecorationPath + "/stats_player_head_pct_meter"
+	string_var sTorsoMeterPath = sTorsoMeterDecorationPath + "/stats_player_torso_pct_meter"
+	string_var sLeftArmMeterPath = sLeftArmMeterDecorationPath + "/stats_player_leftarm_pct_meter"
+	string_var sRightArmMeterPath = sRightArmMeterDecorationPath + "/stats_player_rightarm_pct_meter"
+	string_var sLeftLegMeterPath = sLeftLegMeterDecorationPath + "/stats_player_leftleg_pct_meter"
+	string_var sRightLegMeterPath = sRightLegMeterDecorationPath + "/stats_player_rightleg_pct_meter"
+
+	string_var sHeadCrippledPath = sHeadPath + "/stats_player_head_crippled"
+	string_var sTorsoCrippledPath = sHeadPath + "/stats_player_torso_crippled"
+	string_var sLeftArmCrippledPath = sHeadPath + "/stats_player_leftarm_crippled"
+	string_var sRightArmCrippledPath = sHeadPath + "/stats_player_rightarm_crippled"
+	string_var sLeftLegCrippledPath = sHeadPath + "/stats_player_leftleg_crippled"
+	string_var sRightLegCrippledPath = sHeadPath + "/stats_player_rightleg_crippled"
+
+	SetUIFloatAlt (sHeadPath + "/target") (eval !bEnableTriage && bHeadIsDamaged)
+	SetUIFloatAlt (sTorsoPath + "/target") (eval !bEnableTriage && bTorsoIsDamaged)
+	SetUIFloatAlt (sLeftArmPath + "/target") (eval !bEnableTriage && bLeftArmIsDamaged)
+	SetUIFloatAlt (sRightArmPath + "/target") (eval !bEnableTriage && bRightArmIsDamaged)
+	SetUIFloatAlt (sLeftLegPath + "/target") (eval !bEnableTriage && bLeftLegIsDamaged)
+	SetUIFloatAlt (sRightLegPath + "/target") (eval !bEnableTriage && bRightLegIsDamaged)
+
+	SetUIFloatAlt (sHeadPath + "/brightness") 255
+	SetUIFloatAlt (sFacePath + "/brightness") 255
+	SetUIFloatAlt (sTorsoPath + "/brightness") 255
+	SetUIFloatAlt (sLeftArmPath + "/brightness") 255
+	SetUIFloatAlt (sRightArmPath + "/brightness") 255
+	SetUIFloatAlt (sLeftLegPath + "/brightness") 255
+	SetUIFloatAlt (sRightLegPath + "/brightness") 255
+
+	SetUIFloatAlt (sHeadMeterDecorationPath + "/brightness") 255
+	SetUIFloatAlt (sTorsoMeterDecorationPath + "/brightness") 255
+	SetUIFloatAlt (sLeftArmMeterDecorationPath + "/brightness") 255
+	SetUIFloatAlt (sRightArmMeterDecorationPath + "/brightness") 255
+	SetUIFloatAlt (sLeftLegMeterDecorationPath + "/brightness") 255
+	SetUIFloatAlt (sRightLegMeterDecorationPath + "/brightness") 255
+
+	SetUIFloatAlt (sHeadMeterPath + "/MeterImage/brightness") 255
+	SetUIFloatAlt (sTorsoMeterPath + "/MeterImage/brightness") 255
+	SetUIFloatAlt (sLeftArmMeterPath + "/MeterImage/brightness") 255
+	SetUIFloatAlt (sRightArmMeterPath + "/MeterImage/brightness") 255
+	SetUIFloatAlt (sLeftLegMeterPath + "/MeterImage/brightness") 255
+	SetUIFloatAlt (sRightLegMeterPath + "/MeterImage/brightness") 255
+
+	SetUIFloatAlt (sHeadCrippledPath + "/brightness") 255
+	SetUIFloatAlt (sTorsoCrippledPath + "/brightness") 255
+	SetUIFloatAlt (sLeftArmCrippledPath + "/brightness") 255
+	SetUIFloatAlt (sRightArmCrippledPath + "/brightness") 255
+	SetUIFloatAlt (sLeftLegCrippledPath + "/brightness") 255
+	SetUIFloatAlt (sRightLegCrippledPath + "/brightness") 255
+
+	SetUIFloatAlt (sHeadPath + "/smi_head_hit/_enabled") bEnableTriage
+	SetUIFloatAlt (sTorsoPath + "/smi_torso_hit/_enabled") bEnableTriage
+	SetUIFloatAlt (sLeftArmPath + "/smi_leftarm_hit/_enabled") bEnableTriage
+	SetUIFloatAlt (sRightArmPath + "/smi_rightarm_hit/_enabled") bEnableTriage
+	SetUIFloatAlt (sLeftLegPath + "/smi_leftleg_hit/_enabled") bEnableTriage
+	SetUIFloatAlt (sRightLegPath + "/smi_rightleg_hit/_enabled") bEnableTriage
+
+	; Clean-Up
+
+	Sv_Destruct sHeadPath, sTorsoPath, sLeftArmPath, sRightArmPath, sLeftLegPath, sRightLegPath, sFacePath
+	Sv_Destruct sHeadMeterDecorationPath, sTorsoMeterDecorationPath, sLeftArmMeterDecorationPath, sRightArmMeterDecorationPath, sLeftLegMeterDecorationPath, sRightLegMeterDecorationPath
+	Sv_Destruct sHeadMeterPath, sTorsoMeterPath, sLeftArmMeterPath, sRightArmMeterPath, sLeftLegMeterPath, sRightLegMeterPath
+	Sv_Destruct sHeadCrippledPath, sTorsoCrippledPath, sLeftArmCrippledPath, sRightArmCrippledPath, sLeftLegCrippledPath, sRightLegCrippledPath
+	let aConfig := Ar_Null
 
 end

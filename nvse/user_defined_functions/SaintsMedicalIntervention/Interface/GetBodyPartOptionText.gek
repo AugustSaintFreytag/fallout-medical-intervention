@@ -4,6 +4,7 @@ begin function { string_var sKey, short iBodyPartHealth, short iPlayerSkill, sho
 
 	ref GetBodyPartDescriptionUDF = CompileScript "SaintsMedicalIntervention\Status\GetBodyPartDescription.gek"
 	ref GetBodyPartHealthDescriptionUDF = CompileScript "SaintsMedicalIntervention\Status\GetBodyPartHealthDescription.gek"
+	ref GetTreatmentSkillRequirementBlockUDF = CompileScript "SaintsMedicalIntervention\Treatment\GetTreatmentSkillRequirementBlock.gek"
 
 	; Main
 
@@ -13,18 +14,18 @@ begin function { string_var sKey, short iBodyPartHealth, short iPlayerSkill, sho
 		let sPartDescription := "All Body Parts"
 	endif
 
+	string_var sSkillBlock = Call GetTreatmentSkillRequirementBlockUDF iPlayerSkill iMinSkill iShowSkillRequirements
 	string_var sText = ""
+	string_var sPartHealthDescription = ""
 
-	if iShowSkillRequirements == 2
-		let sText := Sv_Construct "[Medicine %g/%g] %z" iPlayerSkill iMinSkill sPartDescription
-	elseif iShowSkillRequirements == 1
-		let sText := Sv_Construct "[Medicine %g] %z" iMinSkill sPartDescription
+	if eval sSkillBlock
+		let sText := Sv_Construct "%z %z" sSkillBlock sPartDescription
 	else
 		let sText := Sv_Construct "%z" sPartDescription
 	endif
 
 	if iShowBodyPartHealth > 0
-		string_var sPartHealthDescription = Call GetBodyPartHealthDescriptionUDF sKey iBodyPartHealth
+		let sPartHealthDescription := Call GetBodyPartHealthDescriptionUDF sKey iBodyPartHealth
 
 		if iShowBodyPartHealth == 3
 			let sPartHealthDescription := Sv_Construct "%z, %g%%" sPartHealthDescription iBodyPartHealth
@@ -40,5 +41,9 @@ begin function { string_var sKey, short iBodyPartHealth, short iPlayerSkill, sho
 	endif
 
 	SetFunctionValue sText
+
+	; Clean-Up
+
+	Sv_Destruct sPartDescription, sPartHealthDescription, sSkillBlock, sText
 
 end

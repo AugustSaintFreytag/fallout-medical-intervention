@@ -1,0 +1,37 @@
+begin function { short iMenuId, short iTileId, string_var sTileName }
+
+	PrintC "Received click on '%z'." sTileName
+
+	; UDFs
+
+	ref OnTriageSelectionConfirmUDF = CompileScript "SaintsMedicalIntervention\Activation\OnTriageSelectionConfirm.gek"
+
+	; Resolve Tile
+
+	string_var sKey
+
+	if iTileId == 1061
+		let sKey := "head"
+	elseif iTileId == 1063
+		let sKey := "torso"
+	elseif iTileId == 1065
+		let sKey := "leftarm"
+	elseif iTileId == 1067
+		let sKey := "rightarm"
+	elseif iTileId == 1069
+		let sKey := "leftleg"
+	elseif iTileId == 1071
+		let sKey := "rightleg"
+	endif
+
+	if eval sKey
+		Call OnTriageSelectionConfirmUDF sKey
+	else
+		PrintC "Received click on paper doll body part with id %g but key could not be determined." iTileId
+	endif
+
+	; Clean-Up
+
+	Sv_Destruct sKey
+
+end

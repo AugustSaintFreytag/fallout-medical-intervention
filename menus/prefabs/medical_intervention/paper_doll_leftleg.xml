@@ -1,0 +1,18 @@
+<image name="smi_leftleg_hit">
+	<id>1069</id>
+	<locus>1</locus>
+	<_enabled>1</_enabled>
+	<target><copy src="me" trait="_enabled"/></target>
+	<filename>Interface\Shared\solid.dds</filename>
+	<zoom>-1</zoom>
+	<systemcolor>0</systemcolor>
+	<red>255</red>
+	<green>48</green>
+	<blue>255</blue>
+	<alpha>0</alpha>
+	<depth>10</depth>
+	<x>0</x>
+	<y>0</y>
+	<width><copy src="parent" trait="width"/></width>
+	<height><copy src="parent" trait="height"/></height>
+</image>

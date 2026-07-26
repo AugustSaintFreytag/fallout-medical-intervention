@@ -13,7 +13,7 @@ begin function {}
 	let aConfig["bShowBodyPartHealthEmphasis"] := eval GetINIFloat_Cached "TriageMenu:bShowBodyPartHealthEmphasis" "SaintsMedicalIntervention.ini" 1
 	let aConfig["iShowSkillRequirements"] := Clamp (GetINIFloat_Cached "TriageMenu:iShowSkillRequirements" "SaintsMedicalIntervention.ini" 1) 0 2
 
-	let aConfig["iShowItemRequirements"] := Clamp (GetINIFloat_Cached "TreatmentMenu:iShowItemRequirements" "SaintsMedicalIntervention.ini" 0) 0 2
+	let aConfig["iShowItemNumRequirements"] := Clamp (GetINIFloat_Cached "TreatmentMenu:iShowItemNumRequirements" "SaintsMedicalIntervention.ini" 0) 0 2
 
 	let aConfig["fMaxRestoreFactor"] := Clamp (GetINIFloat_Cached "Treatment:fMaxRestoreFactor" "SaintsMedicalIntervention.ini" 0.8) 0 1
 
