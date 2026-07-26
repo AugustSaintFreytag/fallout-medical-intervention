@@ -70,7 +70,7 @@ begin function { string_var sKey }
 	array_var aTreatmentOption = aTreatmentOptions[iTreatmentOptionIndex]
 	array_var aTreatmentItems = aTreatmentOption["items"]
 	
-	short bHasTreatmentItems = Call HasRequiredTreatmentItems aTreatmentItems
+	short bHasTreatmentItems = Call HasRequiredTreatmentItemsUDF aTreatmentItems
 
 	array_var aItemNames = Ar_Construct "array"
 
