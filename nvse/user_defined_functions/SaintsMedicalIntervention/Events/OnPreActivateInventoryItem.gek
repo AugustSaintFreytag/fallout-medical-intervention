@@ -16,7 +16,7 @@ begin function { ref rBaseItem, ref rInvRef, short bIsActivationNotPrevented, sh
 
 	array_var aConfig = Call GetConfigUDF
 
-	if eval !aConfig["bEnableTriage"]
+	if eval aConfig["iInventoryDoctorsBagBehavior"] != 1
 		let aConfig := Ar_Null
 		SetFunctionValue 1
 		return

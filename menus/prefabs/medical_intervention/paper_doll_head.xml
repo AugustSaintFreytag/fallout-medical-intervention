@@ -2,6 +2,7 @@
 	<id>1061</id>
 	<locus>1</locus>
 	<_enabled>1</_enabled>
+	<_preview_enabled>1</_preview_enabled>
 	<target><copy src="me" trait="_enabled"/></target>
 	<filename>Interface\Shared\solid.dds</filename>
 	<zoom>-1</zoom>
