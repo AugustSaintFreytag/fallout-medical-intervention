@@ -1,8 +1,22 @@
 begin function {}
 
+	string_var sPreviousHoveredKey = Player.AuxiliaryVariableGetString "*SMI_StatsBodyPartHoverKey"
+
 	if eval !(MenuMode 1003)
+		if eval sPreviousHoveredKey
+			Player.AuxTimerStop "*SMI_StatsBodyPartBrightnessPulse"
+			Player.AuxiliaryVariableErase "*SMI_StatsBodyPartHoverKey"
+		endif
+
+		Sv_Destruct sPreviousHoveredKey
 		return
 	endif
+
+	; UDFs
+
+	ref GetTreatmentRequirementPreviewUDF = CompileScript "SaintsMedicalIntervention\Treatment\GetTreatmentRequirementPreview.gek"
+
+	; Paths
 
 	string_var sHeadPath = "StatsMenu/GLOW_BRANCH/stats_status_container/stats_player_head"
 	string_var sTorsoPath = "StatsMenu/GLOW_BRANCH/stats_status_container/stats_player_head/stats_player_torso"
@@ -10,47 +24,189 @@ begin function {}
 	string_var sRightArmPath = "StatsMenu/GLOW_BRANCH/stats_status_container/stats_player_head/stats_player_torso/stats_player_rightarm"
 	string_var sLeftLegPath = "StatsMenu/GLOW_BRANCH/stats_status_container/stats_player_head/stats_player_torso/stats_player_leftleg"
 	string_var sRightLegPath = "StatsMenu/GLOW_BRANCH/stats_status_container/stats_player_head/stats_player_torso/stats_player_rightleg"
+	string_var sFacePath = sHeadPath + "/stats_player_face"
+	string_var sPreviewPath = "StatsMenu/GLOW_BRANCH/stats_status_container/smi_treatment_preview"
 
-	; The pulse layer is also the cached feature-enable state.
+	string_var sHeadMeterDecorationPath = sHeadPath + "/stats_player_head_pct"
+	string_var sTorsoMeterDecorationPath = sHeadPath + "/stats_player_torso_pct"
+	string_var sLeftArmMeterDecorationPath = sHeadPath + "/stats_player_leftarm_pct"
+	string_var sRightArmMeterDecorationPath = sHeadPath + "/stats_player_rightarm_pct"
+	string_var sLeftLegMeterDecorationPath = sHeadPath + "/stats_player_leftleg_pct"
+	string_var sRightLegMeterDecorationPath = sHeadPath + "/stats_player_rightleg_pct"
 
-	if eval (GetUIFloatAlt (sHeadPath + "/smi_pulse/_enabled")) != 1
-		Sv_Destruct sHeadPath, sTorsoPath, sLeftArmPath, sRightArmPath, sLeftLegPath, sRightLegPath
+	string_var sHeadMeterPath = sHeadMeterDecorationPath + "/stats_player_head_pct_meter"
+	string_var sTorsoMeterPath = sTorsoMeterDecorationPath + "/stats_player_torso_pct_meter"
+	string_var sLeftArmMeterPath = sLeftArmMeterDecorationPath + "/stats_player_leftarm_pct_meter"
+	string_var sRightArmMeterPath = sRightArmMeterDecorationPath + "/stats_player_rightarm_pct_meter"
+	string_var sLeftLegMeterPath = sLeftLegMeterDecorationPath + "/stats_player_leftleg_pct_meter"
+	string_var sRightLegMeterPath = sRightLegMeterDecorationPath + "/stats_player_rightleg_pct_meter"
+
+	string_var sHeadCrippledPath = sHeadPath + "/stats_player_head_crippled"
+	string_var sTorsoCrippledPath = sHeadPath + "/stats_player_torso_crippled"
+	string_var sLeftArmCrippledPath = sHeadPath + "/stats_player_leftarm_crippled"
+	string_var sRightArmCrippledPath = sHeadPath + "/stats_player_rightarm_crippled"
+	string_var sLeftLegCrippledPath = sHeadPath + "/stats_player_leftleg_crippled"
+	string_var sRightLegCrippledPath = sHeadPath + "/stats_player_rightleg_crippled"
+
+	; The hit layer is also the cached feature-enable state.
+
+	if eval (GetUIFloatAlt (sHeadPath + "/smi_head_hit/_enabled")) != 1
+		SetUIFloatAlt (sHeadPath + "/brightness") 255
+		SetUIFloatAlt (sFacePath + "/brightness") 255
+		SetUIFloatAlt (sTorsoPath + "/brightness") 255
+		SetUIFloatAlt (sLeftArmPath + "/brightness") 255
+		SetUIFloatAlt (sRightArmPath + "/brightness") 255
+		SetUIFloatAlt (sLeftLegPath + "/brightness") 255
+		SetUIFloatAlt (sRightLegPath + "/brightness") 255
+
+		SetUIFloatAlt (sHeadMeterDecorationPath + "/brightness") 255
+		SetUIFloatAlt (sTorsoMeterDecorationPath + "/brightness") 255
+		SetUIFloatAlt (sLeftArmMeterDecorationPath + "/brightness") 255
+		SetUIFloatAlt (sRightArmMeterDecorationPath + "/brightness") 255
+		SetUIFloatAlt (sLeftLegMeterDecorationPath + "/brightness") 255
+		SetUIFloatAlt (sRightLegMeterDecorationPath + "/brightness") 255
+
+		SetUIFloatAlt (sHeadMeterPath + "/MeterImage/brightness") 255
+		SetUIFloatAlt (sTorsoMeterPath + "/MeterImage/brightness") 255
+		SetUIFloatAlt (sLeftArmMeterPath + "/MeterImage/brightness") 255
+		SetUIFloatAlt (sRightArmMeterPath + "/MeterImage/brightness") 255
+		SetUIFloatAlt (sLeftLegMeterPath + "/MeterImage/brightness") 255
+		SetUIFloatAlt (sRightLegMeterPath + "/MeterImage/brightness") 255
+
+		SetUIFloatAlt (sHeadCrippledPath + "/brightness") 255
+		SetUIFloatAlt (sTorsoCrippledPath + "/brightness") 255
+		SetUIFloatAlt (sLeftArmCrippledPath + "/brightness") 255
+		SetUIFloatAlt (sRightArmCrippledPath + "/brightness") 255
+		SetUIFloatAlt (sLeftLegCrippledPath + "/brightness") 255
+		SetUIFloatAlt (sRightLegCrippledPath + "/brightness") 255
+
+		SetUIFloatAlt (sPreviewPath + "/visible") 0
+		Player.AuxiliaryVariableErase "*SMI_StatsBodyPartHoverKey"
+		Player.AuxTimerStop "*SMI_StatsBodyPartBrightnessPulse"
+
+		Sv_Destruct sHeadPath, sTorsoPath, sLeftArmPath, sRightArmPath, sLeftLegPath, sRightLegPath, sFacePath, sPreviewPath, sPreviousHoveredKey
+		Sv_Destruct sHeadMeterDecorationPath, sTorsoMeterDecorationPath, sLeftArmMeterDecorationPath, sRightArmMeterDecorationPath, sLeftLegMeterDecorationPath, sRightLegMeterDecorationPath
+		Sv_Destruct sHeadMeterPath, sTorsoMeterPath, sLeftArmMeterPath, sRightArmMeterPath, sLeftLegMeterPath, sRightLegMeterPath
+		Sv_Destruct sHeadCrippledPath, sTorsoCrippledPath, sLeftArmCrippledPath, sRightArmCrippledPath, sLeftLegCrippledPath, sRightLegCrippledPath
 		return
 	endif
 
-	string_var sHeadMeterPath = sHeadPath + "/stats_player_head_pct/stats_player_head_pct_meter/_Value"
-	string_var sTorsoMeterPath = sHeadPath + "/stats_player_torso_pct/stats_player_torso_pct_meter/_Value"
-	string_var sLeftArmMeterPath = sHeadPath + "/stats_player_leftarm_pct/stats_player_leftarm_pct_meter/_Value"
-	string_var sRightArmMeterPath = sHeadPath + "/stats_player_rightarm_pct/stats_player_rightarm_pct_meter/_Value"
-	string_var sLeftLegMeterPath = sHeadPath + "/stats_player_leftleg_pct/stats_player_leftleg_pct_meter/_Value"
-	string_var sRightLegMeterPath = sHeadPath + "/stats_player_rightleg_pct/stats_player_rightleg_pct_meter/_Value"
+	short bHoverHead = eval (GetUIFloatAlt (sHeadPath + "/smi_head_hit/mouseover")) == 1 && (GetUIFloatAlt (sHeadMeterPath + "/_Value")) < 1
+	short bHoverTorso = eval (GetUIFloatAlt (sTorsoPath + "/smi_torso_hit/mouseover")) == 1 && (GetUIFloatAlt (sTorsoMeterPath + "/_Value")) < 1
+	short bHoverLeftArm = eval (GetUIFloatAlt (sLeftArmPath + "/smi_leftarm_hit/mouseover")) == 1 && (GetUIFloatAlt (sLeftArmMeterPath + "/_Value")) < 1
+	short bHoverRightArm = eval (GetUIFloatAlt (sRightArmPath + "/smi_rightarm_hit/mouseover")) == 1 && (GetUIFloatAlt (sRightArmMeterPath + "/_Value")) < 1
+	short bHoverLeftLeg = eval (GetUIFloatAlt (sLeftLegPath + "/smi_leftleg_hit/mouseover")) == 1 && (GetUIFloatAlt (sLeftLegMeterPath + "/_Value")) < 1
+	short bHoverRightLeg = eval (GetUIFloatAlt (sRightLegPath + "/smi_rightleg_hit/mouseover")) == 1 && (GetUIFloatAlt (sRightLegMeterPath + "/_Value")) < 1
 
-	short bHoverHead = eval (GetUIFloatAlt (sHeadPath + "/smi_head_hit/mouseover")) == 1 && (GetUIFloatAlt (sHeadMeterPath)) < 1
-	short bHoverTorso = eval (GetUIFloatAlt (sTorsoPath + "/smi_torso_hit/mouseover")) == 1 && (GetUIFloatAlt (sTorsoMeterPath)) < 1
-	short bHoverLeftArm = eval (GetUIFloatAlt (sLeftArmPath + "/smi_leftarm_hit/mouseover")) == 1 && (GetUIFloatAlt (sLeftArmMeterPath)) < 1
-	short bHoverRightArm = eval (GetUIFloatAlt (sRightArmPath + "/smi_rightarm_hit/mouseover")) == 1 && (GetUIFloatAlt (sRightArmMeterPath)) < 1
-	short bHoverLeftLeg = eval (GetUIFloatAlt (sLeftLegPath + "/smi_leftleg_hit/mouseover")) == 1 && (GetUIFloatAlt (sLeftLegMeterPath)) < 1
-	short bHoverRightLeg = eval (GetUIFloatAlt (sRightLegPath + "/smi_rightleg_hit/mouseover")) == 1 && (GetUIFloatAlt (sRightLegMeterPath)) < 1
+	string_var sHoveredKey
 
-	float fBlinkPhase = Player.AuxTimerTimeElapsed "*SMI_StatsBodyPartPulse"
-
-	if fBlinkPhase < 0
-		let fBlinkPhase := 0
+	if bHoverHead
+		let sHoveredKey := "head"
+	elseif bHoverTorso
+		let sHoveredKey := "torso"
+	elseif bHoverLeftArm
+		let sHoveredKey := "leftarm"
+	elseif bHoverRightArm
+		let sHoveredKey := "rightarm"
+	elseif bHoverLeftLeg
+		let sHoveredKey := "leftleg"
+	elseif bHoverRightLeg
+		let sHoveredKey := "rightleg"
 	endif
 
-	short iPulseMinAlpha = 50
-	short iPulseMaxAlpha = 255
-	float fPulseT = (Sin ((fBlinkPhase * 180) + 90) + 1) / 2
-	float fPulseAlpha = iPulseMinAlpha + ((iPulseMaxAlpha - iPulseMinAlpha) * fPulseT)
+	short bHoverChanged = eval sHoveredKey != sPreviousHoveredKey
 
-	SetUIFloatAlt (sHeadPath + "/smi_pulse/alpha") (bHoverHead * fPulseAlpha)
-	SetUIFloatAlt (sTorsoPath + "/smi_pulse/alpha") (bHoverTorso * fPulseAlpha)
-	SetUIFloatAlt (sLeftArmPath + "/smi_pulse/alpha") (bHoverLeftArm * fPulseAlpha)
-	SetUIFloatAlt (sRightArmPath + "/smi_pulse/alpha") (bHoverRightArm * fPulseAlpha)
-	SetUIFloatAlt (sLeftLegPath + "/smi_pulse/alpha") (bHoverLeftLeg * fPulseAlpha)
-	SetUIFloatAlt (sRightLegPath + "/smi_pulse/alpha") (bHoverRightLeg * fPulseAlpha)
+	; Body Part Pulse
 
-	Sv_Destruct sHeadPath, sTorsoPath, sLeftArmPath, sRightArmPath, sLeftLegPath, sRightLegPath
+	float fPulseSpeedFactor = 1.5
+	float fPulseSpeed = 180 * fPulseSpeedFactor
+	float fPulseDuration = 360 / fPulseSpeed
+
+	if eval !(sHoveredKey)
+		if eval sPreviousHoveredKey
+			Player.AuxTimerStop "*SMI_StatsBodyPartBrightnessPulse"
+			Player.AuxiliaryVariableErase "*SMI_StatsBodyPartHoverKey"
+		endif
+	elseif bHoverChanged
+		Player.AuxTimerStop "*SMI_StatsBodyPartBrightnessPulse"
+		; MenuMode + seconds + auto-remove + auto-restart + ignore MenuMode TimeMult.
+		Player.AuxTimerStart "*SMI_StatsBodyPartBrightnessPulse" fPulseDuration 93
+	endif
+
+	float fPulsePhase = Player.AuxTimerTimeElapsed "*SMI_StatsBodyPartBrightnessPulse"
+
+	if fPulsePhase < 0
+		let fPulsePhase := 0
+	endif
+
+	short iPulseMinBrightness = 50
+	short iPulseMaxBrightness = 255
+
+	float fPulseT = (Sin ((fPulsePhase * fPulseSpeed) + 90) + 1) / 2
+	float fPulseBrightness = iPulseMinBrightness + ((iPulseMaxBrightness - iPulseMinBrightness) * fPulseT)
+
+	float fHeadBrightness = iPulseMaxBrightness - (bHoverHead * (iPulseMaxBrightness - fPulseBrightness))
+	float fTorsoBrightness = iPulseMaxBrightness - (bHoverTorso * (iPulseMaxBrightness - fPulseBrightness))
+	float fLeftArmBrightness = iPulseMaxBrightness - (bHoverLeftArm * (iPulseMaxBrightness - fPulseBrightness))
+	float fRightArmBrightness = iPulseMaxBrightness - (bHoverRightArm * (iPulseMaxBrightness - fPulseBrightness))
+	float fLeftLegBrightness = iPulseMaxBrightness - (bHoverLeftLeg * (iPulseMaxBrightness - fPulseBrightness))
+	float fRightLegBrightness = iPulseMaxBrightness - (bHoverRightLeg * (iPulseMaxBrightness - fPulseBrightness))
+
+	SetUIFloatAlt (sHeadPath + "/brightness") fHeadBrightness
+	SetUIFloatAlt (sFacePath + "/brightness") fHeadBrightness
+	SetUIFloatAlt (sTorsoPath + "/brightness") fTorsoBrightness
+	SetUIFloatAlt (sLeftArmPath + "/brightness") fLeftArmBrightness
+	SetUIFloatAlt (sRightArmPath + "/brightness") fRightArmBrightness
+	SetUIFloatAlt (sLeftLegPath + "/brightness") fLeftLegBrightness
+	SetUIFloatAlt (sRightLegPath + "/brightness") fRightLegBrightness
+
+	SetUIFloatAlt (sHeadMeterDecorationPath + "/brightness") fHeadBrightness
+	SetUIFloatAlt (sTorsoMeterDecorationPath + "/brightness") fTorsoBrightness
+	SetUIFloatAlt (sLeftArmMeterDecorationPath + "/brightness") fLeftArmBrightness
+	SetUIFloatAlt (sRightArmMeterDecorationPath + "/brightness") fRightArmBrightness
+	SetUIFloatAlt (sLeftLegMeterDecorationPath + "/brightness") fLeftLegBrightness
+	SetUIFloatAlt (sRightLegMeterDecorationPath + "/brightness") fRightLegBrightness
+
+	SetUIFloatAlt (sHeadMeterPath + "/MeterImage/brightness") fHeadBrightness
+	SetUIFloatAlt (sTorsoMeterPath + "/MeterImage/brightness") fTorsoBrightness
+	SetUIFloatAlt (sLeftArmMeterPath + "/MeterImage/brightness") fLeftArmBrightness
+	SetUIFloatAlt (sRightArmMeterPath + "/MeterImage/brightness") fRightArmBrightness
+	SetUIFloatAlt (sLeftLegMeterPath + "/MeterImage/brightness") fLeftLegBrightness
+	SetUIFloatAlt (sRightLegMeterPath + "/MeterImage/brightness") fRightLegBrightness
+
+	SetUIFloatAlt (sHeadCrippledPath + "/brightness") fHeadBrightness
+	SetUIFloatAlt (sTorsoCrippledPath + "/brightness") fTorsoBrightness
+	SetUIFloatAlt (sLeftArmCrippledPath + "/brightness") fLeftArmBrightness
+	SetUIFloatAlt (sRightArmCrippledPath + "/brightness") fRightArmBrightness
+	SetUIFloatAlt (sLeftLegCrippledPath + "/brightness") fLeftLegBrightness
+	SetUIFloatAlt (sRightLegCrippledPath + "/brightness") fRightLegBrightness
+
+	; Treatment Preview
+
+	if eval (!sHoveredKey)
+		SetUIFloatAlt (sPreviewPath + "/visible") 0
+	else
+		if bHoverChanged
+			array_var aPreview = Call GetTreatmentRequirementPreviewUDF sHoveredKey
+			string_var sPreviewText = aPreview["text"]
+			short bTreatmentPossible = aPreview["possible"]
+
+			SetUIStringAlt (sPreviewPath + "/text/string") "%z" sPreviewText
+			SetUIFloatAlt (sPreviewPath + "/_failure") (!bTreatmentPossible)
+			Player.AuxiliaryVariableSetString "*SMI_StatsBodyPartHoverKey" ($sHoveredKey)
+
+			Sv_Destruct sPreviewText
+			let aPreview := Ar_Null
+		endif
+
+		SetUIFloatAlt (sPreviewPath + "/visible") 1
+	endif
+
+	; Clean-Up
+
+	Sv_Destruct sHeadPath, sTorsoPath, sLeftArmPath, sRightArmPath, sLeftLegPath, sRightLegPath, sFacePath, sPreviewPath, sHoveredKey, sPreviousHoveredKey
+	Sv_Destruct sHeadMeterDecorationPath, sTorsoMeterDecorationPath, sLeftArmMeterDecorationPath, sRightArmMeterDecorationPath, sLeftLegMeterDecorationPath, sRightLegMeterDecorationPath
 	Sv_Destruct sHeadMeterPath, sTorsoMeterPath, sLeftArmMeterPath, sRightArmMeterPath, sLeftLegMeterPath, sRightLegMeterPath
+	Sv_Destruct sHeadCrippledPath, sTorsoCrippledPath, sLeftArmCrippledPath, sRightArmCrippledPath, sLeftLegCrippledPath, sRightLegCrippledPath
 
 end

@@ -2,8 +2,6 @@ begin function { short iMenuMode }
 
 	ref UpdateStatsMenuUDF = CompileScript "SaintsMedicalIntervention\Interface\UpdateStatsMenu.gek"
 
-	; MenuMode + seconds + auto-remove + auto-restart + ignore MenuMode TimeMult.
-	Player.AuxTimerStart "*SMI_StatsBodyPartPulse" 2 93
 	Call UpdateStatsMenuUDF
 
 end
