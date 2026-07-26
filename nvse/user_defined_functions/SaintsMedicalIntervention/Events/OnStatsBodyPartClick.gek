@@ -4,7 +4,19 @@ begin function { short iMenuId, short iTileId, string_var sTileName }
 
 	; UDFs
 
+	ref GetConfigUDF = CompileScript "SaintsMedicalIntervention\Configuration\GetConfig.gek"
 	ref OnTriageSelectionConfirmUDF = CompileScript "SaintsMedicalIntervention\Activation\OnTriageSelectionConfirm.gek"
+	ref PerformQuickTreatmentUDF = CompileScript "SaintsMedicalIntervention\Treatment\PerformQuickTreatment.gek"
+
+	; Configuration
+
+	array_var aConfig = Call GetConfigUDF
+	short iPaperDollTreatment = aConfig["iPipBoyPaperDollTreatment"]
+
+	if eval iPaperDollTreatment < 2
+		let aConfig := Ar_Null
+		return
+	endif
 
 	; Resolve Tile
 
@@ -25,7 +37,11 @@ begin function { short iMenuId, short iTileId, string_var sTileName }
 	endif
 
 	if eval sKey
-		Call OnTriageSelectionConfirmUDF sKey
+		if iPaperDollTreatment == 2
+			Call OnTriageSelectionConfirmUDF sKey
+		else
+			Call PerformQuickTreatmentUDF sKey
+		endif
 	else
 		PrintC "Received click on paper doll body part with id %g but key could not be determined." iTileId
 	endif
@@ -33,5 +49,6 @@ begin function { short iMenuId, short iTileId, string_var sTileName }
 	; Clean-Up
 
 	Sv_Destruct sKey
+	let aConfig := Ar_Null
 
 end

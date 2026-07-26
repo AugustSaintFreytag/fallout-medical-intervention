@@ -1,0 +1,87 @@
+begin function { string_var sKey, array_var aTreatmentOption }
+
+	; Return values:
+	; 0 = invalid or unavailable
+	; 1 = missing required items
+	; 2 = treatment started
+
+	; UDFs
+
+	ref ClearTreatmentMenuStateUDF = CompileScript "SaintsMedicalIntervention\Treatment\ClearTreatmentMenuState.gek"
+	ref GetBodyPartDescriptionUDF = CompileScript "SaintsMedicalIntervention\Status\GetBodyPartDescription.gek"
+	ref GetBodyPartHealthDescriptionUDF = CompileScript "SaintsMedicalIntervention\Status\GetBodyPartHealthDescription.gek"
+	ref GetNameListUDF = CompileScript "SaintsMedicalIntervention\Utility\GetNameList.gek"
+	ref GetPlayerBodyHealthMapUDF = CompileScript "SaintsMedicalIntervention\Status\GetPlayerBodyHealthMap.gek"
+	ref HasRequiredTreatmentItemsUDF = CompileScript "SaintsMedicalIntervention\Treatment\HasRequiredTreatmentItems.gek"
+	ref OnTreatmentCompleteUDF = CompileScript "SaintsMedicalIntervention\Treatment\OnTreatmentComplete.gek"
+	ref OnTreatmentPerformUDF = CompileScript "SaintsMedicalIntervention\Treatment\OnTreatmentPerform.gek"
+	ref PlayTreatmentAnimationUDF = CompileScript "SaintsMedicalIntervention\Treatment\PlayTreatmentAnimation.gek"
+	ref PlayTreatmentSoundUDF = CompileScript "SaintsMedicalIntervention\Treatment\PlayTreatmentSound.gek"
+
+	; Validation
+
+	short bIsValidKey = eval sKey == "head" || sKey == "torso" || sKey == "leftarm" || sKey == "rightarm" || sKey == "leftleg" || sKey == "rightleg" || sKey == "all"
+	short bIsValidOption = eval (Ar_Size aTreatmentOption) > 0 && (Ar_HasKey aTreatmentOption, "items") && (Ar_HasKey aTreatmentOption, "restoreFactor") && (Ar_HasKey aTreatmentOption, "restoreMode")
+
+	if eval !bIsValidKey || !bIsValidOption
+		PrintC "Cannot perform treatment for key '%z', invalid treatment state." sKey
+		SetFunctionValue 0
+		return
+	endif
+
+	array_var aTreatmentItems = aTreatmentOption["items"]
+	float fRestoreFactor = aTreatmentOption["restoreFactor"]
+	short iRestoreMode = aTreatmentOption["restoreMode"]
+
+	if eval (Ar_Size aTreatmentItems) <= 0 || fRestoreFactor < 0 || fRestoreFactor > 1 || (iRestoreMode != 0 && iRestoreMode != 1) || (iRestoreMode == 1 && fRestoreFactor == 0)
+		PrintC "Cannot perform treatment for key '%z', invalid treatment option." sKey
+
+		let aTreatmentItems := Ar_Null
+		SetFunctionValue 0
+		return
+	endif
+
+	if eval !(Call HasRequiredTreatmentItemsUDF aTreatmentItems)
+		let aTreatmentItems := Ar_Null
+		SetFunctionValue 1
+		return
+	endif
+
+	; Treatment
+
+	string_var sTreatmentItemNames = Call GetNameListUDF aTreatmentItems
+	string_var sPartDescription = Sv_ToLower (Call GetBodyPartDescriptionUDF sKey)
+
+	array_var aPlayerBodyHealthMap = Call GetPlayerBodyHealthMapUDF
+	short iBodyPartHealth = aPlayerBodyHealthMap[$sKey]
+
+	string_var sPartHealthDescription = Sv_ToLower (Call GetBodyPartHealthDescriptionUDF sKey iBodyPartHealth)
+
+	foreach array_var aTreatmentItemElement <- aTreatmentItems
+		ref rTreatmentItem = *aTreatmentItemElement
+		Player.RemoveItem rTreatmentItem 1 1
+	loop
+
+	string_var sCompleteMessage = Sv_Construct "interface\icons\pipboyimages\itsmejesushchrist\message icons\glow_doctor.dds|You've used %z to treat your %z %z." sTreatmentItemNames sPartHealthDescription sPartDescription
+
+	Player.AuxiliaryVariableSetString "*SMI_TreatmentDialogBodyPartKey" ($sKey)
+	Player.AuxiliaryVariableSetString "*SMI_TreatmentCompleteMessage" ($sCompleteMessage)
+	Player.AuxiliaryVariableSetFloat "*SMI_TreatmentRestoreFactor" fRestoreFactor
+	Player.AuxiliaryVariableSetFloat "*SMI_TreatmentRestoreMode" iRestoreMode
+
+	PrintC "Performing treatment for body part '%z' with items '%z'." sKey sTreatmentItemNames
+
+	Call ClearTreatmentMenuStateUDF 1
+	Call PlayTreatmentSoundUDF
+	Call PlayTreatmentAnimationUDF OnTreatmentPerformUDF OnTreatmentCompleteUDF
+
+	SetFunctionValue 2
+
+	; Clean-Up
+
+	Sv_Destruct sTreatmentItemNames, sPartDescription, sPartHealthDescription, sCompleteMessage
+
+	let aTreatmentItems := Ar_Null
+	let aPlayerBodyHealthMap := Ar_Null
+
+end
