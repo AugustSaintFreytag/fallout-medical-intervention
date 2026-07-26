@@ -16,6 +16,7 @@ begin function {}
 
 	ref GetTreatmentRequirementPreviewUDF = CompileScript "SaintsMedicalIntervention\Treatment\GetTreatmentRequirementPreview.gek"
 	ref SetStatsBodyPartColorsUDF = CompileScript "SaintsMedicalIntervention\Interface\SetStatsBodyPartColors.gek"
+	ref PlayInteractionSoundUDF = CompileScript "SaintsMedicalIntervention\Treatment\PlayInteractionSound.gek"
 
 	; Paths
 
@@ -137,6 +138,8 @@ begin function {}
 		Player.AuxTimerStop "*SMI_StatsBodyPartBrightnessPulse"
 		; MenuMode + seconds + auto-remove + auto-restart + ignore MenuMode TimeMult.
 		Player.AuxTimerStart "*SMI_StatsBodyPartBrightnessPulse" fPulseDuration 93
+
+		Call PlayInteractionSoundUDF 3
 	endif
 
 	float fPulsePhase = Player.AuxTimerTimeElapsed "*SMI_StatsBodyPartBrightnessPulse"
