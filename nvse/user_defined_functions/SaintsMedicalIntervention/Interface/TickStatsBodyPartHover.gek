@@ -15,6 +15,7 @@ begin function {}
 	; UDFs
 
 	ref GetTreatmentRequirementPreviewUDF = CompileScript "SaintsMedicalIntervention\Treatment\GetTreatmentRequirementPreview.gek"
+	ref SetStatsBodyPartColorsUDF = CompileScript "SaintsMedicalIntervention\Interface\SetStatsBodyPartColors.gek"
 
 	; Paths
 
@@ -81,6 +82,8 @@ begin function {}
 		SetUIFloatAlt (sRightLegCrippledPath + "/brightness") 255
 
 		SetUIFloatAlt (sPreviewPath + "/visible") 0
+		SetUIFloatAlt (sPreviewPath + "/_failure") 0
+		Call SetStatsBodyPartColorsUDF "none" 0
 		Player.AuxiliaryVariableErase "*SMI_StatsBodyPartHoverKey"
 		Player.AuxTimerStop "*SMI_StatsBodyPartBrightnessPulse"
 
@@ -125,6 +128,8 @@ begin function {}
 	if eval !(sHoveredKey)
 		if eval sPreviousHoveredKey
 			Player.AuxTimerStop "*SMI_StatsBodyPartBrightnessPulse"
+			SetUIFloatAlt (sPreviewPath + "/_failure") 0
+			Call SetStatsBodyPartColorsUDF "none" 0
 			Player.AuxiliaryVariableErase "*SMI_StatsBodyPartHoverKey"
 		endif
 	elseif bHoverChanged
@@ -139,7 +144,8 @@ begin function {}
 		let fPulsePhase := 0
 	endif
 
-	short iPulseMinBrightness = 50
+	short bHoveredTreatmentFailure = eval sHoveredKey && (GetUIFloatAlt (sPreviewPath + "/_failure")) == 1
+	short iPulseMinBrightness = 50 + (bHoveredTreatmentFailure * 75)
 	short iPulseMaxBrightness = 255
 
 	float fPulseT = (Sin ((fPulsePhase * fPulseSpeed) + 90) + 1) / 2
@@ -190,9 +196,11 @@ begin function {}
 			array_var aPreview = Call GetTreatmentRequirementPreviewUDF sHoveredKey
 			string_var sPreviewText = aPreview["text"]
 			short bTreatmentPossible = aPreview["possible"]
+			short bTreatmentFailure = eval !bTreatmentPossible
 
 			SetUIStringAlt (sPreviewPath + "/text/string") "%z" sPreviewText
-			SetUIFloatAlt (sPreviewPath + "/_failure") (!bTreatmentPossible)
+			SetUIFloatAlt (sPreviewPath + "/_failure") bTreatmentFailure
+			Call SetStatsBodyPartColorsUDF sHoveredKey bTreatmentFailure
 			Player.AuxiliaryVariableSetString "*SMI_StatsBodyPartHoverKey" ($sHoveredKey)
 
 			Sv_Destruct sPreviewText

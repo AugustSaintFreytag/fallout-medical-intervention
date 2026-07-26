@@ -7,6 +7,7 @@ begin function {}
 	; UDFs
 
 	ref GetConfigUDF = CompileScript "SaintsMedicalIntervention\Configuration\GetConfig.gek"
+	ref SetStatsBodyPartColorsUDF = CompileScript "SaintsMedicalIntervention\Interface\SetStatsBodyPartColors.gek"
 
 	; Configuration
 
@@ -26,7 +27,11 @@ begin function {}
 
 	Player.AuxiliaryVariableErase "*SMI_StatsBodyPartHoverKey"
 	Player.AuxTimerStop "*SMI_StatsBodyPartBrightnessPulse"
+
+	Call SetStatsBodyPartColorsUDF "none" 0
+	
 	SetUIFloatAlt "StatsMenu/GLOW_BRANCH/stats_status_container/smi_treatment_preview/visible" 0
+	SetUIFloatAlt "StatsMenu/GLOW_BRANCH/stats_status_container/smi_treatment_preview/_failure" 0
 
 	float fHeadHealth = GetUIFloatAlt "StatsMenu/GLOW_BRANCH/stats_status_container/stats_player_head/stats_player_head_pct/stats_player_head_pct_meter/_Value"
 	float fTorsoHealth = GetUIFloatAlt "StatsMenu/GLOW_BRANCH/stats_status_container/stats_player_head/stats_player_torso_pct/stats_player_torso_pct_meter/_Value"

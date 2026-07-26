@@ -5,11 +5,13 @@
 	<depth>20</depth>
 	<_failure>0</_failure>
 	<_text_zoom>75</_text_zoom>
+	<_success_color>&pipboy;</_success_color>
+	<_failure_color>&hudalt;</_failure_color>
 	<_color>
-		<copy>&pipboy;</copy>
+		<copy src="me" trait="_success_color"/>
 		<add>
-			<copy>&hudalt;</copy>
-			<sub>&pipboy;</sub>
+			<copy src="me" trait="_failure_color"/>
+			<sub src="me" trait="_success_color"/>
 			<mul src="me" trait="_failure"/>
 		</add>
 	</_color>

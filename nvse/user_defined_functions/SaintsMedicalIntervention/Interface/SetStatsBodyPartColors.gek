@@ -1,0 +1,111 @@
+begin function { string_var sKey, short bFailure }
+
+	; Colors
+
+	string_var sPreviewPath = "StatsMenu/GLOW_BRANCH/stats_status_container/smi_treatment_preview"
+	float fSuccessColor = GetUIFloatAlt (sPreviewPath + "/_success_color")
+	float fFailureColor = GetUIFloatAlt (sPreviewPath + "/_failure_color")
+
+	float fHeadColor = fSuccessColor
+	float fTorsoColor = fSuccessColor
+	float fLeftArmColor = fSuccessColor
+	float fRightArmColor = fSuccessColor
+	float fLeftLegColor = fSuccessColor
+	float fRightLegColor = fSuccessColor
+
+	if bFailure
+		if eval sKey == "head"
+			let fHeadColor := fFailureColor
+		elseif eval sKey == "torso"
+			let fTorsoColor := fFailureColor
+		elseif eval sKey == "leftarm"
+			let fLeftArmColor := fFailureColor
+		elseif eval sKey == "rightarm"
+			let fRightArmColor := fFailureColor
+		elseif eval sKey == "leftleg"
+			let fLeftLegColor := fFailureColor
+		elseif eval sKey == "rightleg"
+			let fRightLegColor := fFailureColor
+		endif
+	endif
+
+	; Paths
+
+	string_var sHeadPath = "StatsMenu/GLOW_BRANCH/stats_status_container/stats_player_head"
+	string_var sTorsoPath = sHeadPath + "/stats_player_torso"
+	string_var sLeftArmPath = sTorsoPath + "/stats_player_leftarm"
+	string_var sRightArmPath = sTorsoPath + "/stats_player_rightarm"
+	string_var sLeftLegPath = sTorsoPath + "/stats_player_leftleg"
+	string_var sRightLegPath = sTorsoPath + "/stats_player_rightleg"
+	string_var sFacePath = sHeadPath + "/stats_player_face"
+
+	string_var sHeadMeterDecorationPath = sHeadPath + "/stats_player_head_pct"
+	string_var sTorsoMeterDecorationPath = sHeadPath + "/stats_player_torso_pct"
+	string_var sLeftArmMeterDecorationPath = sHeadPath + "/stats_player_leftarm_pct"
+	string_var sRightArmMeterDecorationPath = sHeadPath + "/stats_player_rightarm_pct"
+	string_var sLeftLegMeterDecorationPath = sHeadPath + "/stats_player_leftleg_pct"
+	string_var sRightLegMeterDecorationPath = sHeadPath + "/stats_player_rightleg_pct"
+
+	string_var sHeadMeterPath = sHeadMeterDecorationPath + "/stats_player_head_pct_meter"
+	string_var sTorsoMeterPath = sTorsoMeterDecorationPath + "/stats_player_torso_pct_meter"
+	string_var sLeftArmMeterPath = sLeftArmMeterDecorationPath + "/stats_player_leftarm_pct_meter"
+	string_var sRightArmMeterPath = sRightArmMeterDecorationPath + "/stats_player_rightarm_pct_meter"
+	string_var sLeftLegMeterPath = sLeftLegMeterDecorationPath + "/stats_player_leftleg_pct_meter"
+	string_var sRightLegMeterPath = sRightLegMeterDecorationPath + "/stats_player_rightleg_pct_meter"
+
+	string_var sHeadCrippledPath = sHeadPath + "/stats_player_head_crippled"
+	string_var sTorsoCrippledPath = sHeadPath + "/stats_player_torso_crippled"
+	string_var sLeftArmCrippledPath = sHeadPath + "/stats_player_leftarm_crippled"
+	string_var sRightArmCrippledPath = sHeadPath + "/stats_player_rightarm_crippled"
+	string_var sLeftLegCrippledPath = sHeadPath + "/stats_player_leftleg_crippled"
+	string_var sRightLegCrippledPath = sHeadPath + "/stats_player_rightleg_crippled"
+
+	; Paper Doll
+	;
+	; Set every nested tile explicitly so a failure color on the head or torso
+	; cannot bleed into descendant body parts through systemcolor inheritance.
+
+	SetUIFloatAlt (sHeadPath + "/systemcolor") fHeadColor
+	SetUIFloatAlt (sFacePath + "/systemcolor") fHeadColor
+	SetUIFloatAlt (sTorsoPath + "/systemcolor") fTorsoColor
+	SetUIFloatAlt (sLeftArmPath + "/systemcolor") fLeftArmColor
+	SetUIFloatAlt (sRightArmPath + "/systemcolor") fRightArmColor
+	SetUIFloatAlt (sLeftLegPath + "/systemcolor") fLeftLegColor
+	SetUIFloatAlt (sRightLegPath + "/systemcolor") fRightLegColor
+
+	; Meter Decorations
+
+	SetUIFloatAlt (sHeadMeterDecorationPath + "/systemcolor") fHeadColor
+	SetUIFloatAlt (sTorsoMeterDecorationPath + "/systemcolor") fTorsoColor
+	SetUIFloatAlt (sLeftArmMeterDecorationPath + "/systemcolor") fLeftArmColor
+	SetUIFloatAlt (sRightArmMeterDecorationPath + "/systemcolor") fRightArmColor
+	SetUIFloatAlt (sLeftLegMeterDecorationPath + "/systemcolor") fLeftLegColor
+	SetUIFloatAlt (sRightLegMeterDecorationPath + "/systemcolor") fRightLegColor
+
+	; Meter Fills
+
+	SetUIFloatAlt (sHeadMeterPath + "/MeterImage/systemcolor") fHeadColor
+	SetUIFloatAlt (sTorsoMeterPath + "/MeterImage/systemcolor") fTorsoColor
+	SetUIFloatAlt (sLeftArmMeterPath + "/MeterImage/systemcolor") fLeftArmColor
+	SetUIFloatAlt (sRightArmMeterPath + "/MeterImage/systemcolor") fRightArmColor
+	SetUIFloatAlt (sLeftLegMeterPath + "/MeterImage/systemcolor") fLeftLegColor
+	SetUIFloatAlt (sRightLegMeterPath + "/MeterImage/systemcolor") fRightLegColor
+
+	; Crippled Labels
+
+	SetUIFloatAlt (sHeadCrippledPath + "/systemcolor") fHeadColor
+	SetUIFloatAlt (sTorsoCrippledPath + "/systemcolor") fTorsoColor
+	SetUIFloatAlt (sLeftArmCrippledPath + "/systemcolor") fLeftArmColor
+	SetUIFloatAlt (sRightArmCrippledPath + "/systemcolor") fRightArmColor
+	SetUIFloatAlt (sLeftLegCrippledPath + "/systemcolor") fLeftLegColor
+	SetUIFloatAlt (sRightLegCrippledPath + "/systemcolor") fRightLegColor
+
+	; Clean-Up
+
+	Sv_Destruct sPreviewPath
+	Sv_Destruct sHeadPath, sTorsoPath, sLeftArmPath, sRightArmPath, sLeftLegPath, sRightLegPath, sFacePath
+	Sv_Destruct sHeadMeterDecorationPath, sTorsoMeterDecorationPath, sLeftArmMeterDecorationPath, sRightArmMeterDecorationPath, sLeftLegMeterDecorationPath, sRightLegMeterDecorationPath
+	Sv_Destruct sHeadMeterPath, sTorsoMeterPath, sLeftArmMeterPath, sRightArmMeterPath, sLeftLegMeterPath, sRightLegMeterPath
+	Sv_Destruct sHeadCrippledPath, sTorsoCrippledPath, sLeftArmCrippledPath, sRightArmCrippledPath, sLeftLegCrippledPath, sRightLegCrippledPath
+
+end
