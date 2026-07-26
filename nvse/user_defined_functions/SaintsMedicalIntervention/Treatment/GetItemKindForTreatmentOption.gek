@@ -1,0 +1,15 @@
+begin function { array_var aTreatmentOption }
+
+	ref rPrimaryItem = aTreatmentOption["items"][0]
+
+	if eval (rPrimaryItem == SurgicalTubing)
+		SetFunctionValue 1
+	elseif eval (IsRefInList NVDLC03PerkRelatedAllStimpaksLIST, rPrimaryItem) >= 0
+		SetFunctionValue 2
+	elseif eval (rPrimaryItem == MedicalBrace)
+		SetFunctionValue 3
+	else
+		SetFunctionValue 0
+	endif
+
+end

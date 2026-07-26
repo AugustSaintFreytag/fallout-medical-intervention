@@ -1,4 +1,8 @@
-begin function {}
+begin function { short iTreatmentKind, short iItemKind }
+
+	; UDFs
+
+	ref GetTreatmentItemSoundPathUDF = CompileScript "SaintsMedicalIntervention\Treatment\GetTreatmentItemSoundPath.gek"
 
 	; Main
 
@@ -7,7 +11,17 @@ begin function {}
 	SetSoundTraitNumeric rSound 3 -6.0
 	SetSoundTraitNumeric rSound 2 10.0
 
-	SetSoundSourceFile rSound "fx\ui\fieldsurgery\"
+	string_var sSoundPath
+
+	if iTreatmentKind == 1
+		let sSoundPath := Call GetTreatmentItemSoundPathUDF iItemKind
+	else
+		let sSoundPath := "fx\ui\triage\major\"
+	endif
+
+	SetSoundSourceFile rSound ($sSoundPath)
+
+	; PrintC "Playing treatment sound '%z'." sSoundPath
 
 	Player.PlaySound rSound 1
 

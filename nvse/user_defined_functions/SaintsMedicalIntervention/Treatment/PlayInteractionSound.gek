@@ -1,0 +1,22 @@
+begin function { short iKind }
+
+	; Play UI sound
+	; 0 = Cancel/Fail
+	; 1 = Click
+	; 2 = Hover (Generic, "click")
+	; 3 = Hover (Pip-Boy, "beep")
+	; 4 = Cycle
+
+	if iKind == 0
+		Player.PlaySound UIMenuCancel 1
+	elseif iKind == 1
+		Player.PlaySound UIMenuOK 1
+	elseif iKind == 2
+		Player.PlaySound UIMenuFocus 1
+	elseif iKind == 3
+		Player.PlaySound UIPipBoyHighlight 1
+	elseif iKind == 4
+		Player.PlaySound UIMenuPrevNext 1		
+	endif
+
+end

@@ -1,22 +1,18 @@
 begin function { short iMenuId, short iTileId, string_var sTileName }
 
-	PrintC "Received click on '%z'." sTileName
-
 	; UDFs
 
 	ref GetConfigUDF = CompileScript "SaintsMedicalIntervention\Configuration\GetConfig.gek"
 	ref OnTriageSelectionConfirmUDF = CompileScript "SaintsMedicalIntervention\Activation\OnTriageSelectionConfirm.gek"
 	ref PerformQuickTreatmentUDF = CompileScript "SaintsMedicalIntervention\Treatment\PerformQuickTreatment.gek"
+	ref PlayInteractionSoundUDF = CompileScript "SaintsMedicalIntervention\Treatment\PlayInteractionSound.gek"
+	ref GetPlayerBodyHealthMapUDF = CompileScript "SaintsMedicalIntervention\Status\GetPlayerBodyHealthMap.gek"
 
 	; Configuration
 
 	array_var aConfig = Call GetConfigUDF
-	short iPaperDollTreatment = aConfig["iPipBoyPaperDollTreatment"]
 
-	if eval iPaperDollTreatment < 2
-		let aConfig := Ar_Null
-		return
-	endif
+	short iPaperDollTreatment = aConfig["iPipBoyPaperDollTreatment"]
 
 	; Resolve Tile
 
@@ -36,19 +32,34 @@ begin function { short iMenuId, short iTileId, string_var sTileName }
 		let sKey := "rightleg"
 	endif
 
-	if eval sKey
-		if iPaperDollTreatment == 2
-			Call OnTriageSelectionConfirmUDF sKey
-		else
-			Call PerformQuickTreatmentUDF sKey
-		endif
+	if eval !(sKey) || (iPaperDollTreatment < 2)
+		let aConfig := Ar_Null
+		return
+	endif
+
+	array_var aBodyPartHealthMap = Call GetPlayerBodyHealthMapUDF
+	short iBodyPartHealth = aBodyPartHealthMap[$sKey]
+	
+	; Sound
+
+	short bIsValidOption = !(GetUIFloatAlt "StatsMenu/GLOW_BRANCH/stats_status_container/smi_treatment_preview/_failure")
+	short bIsInjuredBodyPart = iBodyPartHealth < 100
+
+	Call PlayInteractionSoundUDF (eval bIsValidOption && bIsInjuredBodyPart)
+
+	; Treatment
+
+	if iPaperDollTreatment == 2
+		Call OnTriageSelectionConfirmUDF sKey
 	else
-		PrintC "Received click on paper doll body part with id %g but key could not be determined." iTileId
+		Call PerformQuickTreatmentUDF sKey
 	endif
 
 	; Clean-Up
 
 	Sv_Destruct sKey
+
 	let aConfig := Ar_Null
+	let aBodyPartHealthMap := Ar_Null
 
 end

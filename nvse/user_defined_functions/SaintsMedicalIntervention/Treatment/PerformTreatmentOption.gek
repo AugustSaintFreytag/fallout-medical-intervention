@@ -10,6 +10,7 @@ begin function { string_var sKey, array_var aTreatmentOption }
 	ref ClearTreatmentMenuStateUDF = CompileScript "SaintsMedicalIntervention\Treatment\ClearTreatmentMenuState.gek"
 	ref GetBodyPartDescriptionUDF = CompileScript "SaintsMedicalIntervention\Status\GetBodyPartDescription.gek"
 	ref GetBodyPartHealthDescriptionUDF = CompileScript "SaintsMedicalIntervention\Status\GetBodyPartHealthDescription.gek"
+	ref GetItemKindForTreatmentOptionUDF = CompileScript "SaintsMedicalIntervention\Treatment\GetItemKindForTreatmentOption.gek"
 	ref GetNameListUDF = CompileScript "SaintsMedicalIntervention\Utility\GetNameList.gek"
 	ref GetPlayerBodyHealthMapUDF = CompileScript "SaintsMedicalIntervention\Status\GetPlayerBodyHealthMap.gek"
 	ref HasRequiredTreatmentItemsUDF = CompileScript "SaintsMedicalIntervention\Treatment\HasRequiredTreatmentItems.gek"
@@ -17,6 +18,7 @@ begin function { string_var sKey, array_var aTreatmentOption }
 	ref OnTreatmentPerformUDF = CompileScript "SaintsMedicalIntervention\Treatment\OnTreatmentPerform.gek"
 	ref PlayTreatmentAnimationUDF = CompileScript "SaintsMedicalIntervention\Treatment\PlayTreatmentAnimation.gek"
 	ref PlayTreatmentSoundUDF = CompileScript "SaintsMedicalIntervention\Treatment\PlayTreatmentSound.gek"
+	ref GetConfigUDF = CompileScript "SaintsMedicalIntervention\Configuration\GetConfig.gek"
 
 	; Validation
 
@@ -54,6 +56,15 @@ begin function { string_var sKey, array_var aTreatmentOption }
 
 	array_var aPlayerBodyHealthMap = Call GetPlayerBodyHealthMapUDF
 	short iBodyPartHealth = aPlayerBodyHealthMap[$sKey]
+	short iTreatmentKind = eval sKey != "all" && iBodyPartHealth > 0
+	short iItemKind = Call GetItemKindForTreatmentOptionUDF aTreatmentOption
+
+	array_var aConfig = Call GetConfigUDF
+	short bShowAnimation = aConfig["bShowAnimationForMajorTreatment"]
+
+	if iTreatmentKind == 1
+		let bShowAnimation := aConfig["bShowAnimationForMinorTreatment"]
+	endif
 
 	string_var sPartHealthDescription = Sv_ToLower (Call GetBodyPartHealthDescriptionUDF sKey iBodyPartHealth)
 
@@ -72,8 +83,14 @@ begin function { string_var sKey, array_var aTreatmentOption }
 	PrintC "Performing treatment for body part '%z' with items '%z'." sKey sTreatmentItemNames
 
 	Call ClearTreatmentMenuStateUDF 1
-	Call PlayTreatmentSoundUDF
-	Call PlayTreatmentAnimationUDF OnTreatmentPerformUDF OnTreatmentCompleteUDF
+	Call PlayTreatmentSoundUDF iTreatmentKind iItemKind
+
+	if bShowAnimation
+		Call PlayTreatmentAnimationUDF OnTreatmentPerformUDF OnTreatmentCompleteUDF
+	else
+		Call OnTreatmentPerformUDF
+		Call OnTreatmentCompleteUDF
+	endif
 
 	SetFunctionValue 2
 
@@ -83,5 +100,6 @@ begin function { string_var sKey, array_var aTreatmentOption }
 
 	let aTreatmentItems := Ar_Null
 	let aPlayerBodyHealthMap := Ar_Null
+	let aConfig := Ar_Null
 
 end

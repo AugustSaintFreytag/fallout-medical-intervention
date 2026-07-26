@@ -141,6 +141,20 @@
                         "valueMin": 0.05,
                         "valueMax": 1.0
                     }
+                },
+                "15": {
+                    "title": "Major Treatment Animation",
+                    "enable": 1,
+                    "type": 5,
+                    "mouse": "Lower the Pip-Boy, play treatment audio, and briefly fade to black when treating a crippled body part.",
+                    "vars": [{ "configINI": "Treatment:bShowAnimationForMajorTreatment", "default": 1 }]
+                },
+                "16": {
+                    "title": "Minor Treatment Animation",
+                    "enable": 1,
+                    "type": 5,
+                    "mouse": "Lower the Pip-Boy, play treatment audio, and briefly fade to black when treating a non-crippled body part.",
+                    "vars": [{ "configINI": "Treatment:bShowAnimationForMinorTreatment", "default": 0 }]
                 }
             }
         }

@@ -2,6 +2,7 @@ begin function { string_var sKey }
 
 	; UDFs
 
+	ref GetBodyPartDescriptionUDF = CompileScript "SaintsMedicalIntervention\Status\GetBodyPartDescription.gek"
 	ref GetBodyPartConcernDescriptionUDF = CompileScript "SaintsMedicalIntervention\Status\GetBodyPartConcernDescription.gek"
 	ref GetPlayerBodyHealthMapUDF = CompileScript "SaintsMedicalIntervention\Status\GetPlayerBodyHealthMap.gek"
 	ref GetTreatmentOptionsUDF = CompileScript "SaintsMedicalIntervention\Treatment\GetTreatmentOptions.gek"
@@ -22,12 +23,14 @@ begin function { string_var sKey }
 		return
 	endif
 
+	string_var sBodyPartDescription = Sv_ToLower (Call GetBodyPartDescriptionUDF sKey)
 	array_var aPlayerBodyHealthMap = Call GetPlayerBodyHealthMapUDF
 	short iBodyPartHealth = aPlayerBodyHealthMap[$sKey]
 
 	if iBodyPartHealth >= 100
-		MessageExAlt 2 "Interface\Icons\Message Icons\glow_message_vaultboy_thinking.dds|That body part does not require treatment."
+		MessageExAlt 2 "Interface\Icons\Message Icons\glow_message_vaultboy_thinking.dds|Your %z does not require treatment." sBodyPartDescription
 		let aPlayerBodyHealthMap := Ar_Null
+		Sv_Destruct sBodyPartDescription
 		return
 	endif
 
@@ -39,7 +42,7 @@ begin function { string_var sKey }
 		string_var sPartConcernDescription = Call GetBodyPartConcernDescriptionUDF sKey
 		MessageExAlt 2 "Interface\Icons\Message Icons\glow_message_vaultboy_sad.dds|You cannot treat %z with your current Medicine skill (%g/%g)." sPartConcernDescription iCurrentSkill iRequiredSkill
 
-		Sv_Destruct sPartConcernDescription
+		Sv_Destruct sBodyPartDescription, sPartConcernDescription
 		let aPlayerBodyHealthMap := Ar_Null
 		return
 	endif
@@ -51,6 +54,7 @@ begin function { string_var sKey }
 	if eval (Ar_Size aTreatmentOptions) <= 0
 		MessageExAlt 2 "Interface\Icons\Message Icons\glow_message_vaultboy_thinking.dds|No treatment is currently available for that body part."
 
+		Sv_Destruct sBodyPartDescription, sPartConcernDescription
 		let aPlayerBodyHealthMap := Ar_Null
 		let aTreatmentOptions := Ar_Null
 		return
@@ -66,6 +70,8 @@ begin function { string_var sKey }
 	endif
 
 	; Clean-Up
+
+	Sv_Destruct sBodyPartDescription, sPartConcernDescription
 
 	let aPlayerBodyHealthMap := Ar_Null
 	let aTreatmentOptions := Ar_Null
