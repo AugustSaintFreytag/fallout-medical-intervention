@@ -1,0 +1,77 @@
+<rect name="smi_treatment_preview">
+	<visible>0</visible>
+	<target>0</target>
+	<locus>1</locus>
+	<depth>20</depth>
+	<_failure>0</_failure>
+	<_text_zoom>75</_text_zoom>
+	<_color>
+		<copy>&pipboy;</copy>
+		<add>
+			<copy>&hudalt;</copy>
+			<sub>&pipboy;</sub>
+			<mul src="me" trait="_failure"/>
+		</add>
+	</_color>
+	<clipwindow>1</clipwindow>
+	<width>220</width>
+	<height>
+		<copy src="child(text)" trait="height"/>
+		<add>16</add>
+	</height>
+	<x>
+		<copy src="parent" trait="width"/>
+		<sub src="me" trait="width"/>
+		<sub>30</sub>
+	</x>
+	<y>
+		<copy src="parent" trait="height"/>
+		<sub src="me" trait="height"/>
+		<add>14</add>
+	</y>
+
+	<rect name="box">
+		<include src="box.xml"/>
+		<systemcolor><copy src="parent" trait="_color"/></systemcolor>
+		<_line_alpha>255</_line_alpha>
+		<_fill_alpha><copy src="globals" trait="_VUI+Highlighting"/></_fill_alpha>
+		<depth>1</depth>
+		<clips>1</clips>
+		<width><copy src="parent" trait="width"/></width>
+		<height><copy src="parent" trait="height"/></height>
+	</rect>
+
+	<text name="text">
+		<string></string>
+		<systemcolor><copy src="parent" trait="_color"/></systemcolor>
+		<font><copy src="io" trait="font"/></font>
+		<zoom><copy src="parent" trait="_text_zoom"/></zoom>
+		<justify>&left;</justify>
+		<depth>2</depth>
+		<clips>1</clips>
+		<x>
+			<copy src="parent" trait="width"/>
+			<sub src="me" trait="width"/>
+			<div>2</div>
+			<add>
+				<copy src="me" trait="font"/>
+				<copy src="globals" trait="_VUI+FontX_"/>
+				<mul>0.75</mul>
+			</add>
+		</x>
+		<y>
+			<copy src="parent" trait="height"/>
+			<sub src="me" trait="height"/>
+			<div>2</div>
+			<add>
+				<copy src="me" trait="font"/>
+				<copy src="globals" trait="_VUI+FontY_"/>
+				<mul>0.75</mul>
+			</add>
+		</y>
+		<wrapwidth>
+			<copy src="parent" trait="width"/>
+			<sub>20</sub>
+		</wrapwidth>
+	</text>
+</rect>

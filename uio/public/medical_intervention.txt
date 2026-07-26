@@ -1,6 +1,9 @@
 medical_intervention\triage_button.xml::StatsMenu::stats_status_container
 true
 
+medical_intervention\paper_doll_preview.xml::StatsMenu::stats_status_container
+true
+
 Stentorious\PipBoyUITweaks\MapMenu\ySIDataYButtonIcon.xml::@prefabs\medical_intervention\triage_button.xml::stats_triage_button
 #..\ySI\ySI.xml
 
