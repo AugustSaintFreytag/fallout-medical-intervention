@@ -1,0 +1,43 @@
+begin function { string_var sHoveredKey, short bPlayCycleSound }
+
+	; UDFs
+
+	ref GetTreatmentRequirementPreviewUDF = CompileScript "SaintsMedicalIntervention\Treatment\GetTreatmentRequirementPreview.gek"
+	ref SetStatsBodyPartColorsUDF = CompileScript "SaintsMedicalIntervention\Interface\SetStatsBodyPartColors.gek"
+	ref PlayInteractionSoundUDF = CompileScript "SaintsMedicalIntervention\Treatment\PlayInteractionSound.gek"
+
+	; Main
+
+	string_var sPreviewPath = "StatsMenu/GLOW_BRANCH/stats_status_container/smi_treatment_preview"
+	
+	array_var aPreview = Call GetTreatmentRequirementPreviewUDF sHoveredKey
+	
+	string_var sPreviewText = aPreview["text"]
+	short bTreatmentPossible = aPreview["possible"]
+	short bIsTreatmentImpossible = eval !bTreatmentPossible
+
+	short iNumTreatmentOptions = aPreview["numOptions"]
+	short iTreatmentOptionIndex = aPreview["index"]
+
+	SetUIStringAlt (sPreviewPath + "/text/string") "%z" sPreviewText
+	SetUIFloatAlt (sPreviewPath + "/_failure") bIsTreatmentImpossible
+
+	Call SetStatsBodyPartColorsUDF sHoveredKey bIsTreatmentImpossible
+	
+	Player.AuxiliaryVariableSetString "*SMI_StatsBodyPartHoverKey" ($sHoveredKey)
+	Player.AuxiliaryVariableSetFloat "*SMI_StatsTreatmentOptionIndex" iTreatmentOptionIndex
+
+	if bPlayCycleSound
+		if iNumTreatmentOptions > 1
+			Call PlayInteractionSoundUDF 4
+		else
+			Call PlayInteractionSoundUDF 0
+		endif
+	endif
+
+	; Clean-Up
+
+	Sv_Destruct sPreviewPath, sPreviewText
+	let aPreview := Ar_Null
+
+end
