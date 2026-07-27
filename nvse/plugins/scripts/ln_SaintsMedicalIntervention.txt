@@ -7,6 +7,7 @@ ref OnPreActivateInventoryItemUDF = CompileScript "SaintsMedicalIntervention\Eve
 ref OnQuickSelectPreActivateInventoryItemUDF = CompileScript "SaintsMedicalIntervention\Events\OnQuickSelectPreActivateInventoryItem.gek"
 ref OnStatsTriageClickUDF = CompileScript "SaintsMedicalIntervention\Events\OnStatsTriageClick.gek"
 ref OnStatsBodyPartClickUDF = CompileScript "SaintsMedicalIntervention\Events\OnStatsBodyPartClick.gek"
+ref OnStatsTreatmentOptionCycleUDF = CompileScript "SaintsMedicalIntervention\Events\OnStatsTreatmentOptionCycle.gek"
 ref TickStatsBodyPartHoverUDF = CompileScript "SaintsMedicalIntervention\Interface\TickStatsBodyPartHover.gek"
 
 ; Events
@@ -25,4 +26,6 @@ SetOnMenuClickEventHandler OnStatsBodyPartClickUDF 1 "StatsMenu#1065"
 SetOnMenuClickEventHandler OnStatsBodyPartClickUDF 1 "StatsMenu#1067"
 SetOnMenuClickEventHandler OnStatsBodyPartClickUDF 1 "StatsMenu#1069"
 SetOnMenuClickEventHandler OnStatsBodyPartClickUDF 1 "StatsMenu#1071"
+SetOnKeyDownEventHandler OnStatsTreatmentOptionCycleUDF 1 264
+SetOnKeyDownEventHandler OnStatsTreatmentOptionCycleUDF 1 265
 SetGameMainLoopCallback TickStatsBodyPartHoverUDF 1 1 2

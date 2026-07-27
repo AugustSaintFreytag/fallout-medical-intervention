@@ -29,6 +29,7 @@ begin function {}
 	; hard-coded actions cannot run.
 
 	Player.AuxiliaryVariableErase "*SMI_StatsBodyPartHoverKey"
+	Player.AuxiliaryVariableErase "*SMI_StatsTreatmentOptionIndex"
 	Player.AuxTimerStop "*SMI_StatsBodyPartBrightnessPulse"
 
 	Call SetStatsBodyPartColorsUDF "none" 0

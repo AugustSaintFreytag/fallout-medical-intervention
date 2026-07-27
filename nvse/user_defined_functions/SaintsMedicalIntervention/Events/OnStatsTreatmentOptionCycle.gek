@@ -1,0 +1,69 @@
+begin function { short iKeyId }
+
+	if eval !(MenuMode 1003)
+		return
+	endif
+
+	; UDFs
+
+	ref UpdateStatsTreatmentPreviewUDF = CompileScript "SaintsMedicalIntervention\Interface\UpdateStatsTreatmentPreview.gek"
+
+	; State
+
+	string_var sHoveredKey = Player.AuxiliaryVariableGetString "*SMI_StatsBodyPartHoverKey"
+
+	if eval !(sHoveredKey)
+		Sv_Destruct sHoveredKey
+		return
+	endif
+
+	; Validate Hover
+
+	string_var sHitPath
+
+	if eval sHoveredKey == "head"
+		let sHitPath := "StatsMenu/GLOW_BRANCH/stats_status_container/stats_player_head/smi_head_hit"
+	elseif eval sHoveredKey == "torso"
+		let sHitPath := "StatsMenu/GLOW_BRANCH/stats_status_container/stats_player_head/stats_player_torso/smi_torso_hit"
+	elseif eval sHoveredKey == "leftarm"
+		let sHitPath := "StatsMenu/GLOW_BRANCH/stats_status_container/stats_player_head/stats_player_torso/stats_player_leftarm/smi_leftarm_hit"
+	elseif eval sHoveredKey == "rightarm"
+		let sHitPath := "StatsMenu/GLOW_BRANCH/stats_status_container/stats_player_head/stats_player_torso/stats_player_rightarm/smi_rightarm_hit"
+	elseif eval sHoveredKey == "leftleg"
+		let sHitPath := "StatsMenu/GLOW_BRANCH/stats_status_container/stats_player_head/stats_player_torso/stats_player_leftleg/smi_leftleg_hit"
+	elseif eval sHoveredKey == "rightleg"
+		let sHitPath := "StatsMenu/GLOW_BRANCH/stats_status_container/stats_player_head/stats_player_torso/stats_player_rightleg/smi_rightleg_hit"
+	endif
+
+	short bIsStillHovered = eval sHitPath && (GetUIFloatAlt (sHitPath + "/_enabled")) == 1 && (GetUIFloatAlt (sHitPath + "/mouseover")) == 1
+
+	if eval !bIsStillHovered
+		Sv_Destruct sHoveredKey, sHitPath
+		return
+	endif
+
+	; Cycle
+
+	short iWheelDirection = 0
+
+	if iKeyId == 264
+		let iWheelDirection := (-1)
+	elseif iKeyId == 265
+		let iWheelDirection := 1
+	endif
+
+	if eval !iWheelDirection
+		Sv_Destruct sHoveredKey, sHitPath
+		return
+	endif
+
+	short iTreatmentOptionIndex = Player.AuxiliaryVariableGetFloat "*SMI_StatsTreatmentOptionIndex"
+	Player.AuxiliaryVariableSetFloat "*SMI_StatsTreatmentOptionIndex" (iTreatmentOptionIndex + iWheelDirection)
+
+	Call UpdateStatsTreatmentPreviewUDF sHoveredKey 1
+
+	; Clean-Up
+
+	Sv_Destruct sHoveredKey, sHitPath
+
+end

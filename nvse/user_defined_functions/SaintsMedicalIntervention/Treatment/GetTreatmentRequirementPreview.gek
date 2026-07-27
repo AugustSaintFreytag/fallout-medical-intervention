@@ -10,8 +10,47 @@ begin function { string_var sKey }
 	; Result
 
 	array_var aPreview = Ar_Construct "stringmap"
+	let aPreview["index"] := 0
+	let aPreview["numOptions"] := 0
 
 	; TODO: Allow `text` to be empty and preview box to not show in XML when empty.
+
+	; Requirements
+
+	array_var aPlayerBodyHealthMap = Call GetPlayerBodyHealthMapUDF
+
+	short iBodyPartHealth = aPlayerBodyHealthMap[$sKey]
+	short bBodyPartIsMinor = eval sKey != "all" && iBodyPartHealth > 0
+	short iCurrentSkill = Player.GetActorValue Medicine
+	short iRequiredSkill = Call GetTreatmentSkillLevelUDF sKey bBodyPartIsMinor
+
+	; Treatment Option List
+
+	array_var aTreatmentOptions = Call GetTreatmentOptionsUDF sKey iBodyPartHealth
+	short iNumTreatmentOptions = Ar_Size aTreatmentOptions
+
+	if iNumTreatmentOptions <= 0
+		; Unusual edge case but worth checking.
+		let aPreview["text"] := "No Options"
+		let aPreview["possible"] := 0
+
+		SetFunctionValue aPreview
+
+		let aPreview := Ar_Null
+		let aPlayerBodyHealthMap := Ar_Null
+		let aTreatmentOptions := Ar_Null
+		return
+	endif
+
+	short iTreatmentOptionIndex = Player.AuxiliaryVariableGetFloat "*SMI_StatsTreatmentOptionIndex"
+	let iTreatmentOptionIndex %= iNumTreatmentOptions
+
+	if iTreatmentOptionIndex < 0
+		let iTreatmentOptionIndex += iNumTreatmentOptions
+	endif
+
+	let aPreview["index"] := iTreatmentOptionIndex
+	let aPreview["numOptions"] := iNumTreatmentOptions
 
 	; Triage Item
 
@@ -22,39 +61,15 @@ begin function { string_var sKey }
 		SetFunctionValue aPreview
 
 		let aPreview := Ar_Null
+		let aPlayerBodyHealthMap := Ar_Null
+		let aTreatmentOptions := Ar_Null
 		return
 	endif
-
-	; Requirements
-	
-	array_var aPlayerBodyHealthMap = Call GetPlayerBodyHealthMapUDF
-	
-	short iBodyPartHealth = aPlayerBodyHealthMap[$sKey]
-	short bBodyPartIsMinor = eval sKey != "all" && iBodyPartHealth > 0
-	short iCurrentSkill = Player.GetActorValue Medicine
-	short iRequiredSkill = Call GetTreatmentSkillLevelUDF sKey bBodyPartIsMinor
 
 	; Skill
 
 	if iCurrentSkill < iRequiredSkill
 		let aPreview["text"] := (Sv_Construct "Need Medicine %g+" iRequiredSkill)
-		let aPreview["possible"] := 0
-
-		SetFunctionValue aPreview
-
-		let aPreview := Ar_Null
-		let aPlayerBodyHealthMap := Ar_Null
-		return
-	endif
-
-	; Treatment Option List
-	
-	array_var aTreatmentOptions = Call GetTreatmentOptionsUDF sKey iBodyPartHealth
-	short iTreatmentOptionIndex = 0 ; Can later be derived from aux var state, cycled by wheel input.
-
-	if eval (Ar_Size aTreatmentOptions) <= 0
-		; Unusual edge case but worth checking.
-		let aPreview["text"] := "No Options"
 		let aPreview["possible"] := 0
 
 		SetFunctionValue aPreview
