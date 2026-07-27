@@ -47,11 +47,12 @@ begin function { string_var sKey }
 		return
 	endif
 
-	; The first treatment option is the selection advertised by the hover preview.
+	; Use the treatment option advertised by the hover preview.
 
 	array_var aTreatmentOptions = Call GetTreatmentOptionsUDF sKey iBodyPartHealth
+	short iNumTreatmentOptions = Ar_Size aTreatmentOptions
 
-	if eval (Ar_Size aTreatmentOptions) <= 0
+	if iNumTreatmentOptions <= 0
 		MessageExAlt 2 "Interface\Icons\Message Icons\glow_message_vaultboy_thinking.dds|No treatment is currently available for that body part."
 
 		Sv_Destruct sBodyPartDescription, sPartConcernDescription
@@ -60,7 +61,13 @@ begin function { string_var sKey }
 		return
 	endif
 
-	array_var aTreatmentOption = aTreatmentOptions[0]
+	short iTreatmentOptionIndex = Player.AuxiliaryVariableGetFloat "*SMI_StatsTreatmentOptionIndex"
+
+	if eval iTreatmentOptionIndex < 0 || iTreatmentOptionIndex >= iNumTreatmentOptions
+		let iTreatmentOptionIndex := 0
+	endif
+
+	array_var aTreatmentOption = aTreatmentOptions[iTreatmentOptionIndex]
 	short iTreatmentResult = Call PerformTreatmentOptionUDF sKey aTreatmentOption
 
 	if iTreatmentResult == 0

@@ -8,13 +8,15 @@ begin function {}
 			Player.AuxiliaryVariableErase "*SMI_StatsBodyPartHoverKey"
 		endif
 
+		Player.AuxiliaryVariableErase "*SMI_StatsTreatmentOptionIndex"
+
 		Sv_Destruct sPreviousHoveredKey
 		return
 	endif
 
 	; UDFs
 
-	ref GetTreatmentRequirementPreviewUDF = CompileScript "SaintsMedicalIntervention\Treatment\GetTreatmentRequirementPreview.gek"
+	ref UpdateStatsTreatmentPreviewUDF = CompileScript "SaintsMedicalIntervention\Interface\UpdateStatsTreatmentPreview.gek"
 	ref SetStatsBodyPartColorsUDF = CompileScript "SaintsMedicalIntervention\Interface\SetStatsBodyPartColors.gek"
 	ref PlayInteractionSoundUDF = CompileScript "SaintsMedicalIntervention\Treatment\PlayInteractionSound.gek"
 
@@ -87,6 +89,7 @@ begin function {}
 		SetUIFloatAlt (sPreviewPath + "/_failure") 0
 		Call SetStatsBodyPartColorsUDF "none" 0
 		Player.AuxiliaryVariableErase "*SMI_StatsBodyPartHoverKey"
+		Player.AuxiliaryVariableErase "*SMI_StatsTreatmentOptionIndex"
 		Player.AuxTimerStop "*SMI_StatsBodyPartBrightnessPulse"
 
 		Sv_Destruct sHeadPath, sTorsoPath, sLeftArmPath, sRightArmPath, sLeftLegPath, sRightLegPath, sFacePath, sPreviewPath, sPreviousHoveredKey
@@ -121,6 +124,10 @@ begin function {}
 
 	short bHoverChanged = eval sHoveredKey != sPreviousHoveredKey
 
+	if eval bHoverChanged && sHoveredKey
+		Player.AuxiliaryVariableSetFloat "*SMI_StatsTreatmentOptionIndex" 0
+	endif
+
 	; Body Part Pulse
 
 	float fPulseSpeedFactor = 1.5
@@ -133,6 +140,7 @@ begin function {}
 			SetUIFloatAlt (sPreviewPath + "/_failure") 0
 			Call SetStatsBodyPartColorsUDF "none" 0
 			Player.AuxiliaryVariableErase "*SMI_StatsBodyPartHoverKey"
+			Player.AuxiliaryVariableErase "*SMI_StatsTreatmentOptionIndex"
 		endif
 	elseif bHoverChanged
 		Player.AuxTimerStop "*SMI_StatsBodyPartBrightnessPulse"
@@ -197,18 +205,7 @@ begin function {}
 		SetUIFloatAlt (sPreviewPath + "/visible") 0
 	else
 		if bHoverChanged
-			array_var aPreview = Call GetTreatmentRequirementPreviewUDF sHoveredKey
-			string_var sPreviewText = aPreview["text"]
-			short bTreatmentPossible = aPreview["possible"]
-			short bTreatmentFailure = eval !bTreatmentPossible
-
-			SetUIStringAlt (sPreviewPath + "/text/string") "%z" sPreviewText
-			SetUIFloatAlt (sPreviewPath + "/_failure") bTreatmentFailure
-			Call SetStatsBodyPartColorsUDF sHoveredKey bTreatmentFailure
-			Player.AuxiliaryVariableSetString "*SMI_StatsBodyPartHoverKey" ($sHoveredKey)
-
-			Sv_Destruct sPreviewText
-			let aPreview := Ar_Null
+			Call UpdateStatsTreatmentPreviewUDF sHoveredKey 0
 		endif
 
 		SetUIFloatAlt (sPreviewPath + "/visible") bTreatmentPreviewEnabled
