@@ -1,0 +1,8 @@
+begin function { short iMode }
+
+	; State
+
+	float fTimeSleepStarted = (GetGameDaysPassed 2282 2 10)
+	Player.AuxiliaryVariableSetFloat "*SMI_fTimeSleepStarted" fTimeSleepStarted
+
+end

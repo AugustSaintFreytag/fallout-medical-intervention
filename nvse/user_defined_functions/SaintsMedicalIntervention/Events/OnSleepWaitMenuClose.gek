@@ -1,0 +1,57 @@
+begin function { short iMenuID }
+
+	; UDFs
+
+	ref GetConfigUDF = CompileScript "SaintsMedicalIntervention\Configuration\GetConfig.gek"
+	ref GetPlayerBodyStatusMapUDF = CompileScript "SaintsMedicalIntervention\Status\GetPlayerBodyStatusMap.gek"
+	ref RestoreBodyPartUDF = CompileScript "SaintsMedicalIntervention\Status\RestoreBodyPart.gek"
+
+	; Config
+
+	array_var aConfig = Call GetConfigUDF
+
+	float fSleepRestorationFactor = aConfig["fSleepRestorationFactor"]
+
+	; State
+
+	float fTimeSleepStarted = Player.AuxiliaryVariableGetFloat "*SMI_fTimeSleepStarted"
+	Player.AuxiliaryVariableErase "*SMI_fTimeSleepStarted"
+
+	; Main
+
+	if eval (fSleepRestorationFactor <= 0 || fTimeSleepStarted <= 0)
+		let aConfig := Ar_Null
+		return
+	endif
+
+	float fCurrentTime = (GetGameDaysPassed 2282 2 10)
+	float fHoursSlept = (fCurrentTime - fTimeSleepStarted) * 24.0
+	short iRestoredCondition = Floor ((100.0 * fSleepRestorationFactor * fHoursSlept) + 0.5)
+
+	if iRestoredCondition <= 0
+		let aConfig := Ar_Null
+		return
+	endif
+
+	array_var aBodyStatusMap = Call GetPlayerBodyStatusMapUDF
+	array_var aPartKeys = Ar_List "leftleg", "rightleg", "leftarm", "rightarm", "torso", "head"
+
+	foreach array_var aPartElement <- aPartKeys
+		string_var sKey = *aPartElement
+
+		if eval aBodyStatusMap[sKey] == 0
+			Call RestoreBodyPartUDF sKey iRestoredCondition
+		endif
+
+		Sv_Destruct sKey
+	loop
+
+	PrintC "Restored healthy body parts by %g after %.2f hour(s) of sleep." iRestoredCondition fHoursSlept
+
+	; Clean-Up
+
+	let aConfig := Ar_Null
+	let aBodyStatusMap := Ar_Null
+	let aPartKeys := Ar_Null
+
+end

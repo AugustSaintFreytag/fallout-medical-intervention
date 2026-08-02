@@ -8,6 +8,8 @@ ref OnQuickSelectPreActivateInventoryItemUDF = CompileScript "SaintsMedicalInter
 ref OnStatsTriageClickUDF = CompileScript "SaintsMedicalIntervention\Events\OnStatsTriageClick.gek"
 ref OnStatsBodyPartClickUDF = CompileScript "SaintsMedicalIntervention\Events\OnStatsBodyPartClick.gek"
 ref OnStatsTreatmentOptionCycleUDF = CompileScript "SaintsMedicalIntervention\Events\OnStatsTreatmentOptionCycle.gek"
+ref OnSleepWaitMenuCloseUDF = CompileScript "SaintsMedicalIntervention\Events\OnSleepWaitMenuClose.gek"
+ref OnSleepWaitRunUDF = CompileScript "SaintsMedicalIntervention\Events\OnSleepWaitRun.gek"
 ref TickStatsBodyPartHoverUDF = CompileScript "SaintsMedicalIntervention\Interface\TickStatsBodyPartHover.gek"
 
 ; Events
@@ -26,6 +28,11 @@ SetOnMenuClickEventHandler OnStatsBodyPartClickUDF 1 "StatsMenu#1065"
 SetOnMenuClickEventHandler OnStatsBodyPartClickUDF 1 "StatsMenu#1067"
 SetOnMenuClickEventHandler OnStatsBodyPartClickUDF 1 "StatsMenu#1069"
 SetOnMenuClickEventHandler OnStatsBodyPartClickUDF 1 "StatsMenu#1071"
+
 SetOnKeyDownEventHandler OnStatsTreatmentOptionCycleUDF 1 264
 SetOnKeyDownEventHandler OnStatsTreatmentOptionCycleUDF 1 265
+
+SetJohnnyOnSleepWaitEventHandler 1 OnSleepWaitRunUDF 0 2
+SetOnMenuCloseEventHandler OnSleepWaitMenuCloseUDF 1 1012
+
 SetGameMainLoopCallback TickStatsBodyPartHoverUDF 1 1 2

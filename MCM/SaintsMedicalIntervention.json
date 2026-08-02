@@ -155,6 +155,19 @@
                     "type": 5,
                     "mouse": "Lower the Pip-Boy, play treatment audio, and briefly fade to black when treating a non-crippled body part.",
                     "vars": [{ "configINI": "Treatment:bShowAnimationForMinorTreatment", "default": 0 }]
+                },
+                "17": {
+                    "title": "Sleep Restoration",
+                    "enable": 1,
+                    "type": 2.5,
+                    "mouse": "Set the fraction of condition restored to each non-crippled body part per hour slept. Set to zero to disable.",
+                    "vars": [{ "configINI": "Treatment:fSleepRestorationFactor", "default": 0.05 }],
+                    "scale": {
+                        "valueDecimal": 2,
+                        "valueIncrement": 0.01,
+                        "valueMin": 0.0,
+                        "valueMax": 1.0
+                    }
                 }
             }
         }
